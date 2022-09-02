@@ -13,6 +13,7 @@
     "@microsoft/signalr": "^5.0.2",
     "@sveltejs/kit": "next",
     "@types/three": "^0.134.0",
+    "fluent-svelte": "^1.6.0",
     "prettier": "^2.4.1",
     "prettier-plugin-svelte": "^2.4.0",
     "rxjs": "^7.5.1",

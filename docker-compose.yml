@@ -51,7 +51,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
   eventstore:
-    #container_name: esdb-docs
+    container_name: esdb-docs
     #image: eventstore/eventstore:release-5.0.10
     image: eventstore/eventstore:latest
     ports:
