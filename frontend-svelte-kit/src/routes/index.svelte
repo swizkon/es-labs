@@ -67,11 +67,23 @@
 		console.log(args)
 	}
 
-	let spin = 0;
+	function handleLevelChanged(a, b) {
+		console.log(a, b)
+		// connection.send('Broadcast', 'user', 'message');
+	}
 
+	let levels = [
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+	];
 	let bikes = [
-		[0, 0, 0],
-		[0, 0, 0]
+		[0, 0, -10],
+		[0, 1, 0]
 	];
 </script>
 
@@ -83,43 +95,44 @@
 >
 	<SC.Group position={[0, -height / 2, 0]}>
 		<SC.Mesh
-			geometry={new THREE.PlaneGeometry(64, 40)}
+			geometry={new THREE.PlaneGeometry(20, 40)}
 			material={new THREE.MeshStandardMaterial({ color: 'burlywood' })}
 			rotation={[-Math.PI / 2, 0, 0]}
 			receiveShadow
 		/>
 		<SC.Primitive
-			object={new THREE.GridHelper(64, 50, 'papayawhip2', 'papayawhip2')}
+			object={new THREE.GridHelper(40, 40, 'papayawhip2', 'papayawhip2')}
 			position={[0, 0.001, 0]}
 		/>
 	</SC.Group>
-
-	{#each $values as v}
-		<Bike position={[0, 0, v]} />
-	{/each}
 
 	
 	{#each bikes as b}
 		<Bike position={b} />
 	{/each}
 
-	<SC.PerspectiveCamera position={[-40, 25, 40]} />
+	<SC.PerspectiveCamera position={[-40, 15, 30]} />
 	<SC.OrbitControls enableZoom={true} maxPolarAngle={Math.PI * 0.51} />
 	<SC.AmbientLight intensity={0.6} />
 	<SC.DirectionalLight
-		intensity={0.6}
+		intensity={0.5}
 		position={[-2, 3, 2]}
 		shadow={{ mapSize: [2048, 2048] }}
 	/>
 </SC.Canvas>
 
 <div class="controls">
+
+	{#each levels as level, i}
 	<label
-		><input type="range" bind:value={width} min={0.1} max={3} step={0.1} />
-		width {spin}</label
+		><input type="range" on:input={(e) => handleLevelChanged(i, e.target.value)} bind:value={levels[i]} min={0.1} max={10} step={0.1} />
+		level {i}
+		</label
 	>
+	{/each}
+
 	<label
-		><input type="range" bind:value={height} min={0.1} max={3} step={0.1} /> height</label
+		><input type="range" bind:value={height} min={0} max={10} step={1} /> volume</label
 	>
 	<label
 		><input type="range" bind:value={depth} min={0.1} max={3} step={0.1} /> depth</label

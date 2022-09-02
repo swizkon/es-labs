@@ -6,7 +6,7 @@ const config = {
 
     vite: {
       ssr: {
-        noExternal: ['three'],
+        noExternal: ['three', 'fluent-svelte'],
       },
     },
   },
