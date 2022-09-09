@@ -9,7 +9,7 @@
 <SC.Group scale={[0.5, 0.5, 0.5]} position={position}>
 	<SC.Mesh
 		geometry={new THREE.BoxGeometry(50, 5, 10)}
-		material={new THREE.MeshStandardMaterial({ color: 0x003eff })}
+		material={new THREE.MeshStandardMaterial({ color: 0x0099ff })}
 		scale={[0.1, 0.1, 0.1]}
 		position={[4, 1.6, 0]}
 		castShadow
@@ -17,7 +17,7 @@
 	
 	<SC.Mesh
 		geometry={new THREE.BoxGeometry(3, 50, 5)}
-		material={new THREE.MeshStandardMaterial({ color: 0x003eff })}
+		material={new THREE.MeshStandardMaterial({ color: 0x0099ff })}
 		scale={[0.1, 0.1, 0.1]}
 		position={[1.6, 3.9, 0]}
 		castShadow

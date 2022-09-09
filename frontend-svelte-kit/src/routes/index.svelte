@@ -7,6 +7,7 @@
 	import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
 	import Bike from '../components/bike/Bike.svelte';
+	import Level from '../components/Level.svelte';
 
 	import { of } from 'rxjs';
 	import { delay, startWith } from 'rxjs/operators';
@@ -25,22 +26,12 @@
 			.withUrl(`${baseUrl}/hubs/testHub`)
 			.withAutomaticReconnect()
 			.build();
-
-		connection.on('AddItem', (a,b,c) => {
-			console.log(a)
-			console.log(b)
-			console.log(c)
-			signalRMessageCount++;
-		});
-
-		connection.on('playerPosition', (player, x, y) => {
-			bikes[0] = [x/10,0,y/10];
-			signalRMessageCount++;
-		});
 		
 		connection.on('ChannelLevel', (player, x, y) => {
 			console.log('ChannelLevel', player, x, y);
-			bikes[0] = [x/10,0,y/10];
+			// bikes[x] = [x/10, y/10, 0];
+			bikes[x][0][1] = -y/100;
+			bikes[x][1] = y;
 			signalRMessageCount++;
 		});
 
@@ -52,7 +43,6 @@
 		} catch (err) {
 			signalRConnectionState = connection.state;
 			console.log('err', err);
-			// setTimeout(() => start(), 5000);
 		}
 		console.log(connection);
 	}
@@ -85,8 +75,11 @@
 		50
 	];
 	let bikes = [
-		[0, 0, -10],
-		[0, 1, 0]
+		[[0, 0, -10], 50, 0x663399],
+		[[0, 0, -5],  50, 0x336699],
+		[[0, 0,  0],  50, 0x996633],
+		[[0, 0,  5],  50, 0x339966],
+		[[0, 0, 10],  50, 0x669933]
 	];
 </script>
 
@@ -96,7 +89,7 @@
 	fog={new THREE.FogExp2('papayawhip', 0.01)}
 	shadows
 >
-	<SC.Group position={[0, -height / 2, 0]}>
+	<SC.Group position={[0, 0, 0]}>
 		<SC.Mesh
 			geometry={new THREE.PlaneGeometry(20, 40)}
 			material={new THREE.MeshStandardMaterial({ color: 'burlywood' })}
@@ -111,7 +104,8 @@
 
 	
 	{#each bikes as b}
-		<Bike position={b} />
+		<!-- <Bike position={b} /> -->
+		<Level position={b[0]} color={b[2]} level={b[1]} />
 	{/each}
 
 	<SC.PerspectiveCamera position={[-40, 15, 30]} />
