@@ -32,14 +32,21 @@
 			console.log(c)
 			signalRMessageCount++;
 		});
+
 		connection.on('playerPosition', (player, x, y) => {
+			bikes[0] = [x/10,0,y/10];
+			signalRMessageCount++;
+		});
+		
+		connection.on('ChannelLevel', (player, x, y) => {
+			console.log('ChannelLevel', player, x, y);
 			bikes[0] = [x/10,0,y/10];
 			signalRMessageCount++;
 		});
 
 		try {
 			await connection.start();
-			connection.send('Broadcast', 'user', 'message');
+			connection.send('Broadcast', 'Me', 'Just connected');
 			signalRConnectionState = connection.state;
 			console.log('SignalR Connected.');
 		} catch (err) {
@@ -59,27 +66,23 @@
 
 	let width = 1;
 	let height = 0.1;
-	let depth = 1;
 
-	$: onChange(width, height, depth);
+	$: onChange(width, height);
 
 	function onChange(...args) {
 		console.log(args)
 	}
 
 	function handleLevelChanged(a, b) {
-		console.log(a, b)
-		// connection.send('Broadcast', 'user', 'message');
+		connection.send('SetChannelLevel', 'mainroom', '' + a, b);
 	}
 
 	let levels = [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
+		50,
+		50,
+		50,
+		50,
+		50
 	];
 	let bikes = [
 		[0, 0, -10],
@@ -125,17 +128,14 @@
 
 	{#each levels as level, i}
 	<label
-		><input type="range" on:input={(e) => handleLevelChanged(i, e.target.value)} bind:value={levels[i]} min={0.1} max={10} step={0.1} />
-		level {i}
+		><input type="range" on:input={(e) => handleLevelChanged(i, e.target.value)} bind:value={levels[i]} min={1} max={100} step={1} />
+		level{i}
 		</label
 	>
 	{/each}
 
 	<label
 		><input type="range" bind:value={height} min={0} max={10} step={1} /> volume</label
-	>
-	<label
-		><input type="range" bind:value={depth} min={0.1} max={3} step={0.1} /> depth</label
 	>
 	<div>
 		<h2>State: <small>{signalRConnectionState}</small></h2>
@@ -148,6 +148,7 @@
 		position: absolute;
 		left: 1em;
 		top: 1em;
+		width:500;
 	}
 
 	label {

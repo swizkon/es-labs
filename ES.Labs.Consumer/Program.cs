@@ -1,9 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-//using System.Diagnostics;
-using System.Text;
 using ES.Labs.Domain;
 using EventStore.Client;
+
+namespace ES.Labs.Consumer;
 
 public class Program
 {
@@ -15,20 +15,30 @@ public class Program
 
     public static async Task MainAsync(string[] args)
     {
-        await Task.Delay(1000);
-        Console.WriteLine("Hello World!");
+        Console.WriteLine($"Hello {typeof(Program).Namespace}!");
         
         var settings = EventStoreClientSettings
             .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
         var client = new EventStoreClient(settings);
 
+        /*
         await client.SubscribeToStreamAsync(EventStoreConfiguration.StreamName,
             async (subscription, e, cancellationToken) => {
                 Console.WriteLine($"Received event {e.OriginalEventNumber}@{e.OriginalStreamId}");
                 //await HandleEvent(evnt);
                 await Task.Delay(10, cancellationToken);
             });
+        */
 
+        await client.SubscribeToStreamAsync("device-mainroom",
+            async (subscription, e, cancellationToken) => {
+                Console.WriteLine($"Received event {e.OriginalEventNumber}@{e.OriginalStreamId}");
+                //await HandleEvent(evnt);
+                Console.WriteLine(e.Event.EventType);
+                await Task.Delay(1, cancellationToken);
+            });
+
+        /*
         await client.SubscribeToAllAsync(Position.Start,
             (s, e, c) =>
             {
@@ -41,6 +51,7 @@ public class Program
             },
             filterOptions: new SubscriptionFilterOptions(EventTypeFilter.ExcludeSystemEvents())
         );
+        */
 
         //var events = client.ReadStreamAsync(
         //    Direction.Forwards,

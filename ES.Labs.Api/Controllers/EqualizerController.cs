@@ -1,32 +1,31 @@
 using System.Text;
 using ES.Labs.Domain;
+using ES.Labs.Domain.Events;
 using EventStore.Client;
-//using EventStore.ClientAPI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-//using EventData = EventStore.ClientAPI.EventData;
 
 namespace ES.Labs.Api.Controllers
 {
 
     [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class EqualizerController : ControllerBase
     {
-
         private readonly IHubContext<TestHub> _hubContext;
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<EqualizerController> _logger;
 
-        public WeatherForecastController(
+        public EqualizerController(
             IHubContext<TestHub> hubContext, 
-            ILogger<WeatherForecastController> logger)
+            ILogger<EqualizerController> logger)
         {
+            _hubContext = hubContext;
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
+        [HttpGet(Name = "GetEqualizer")]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -37,12 +36,11 @@ namespace ES.Labs.Api.Controllers
                 .ToArray();
         }
 
-        [HttpPost(Name = "SetWeatherForecast")]
-        public async Task<IActionResult> Set(WeatherForecast data)
+        [HttpPost(Name = "SetChannelLevel")]
+        public async Task<IActionResult> Set(ChannelLevelChanged data)
         {
             var settings = EventStoreClientSettings
                 .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
-            //.Create("esdb+discover://admin:changeit@localhost:2113?tls=false&keepAliveTimeout=10000&keepAliveInterval=10000");
             var client = new EventStoreClient(settings);
 
             const string metadata = "{}";
@@ -57,9 +55,9 @@ namespace ES.Labs.Api.Controllers
             );
             
             var result = await client.AppendToStreamAsync(
-                streamName: EventStoreConfiguration.StreamName,
+                streamName: $"device-{data.DeviceName}",
                 expectedState: StreamState.Any,
-                eventData: new List<EventStore.Client.EventData>()
+                eventData: new List<EventData>
                 {
                     eventData
                 });

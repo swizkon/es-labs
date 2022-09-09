@@ -6,5 +6,7 @@ public interface ITestHubClient
 
     Task Broadcast(string user, string message);
 
+    Task ChannelLevel(string deviceName, string channel, int value);
+
     Task PlayerPosition(string player, int x, int y);
 }
