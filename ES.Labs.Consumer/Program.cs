@@ -30,7 +30,7 @@ public class Program
             });
         */
 
-        await client.SubscribeToStreamAsync("device-mainroom",
+        await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) => {
                 Console.WriteLine($"Received event {e.OriginalEventNumber}@{e.OriginalStreamId}");
                 //await HandleEvent(evnt);

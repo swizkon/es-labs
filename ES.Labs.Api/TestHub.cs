@@ -1,6 +1,7 @@
 
 
 using System.Text;
+using ES.Labs.Domain;
 using ES.Labs.Domain.Events;
 using EventStore.Client;
 using Microsoft.AspNetCore.SignalR;
@@ -53,7 +54,7 @@ public class TestHub : Hub<ITestHubClient>
         );
 
         var result = await _client.AppendToStreamAsync(
-            streamName: $"device-{data.DeviceName}",
+            streamName: EventStoreConfiguration.DeviceStreamName,
             expectedState: StreamState.Any,
             eventData: new List<EventData>
             {
