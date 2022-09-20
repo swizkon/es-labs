@@ -42,7 +42,6 @@ namespace ES.Labs.Api.Controllers
         {
             var settings = EventStoreClientSettings
                 .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
-            //.Create("esdb+discover://admin:changeit@localhost:2113?tls=false&keepAliveTimeout=10000&keepAliveInterval=10000");
             var client = new EventStoreClient(settings);
 
             const string metadata = "{}";
