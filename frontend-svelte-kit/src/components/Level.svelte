@@ -12,7 +12,7 @@
 		geometry={new THREE.BoxGeometry(45, level, 45)}
 		material={new THREE.MeshStandardMaterial({ color: color })}
 		scale={[0.1, 0.1, 0.1]}
-		position={[1.6, 2.5, 0]}
+		position={[1.6, level/20, 0]}
 		castShadow
 	/>
 </SC.Group>
