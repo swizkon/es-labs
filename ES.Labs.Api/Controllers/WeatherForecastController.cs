@@ -17,12 +17,15 @@ namespace ES.Labs.Api.Controllers
 
         private readonly IHubContext<TestHub> _hubContext;
 
+        private readonly EventStoreClient _client;
         private readonly ILogger<WeatherForecastController> _logger;
 
         public WeatherForecastController(
-            IHubContext<TestHub> hubContext, 
+            IHubContext<TestHub> hubContext,
+            EventStoreClient client,
             ILogger<WeatherForecastController> logger)
         {
+            _client = client;
             _logger = logger;
         }
 
@@ -40,9 +43,9 @@ namespace ES.Labs.Api.Controllers
         [HttpPost(Name = "SetWeatherForecast")]
         public async Task<IActionResult> Set(WeatherForecast data)
         {
-            var settings = EventStoreClientSettings
-                .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
-            var client = new EventStoreClient(settings);
+            //var settings = EventStoreClientSettings
+            //    .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
+            //var client = new EventStoreClient(settings);
 
             const string metadata = "{}";
 
@@ -55,7 +58,7 @@ namespace ES.Labs.Api.Controllers
                 metadata: Encoding.UTF8.GetBytes(metadata)
             );
             
-            var result = await client.AppendToStreamAsync(
+            var result = await _client.AppendToStreamAsync(
                 streamName: EventStoreConfiguration.StreamName,
                 expectedState: StreamState.Any,
                 eventData: new List<EventStore.Client.EventData>()

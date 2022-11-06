@@ -1,26 +1,27 @@
 using System.Text;
-using ES.Labs.Domain;
 using ES.Labs.Domain.Events;
 using EventStore.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-
+    
 namespace ES.Labs.Api.Controllers
 {
-
     [ApiController]
     [Route("[controller]")]
     public class EqualizerController : ControllerBase
     {
+        private readonly EventStoreClient _eventStoreClient;
         private readonly IHubContext<TestHub> _hubContext;
 
         private readonly ILogger<EqualizerController> _logger;
 
         public EqualizerController(
+            EventStoreClient eventStoreClient,
             IHubContext<TestHub> hubContext, 
             ILogger<EqualizerController> logger)
         {
+            _eventStoreClient = eventStoreClient;
             _hubContext = hubContext;
             _logger = logger;
         }
@@ -39,10 +40,6 @@ namespace ES.Labs.Api.Controllers
         [HttpPost(Name = "SetChannelLevel")]
         public async Task<IActionResult> Set(ChannelLevelChanged data)
         {
-            var settings = EventStoreClientSettings
-                .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
-            var client = new EventStoreClient(settings);
-
             const string metadata = "{}";
 
             var eventType = data.GetType().Name.ToLower();
@@ -54,7 +51,7 @@ namespace ES.Labs.Api.Controllers
                 metadata: Encoding.UTF8.GetBytes(metadata)
             );
             
-            var result = await client.AppendToStreamAsync(
+            var result = await _eventStoreClient.AppendToStreamAsync(
                 streamName: $"device-{data.DeviceName}",
                 expectedState: StreamState.Any,
                 eventData: new List<EventData>

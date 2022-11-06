@@ -62,7 +62,7 @@ public class TestHub : Hub<ITestHubClient>
             });
 
         _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
-        
+
         await Clients.All.ChannelLevel(deviceName, channel, int.Parse(value));
     }
 

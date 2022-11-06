@@ -6,7 +6,7 @@
 
 	import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
-	import Bike from '../components/bike/Bike.svelte';
+	import Logo from '../components/Logo.svelte';
 	import Level from '../components/Level.svelte';
 
 	import { of } from 'rxjs';
@@ -85,7 +85,7 @@
 
 <SC.Canvas
 	antialias
-	background={new THREE.Color('papayawhip')}
+	background={new THREE.Color('black')}
 	fog={new THREE.FogExp2('papayawhip', 0.01)}
 	shadows
 >
@@ -118,6 +118,9 @@
 	/>
 </SC.Canvas>
 
+
+<Logo />
+
 <div class="controls">
 
 	{#each levels as level, i}
@@ -143,6 +146,7 @@
 		left: 1em;
 		top: 1em;
 		width:500;
+		color: antiquewhite;
 	}
 
 	label {

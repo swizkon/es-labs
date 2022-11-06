@@ -1,11 +1,15 @@
 using ES.Labs.Api;
+using EventStore.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var services = builder.Services;
 
-builder.Services.AddControllers();
+services.AddEventStoreClient(settings => EventStoreClientSettings
+    .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false"));
+
+services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();

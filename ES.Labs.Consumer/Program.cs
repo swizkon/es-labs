@@ -1,26 +1,33 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Collections.Concurrent;
+using System.Text;
 using ES.Labs.Domain;
+using ES.Labs.Domain.Events;
+using ES.Labs.Domain.Projections;
 using EventStore.Client;
+using Newtonsoft.Json;
 
 namespace ES.Labs.Consumer;
 
 public class Program
 {
+    private static ConcurrentDictionary<string, EqualizerState> _eqStates 
+        = new ConcurrentDictionary<string, EqualizerState>();
+
     public static void Main(string[] args)
     {
+        var httpClient = new HttpClient();
+
         MainAsync(args).GetAwaiter().GetResult();
         Console.ReadKey();
+
+        httpClient.Dispose();
     }
 
     public static async Task MainAsync(string[] args)
     {
         Console.WriteLine($"Hello {typeof(Program).Namespace}!");
-        
-        var settings = EventStoreClientSettings
-            .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
-        var client = new EventStoreClient(settings);
-
         /*
         await client.SubscribeToStreamAsync(EventStoreConfiguration.StreamName,
             async (subscription, e, cancellationToken) => {
@@ -30,12 +37,22 @@ public class Program
             });
         */
 
+        var client = EventStoreUtil.GetDefaultClient();
         await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) => {
-                Console.WriteLine($"Received event {e.OriginalEventNumber}@{e.OriginalStreamId}");
+                
+                // Console.WriteLine($"Received event {e.OriginalEventNumber}@{e.OriginalStreamId}");
                 //await HandleEvent(evnt);
-                Console.WriteLine(e.Event.EventType);
-                await Task.Delay(1, cancellationToken);
+
+                if (e.Event.EventType == "ChannelLevelChanged")
+                {
+                    await HandleChannelLevelChanged(e);
+                }
+                else
+                {
+                    Console.WriteLine(e.Event.EventType);
+                }
+                // await Task.Delay(1, cancellationToken);
             });
 
         /*
@@ -95,5 +112,32 @@ public class Program
         //    Console.WriteLine("Wait for new round...");
         //    await Task.Delay(10_000);
         //}
+    }
+
+    private static async Task HandleChannelLevelChanged(ResolvedEvent resolvedEvent)
+    {
+        var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
+        var (deviceName, channel, level) = JsonConvert.DeserializeObject<ChannelLevelChanged>(data);
+        
+        var s = _eqStates.AddOrUpdate(deviceName,
+            new EqualizerState(),
+            (s, state) =>
+            {
+                state.DeviceName = deviceName;
+                state.Channels
+                    = state
+                        .Channels
+                        .Where(c => c.Channel != channel)
+                        .Append(new EqualizerState.EqualizerChannelState
+                        {
+                            Channel = channel,
+                            Level = level.ToString().PadLeft(3,'0')
+                        })
+                        .ToList();
+                return state;
+            });
+
+        Console.WriteLine(s.ToString());
+        // await Task.Delay(1);
     }
 }
