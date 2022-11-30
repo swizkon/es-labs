@@ -8,5 +8,7 @@ public interface ITestHubClient
 
     Task ChannelLevel(string deviceName, string channel, int value);
 
+    Task VolumeChanged(string deviceName, int volume);
+
     Task PlayerPosition(string player, int x, int y);
 }

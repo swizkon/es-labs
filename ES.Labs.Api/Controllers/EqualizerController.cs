@@ -1,5 +1,6 @@
 using System.Text;
 using ES.Labs.Domain.Events;
+using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -60,6 +61,46 @@ namespace ES.Labs.Api.Controllers
                 });
 
             return Ok(result);
+        }
+
+        //[HttpPost(template: "channel", Name = "AdjustEqChannel")]
+        //public async Task<IActionResult> AdjustEqChannel(ChannelLevelChanged data)
+        //{
+        //    const string metadata = "{}";
+
+        //    var eventType = data.GetType().Name.ToLower();
+        //    var eventData = new EventData(
+        //        eventId: Uuid.NewUuid(),
+        //        type: eventType,
+        //        //isJson: true,
+        //        data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
+        //        metadata: Encoding.UTF8.GetBytes(metadata)
+        //    );
+
+        //    var result = await _eventStoreClient.AppendToStreamAsync(
+        //        streamName: $"device-{data.DeviceName}",
+        //        expectedState: StreamState.Any,
+        //        eventData: new List<EventData>
+        //        {
+        //            eventData
+        //        });
+
+        //    return Ok(result);
+        //}
+
+        [HttpPost("projections")]
+        public async Task<IActionResult> SetProjection(EqualizerState state)
+        {
+            _logger.LogInformation("Got projection {State}", state);
+
+            return Ok(state);
+        }
+
+        [HttpGet("projections/{deviceName}")]
+        public async Task<IActionResult> GetProjection(
+            [FromRoute] string deviceName)
+        {
+            return Ok(deviceName);
         }
     }
 }

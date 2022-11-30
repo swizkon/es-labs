@@ -29,9 +29,15 @@
 		
 		connection.on('ChannelLevel', (player, x, y) => {
 			console.log('ChannelLevel', player, x, y);
-			// bikes[x] = [x/10, y/10, 0];
 			bikes[x][0][1] = -y/100;
 			bikes[x][1] = y;
+			signalRMessageCount++;
+		});
+		
+		connection.on('VolumeChanged', (deviceName, volume) => {
+			console.log('VolumeChanged', deviceName, volume);
+			// bikes[x][0][1] = -y/100;
+			// bikes[x][1] = y;
 			signalRMessageCount++;
 		});
 
@@ -65,6 +71,10 @@
 
 	function handleLevelChanged(a, b) {
 		connection.send('SetChannelLevel', 'mainroom', '' + a, b);
+	}
+
+	function handleVolumeChanged(v) {
+		connection.send('SetVolume', 'mainroom', v);
 	}
 
 	let levels = [
@@ -104,7 +114,6 @@
 
 	
 	{#each bikes as b}
-		<!-- <Bike position={b} /> -->
 		<Level position={b[0]} color={b[2]} level={b[1]} />
 	{/each}
 
@@ -132,7 +141,7 @@
 	{/each}
 
 	<label
-		><input type="range" bind:value={height} min={0} max={10} step={1} /> volume</label
+		><input type="range" on:input={(e) => handleVolumeChanged(e.target.value)} bind:value={height} min={0} max={100} step={1} /> volume</label
 	>
 	<div>
 		<h2>State: <small>{signalRConnectionState}</small></h2>

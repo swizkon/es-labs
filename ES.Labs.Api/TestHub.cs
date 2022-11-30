@@ -2,6 +2,7 @@
 
 using System.Text;
 using ES.Labs.Domain;
+using ES.Labs.Domain.Commands;
 using ES.Labs.Domain.Events;
 using EventStore.Client;
 using Microsoft.AspNetCore.SignalR;
@@ -31,6 +32,38 @@ public class TestHub : Hub<ITestHubClient>
     public async Task Broadcast(string user, string message)
     {
         await Clients.All.Broadcast(user, message);
+    }
+
+    public async Task SetVolume(string deviceName, string value)
+    {
+        var data = new SetVolume(DeviceName: deviceName, Volume: int.Parse(value));
+        var metadata = new
+        {
+            Timestamp = DateTime.UtcNow.ToString("o"),
+            CtrlType = data.GetType().FullName,
+            data.GetType().AssemblyQualifiedName
+        };
+
+        var eventType = data.GetType().Name;
+        var eventData = new EventData(
+            eventId: Uuid.NewUuid(),
+            type: eventType,
+            data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
+            metadata: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)),
+            contentType: "application/json"
+        );
+
+        var result = await _client.AppendToStreamAsync(
+            streamName: EventStoreConfiguration.DeviceStreamName,
+            expectedState: StreamState.Any,
+            eventData: new List<EventData>
+            {
+                eventData
+            });
+
+        _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
+        
+        await Clients.All.VolumeChanged(deviceName, int.Parse(value));
     }
 
     public async Task SetChannelLevel(string deviceName, string channel, string value)
