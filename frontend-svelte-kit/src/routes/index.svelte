@@ -100,18 +100,17 @@
 	shadows
 >
 	<SC.Group position={[0, 0, 0]}>
-		<SC.Mesh
+		<!-- <SC.Mesh
 			geometry={new THREE.PlaneGeometry(20, 40)}
 			material={new THREE.MeshStandardMaterial({ color: 'burlywood' })}
 			rotation={[-Math.PI / 2, 0, 0]}
 			receiveShadow
-		/>
+		/> -->
 		<SC.Primitive
 			object={new THREE.GridHelper(40, 40, 'papayawhip2', 'papayawhip2')}
 			position={[0, 0.001, 0]}
 		/>
 	</SC.Group>
-
 	
 	{#each bikes as b}
 		<Level position={b[0]} color={b[2]} level={b[1]} />
