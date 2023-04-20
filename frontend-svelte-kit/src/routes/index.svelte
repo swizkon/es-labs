@@ -13,6 +13,7 @@
 	import { delay, startWith } from 'rxjs/operators';
 
 	const baseUrl = 'https://localhost:6001';
+	const roomName = 'mainroom';
 
 	let signalRConnectionState = 'Unknown';
 	let signalRMessageCount = 0;
@@ -26,6 +27,13 @@
 			.withUrl(`${baseUrl}/hubs/testHub`)
 			.withAutomaticReconnect()
 			.build();
+			
+		connection.on('EqualizerStateChanged', function (data) {
+			console.log('EqualizerStateChanged', data);
+			console.log(arguments);
+
+			height = 10;
+		})
 		
 		connection.on('ChannelLevel', (player, x, y) => {
 			console.log('ChannelLevel', player, x, y);
@@ -36,8 +44,6 @@
 		
 		connection.on('VolumeChanged', (deviceName, volume) => {
 			console.log('VolumeChanged', deviceName, volume);
-			// bikes[x][0][1] = -y/100;
-			// bikes[x][1] = y;
 			signalRMessageCount++;
 		});
 
@@ -50,7 +56,7 @@
 			signalRConnectionState = connection.state;
 			console.log('err', err);
 		}
-		console.log(connection);
+		// console.log(connection);
 	}
 
 	onMount(async () => {
@@ -70,11 +76,11 @@
 	}
 
 	function handleLevelChanged(a, b) {
-		connection.send('SetChannelLevel', 'mainroom', '' + a, b);
+		connection.send('SetChannelLevel', roomName, '' + a, b);
 	}
 
 	function handleVolumeChanged(v) {
-		connection.send('SetVolume', 'mainroom', v);
+		connection.send('SetVolume', roomName, v);
 	}
 
 	let levels = [
@@ -113,7 +119,7 @@
 	</SC.Group>
 	
 	{#each bikes as b}
-		<Level position={b[0]} color={b[2]} level={b[1]} />
+		<Level position={b[0]} level={b[1]} color={b[2]} />
 	{/each}
 
 	<SC.PerspectiveCamera position={[-40, 15, 30]} />
@@ -143,7 +149,7 @@
 		><input type="range" on:input={(e) => handleVolumeChanged(e.target.value)} bind:value={height} min={0} max={100} step={1} /> volume</label
 	>
 	<div>
-		<h2>State: <small>{signalRConnectionState}</small></h2>
+		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
 		<h2>Messages: <small>{signalRMessageCount}</small></h2>
 	</div>
 </div>

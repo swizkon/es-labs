@@ -22,6 +22,11 @@ connection.on('Broadcast', function (data) {
   console.log(arguments);
 })
 
+connection.on('EqualizerStateChanged', function (data) {
+  console.log('EqualizerStateChanged', data);
+  console.log(arguments);
+})
+
 connection.on('Send', function (data) {
   console.log('Send', data);
 })

@@ -5,7 +5,7 @@ using EventStore.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-    
+
 namespace ES.Labs.Api.Controllers
 {
     [ApiController]
@@ -13,16 +13,19 @@ namespace ES.Labs.Api.Controllers
     public class EqualizerController : ControllerBase
     {
         private readonly EventStoreClient _eventStoreClient;
+        private readonly ProjectionState _projectionState;
         private readonly IHubContext<TestHub> _hubContext;
 
         private readonly ILogger<EqualizerController> _logger;
 
         public EqualizerController(
             EventStoreClient eventStoreClient,
-            IHubContext<TestHub> hubContext, 
+            ProjectionState projectionState,
+            IHubContext<TestHub> hubContext,
             ILogger<EqualizerController> logger)
         {
             _eventStoreClient = eventStoreClient;
+            _projectionState = projectionState;
             _hubContext = hubContext;
             _logger = logger;
         }
@@ -51,7 +54,7 @@ namespace ES.Labs.Api.Controllers
                 data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
                 metadata: Encoding.UTF8.GetBytes(metadata)
             );
-            
+
             var result = await _eventStoreClient.AppendToStreamAsync(
                 streamName: $"device-{data.DeviceName}",
                 expectedState: StreamState.Any,
@@ -91,8 +94,9 @@ namespace ES.Labs.Api.Controllers
         [HttpPost("projections")]
         public async Task<IActionResult> SetProjection(EqualizerState state)
         {
+            _projectionState.EqualizerState = state;
             _logger.LogInformation("Got projection {State}", state);
-
+            
             return Ok(state);
         }
 

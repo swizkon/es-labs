@@ -1,3 +1,5 @@
+using ES.Labs.Domain.Projections;
+
 namespace ES.Labs.Api;
 
 public interface ITestHubClient
@@ -11,4 +13,6 @@ public interface ITestHubClient
     Task VolumeChanged(string deviceName, int volume);
 
     Task PlayerPosition(string player, int x, int y);
+
+    Task EqualizerStateChanged(EqualizerState state);
 }

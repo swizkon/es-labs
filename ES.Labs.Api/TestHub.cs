@@ -12,15 +12,19 @@ namespace ES.Labs.Api;
 
 public class TestHub : Hub<ITestHubClient>
 {
+    private readonly ProjectionState _projectionState;
     private readonly ILogger<TestHub> _logger;
     private readonly EventStoreClient _client;
 
-    public TestHub(ILogger<TestHub> logger)
+    public TestHub(
+        ProjectionState projectionState,
+        ILogger<TestHub> logger)
     {
         var settings = EventStoreClientSettings
             .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
         _client = new EventStoreClient(settings);
 
+        _projectionState = projectionState;
         _logger = logger;
     }
 
@@ -106,6 +110,11 @@ public class TestHub : Hub<ITestHubClient>
 
     public override async Task OnConnectedAsync()
     {
+        _logger.LogDebug("OnConnectedAsync");
+        if (_projectionState.EqualizerState != null)
+        {
+            await Clients.All.EqualizerStateChanged(_projectionState.EqualizerState);
+        }
         await Groups.AddToGroupAsync(Context.ConnectionId, "All Connected Users");
         await base.OnConnectedAsync();
     }
@@ -116,3 +125,4 @@ public class TestHub : Hub<ITestHubClient>
         return base.OnDisconnectedAsync(exception);
     }
 }
+        

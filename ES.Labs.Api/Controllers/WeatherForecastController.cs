@@ -14,7 +14,6 @@ namespace ES.Labs.Api.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-
         private readonly IHubContext<TestHub> _hubContext;
 
         private readonly EventStoreClient _client;
@@ -43,10 +42,6 @@ namespace ES.Labs.Api.Controllers
         [HttpPost(Name = "SetWeatherForecast")]
         public async Task<IActionResult> Set(WeatherForecast data)
         {
-            //var settings = EventStoreClientSettings
-            //    .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
-            //var client = new EventStoreClient(settings);
-
             const string metadata = "{}";
 
             var eventType = data.GetType().Name.ToLower();

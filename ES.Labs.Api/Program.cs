@@ -31,6 +31,7 @@ services.AddCors(options => options.AddPolicy("AllowAll", builder =>
 }));
 
 
+services.AddSingleton<ProjectionState>();
 
 
 var app = builder.Build();
