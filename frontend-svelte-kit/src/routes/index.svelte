@@ -30,9 +30,16 @@
 			
 		connection.on('EqualizerStateChanged', function (data) {
 			console.log('EqualizerStateChanged', data);
-			console.log(arguments);
 
-			height = 10;
+			for (let index = 0; index < data.channels.length; index++) {
+				const element = data.channels[index];
+				const pos = parseInt(element.channel);
+				const lev = parseInt(element.level);
+				console.log(element);
+				levels[pos] = lev;
+				bikes[pos][1] = lev;
+			}
+			volume = data.volume;
 		})
 		
 		connection.on('ChannelLevel', (player, x, y) => {
@@ -67,12 +74,12 @@
 	const values = of([10]).pipe(delay(2000), startWith([]));
 
 	let width = 1;
-	let height = 0.1;
+	let volume = 0.1;
 
-	$: onChange(width, height);
+	$: onChange(width, volume);
 
 	function onChange(...args) {
-		console.log(args)
+		console.log('onChange', args)
 	}
 
 	function handleLevelChanged(a, b) {
@@ -84,11 +91,11 @@
 	}
 
 	let levels = [
-		50,
-		50,
-		50,
-		50,
-		50
+		0,
+		0,
+		0,
+		0,
+		0
 	];
 	let bikes = [
 		[[0, 0, -10], 50, 0x663399],
@@ -146,7 +153,7 @@
 	{/each}
 
 	<label
-		><input type="range" on:input={(e) => handleVolumeChanged(e.target.value)} bind:value={height} min={0} max={100} step={1} /> volume</label
+		><input type="range" on:input={(e) => handleVolumeChanged(e.target.value)} bind:value={volume} min={0} max={100} step={1} /> volume</label
 	>
 	<div>
 		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
