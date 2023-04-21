@@ -1,5 +1,6 @@
 using ES.Labs.Api;
 using EventStore.Client;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,10 +32,12 @@ services.AddCors(options => options.AddPolicy("AllowAll", builder =>
 }));
 
 
+services.AddSingleton<AppVersionInfo>();
 services.AddSingleton<ProjectionState>();
 
-
 var app = builder.Build();
+
+app.MapGet("/appInfo", ([FromServices] AppVersionInfo appInfo) => Results.Ok(appInfo));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
