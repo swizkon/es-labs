@@ -28,8 +28,6 @@ public class AppVersionInfo
         var informationalVersion = (infoVerAttr as AssemblyInformationalVersionAttribute)?.InformationalVersion ?? "1.0.0";
 
         return WithLocalRevision(informationalVersion);
-
-        // "1.0.0+LOCALBUILD";
     }
 
     private static string WithLocalRevision(string informationalVersion)

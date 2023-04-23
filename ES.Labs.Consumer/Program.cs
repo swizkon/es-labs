@@ -52,22 +52,11 @@ public class Program
     public static async Task MainAsync(string[] args, Subject<EqualizerState> projectionStream)
     {
         Console.WriteLine($"Hello {typeof(Program).Namespace}!");
-        /*
-        await client.SubscribeToStreamAsync(EventStoreConfiguration.StreamName,
-            async (subscription, e, cancellationToken) => {
-                Console.WriteLine($"Received event {e.OriginalEventNumber}@{e.OriginalStreamId}");
-                //await HandleEvent(evnt);
-                await Task.Delay(10, cancellationToken);
-            });
-        */
-        
+
         var client = EventStoreUtil.GetDefaultClient();
         await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) => {
-
-                // Console.WriteLine($"Received event {e.OriginalEventNumber}@{e.OriginalStreamId}");
-                //await HandleEvent(evnt);
-
+                
                 if (e.Event.EventType == "ChannelLevelChanged")
                 {
                     await HandleChannelLevelChanged(e, projectionStream);
@@ -80,7 +69,6 @@ public class Program
                 {
                     Console.WriteLine(e.Event.EventType);
                 }
-                // await Task.Delay(1, cancellationToken);
             });
 
         /*

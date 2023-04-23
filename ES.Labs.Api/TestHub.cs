@@ -81,7 +81,7 @@ public class TestHub : Hub<ITestHubClient>
             data.GetType().AssemblyQualifiedName
         };
 
-        var eventType = data.GetType().Name; //.ToLower();
+        var eventType = data.GetType().Name;
         var eventData = new EventData(
             eventId: Uuid.NewUuid(),
             type: eventType,
@@ -101,11 +101,6 @@ public class TestHub : Hub<ITestHubClient>
         _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
 
         await Clients.All.ChannelLevel(deviceName, channel, int.Parse(value));
-    }
-
-    public async Task PlayerPosition(string player, int x, int y)
-    {
-        await Clients.All.PlayerPosition(player, x, y);
     }
 
     public override async Task OnConnectedAsync()
