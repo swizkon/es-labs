@@ -35,7 +35,6 @@
 				const element = data.channels[index];
 				const pos = parseInt(element.channel);
 				const lev = parseInt(element.level);
-				console.log(element);
 				levels[pos] = lev;
 				bikes[pos][1] = lev;
 			}
@@ -44,7 +43,6 @@
 		
 		connection.on('ChannelLevel', (player, x, y) => {
 			console.log('ChannelLevel', player, x, y);
-			bikes[x][0][1] = -y/100;
 			bikes[x][1] = y;
 			signalRMessageCount++;
 		});
@@ -63,7 +61,6 @@
 			signalRConnectionState = connection.state;
 			console.log('err', err);
 		}
-		// console.log(connection);
 	}
 
 	onMount(async () => {
@@ -113,15 +110,9 @@
 	shadows
 >
 	<SC.Group position={[0, 0, 0]}>
-		<!-- <SC.Mesh
-			geometry={new THREE.PlaneGeometry(20, 40)}
-			material={new THREE.MeshStandardMaterial({ color: 'burlywood' })}
-			rotation={[-Math.PI / 2, 0, 0]}
-			receiveShadow
-		/> -->
 		<SC.Primitive
 			object={new THREE.GridHelper(40, 40, 'papayawhip2', 'papayawhip2')}
-			position={[0, 0.001, 0]}
+			position={[0, 0.1, 0]}
 		/>
 	</SC.Group>
 	
