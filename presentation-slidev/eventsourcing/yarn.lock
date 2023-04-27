@@ -756,6 +756,11 @@
   resolved "https://registry.yarnpkg.com/@slidev/types/-/types-0.22.7.tgz#abe1c81fedd5db1475428832f65253f95722a6d8"
   integrity sha512-mCVKQbcGTv6d6n9aHpYNp5U04HF+FMbpY083vqpJ6Folc805BB1Am02eubaW0J6nM+dSOu2dDgPY+kIjs75sAQ==
 
+"@slidev/types@^0.39.0":
+  version "0.39.0"
+  resolved "https://registry.yarnpkg.com/@slidev/types/-/types-0.39.0.tgz#aecb9cded7c48beba35a2404d024e410fcd29d8e"
+  integrity sha512-WYBCHewOncgIT9g4cxK7fNNqLSdjx8wnHPgpWj7pHHnV/ZxHxaONn7sMkUIlHB4DAGPptMsKIHN/QqQnEHQO7A==
+
 "@types/estree@^1.0.0":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.1.tgz#aa22750962f3bf0e79d753d3cc067f010c95f194"
@@ -3045,7 +3050,7 @@ prettier@^2.8.7:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
-prism-theme-vars@^0.2.2:
+prism-theme-vars@^0.2.2, prism-theme-vars@^0.2.4:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/prism-theme-vars/-/prism-theme-vars-0.2.4.tgz#c92b8747a70ced8675538454900f88f08d053558"
   integrity sha512-B3Pht+GCT87sZph7hMRLlCQXzCM0awW7Rhk08RavpqRW4LEQOeqN0uMG4QCWkul2tr8PB61YAOJGUrEW+1uuJA==
@@ -3258,6 +3263,16 @@ slash@^4.0.0:
   resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
   integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
 
+slidev-theme-the-unnamed@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/slidev-theme-the-unnamed/-/slidev-theme-the-unnamed-0.0.10.tgz#f2c6e27acd04677db4f56422abef94af525c879d"
+  integrity sha512-bRIDa3eLZc5AvXVn1QaRE+9Kx6+0SGhCc6Ey0ETf2+HuZlowGX4S4uqPMCW08zQIsQHRl8VcMrMzKhj4KpOSlw==
+  dependencies:
+    "@slidev/types" "^0.39.0"
+    codemirror-theme-vars "^0.1.1"
+    prism-theme-vars "^0.2.4"
+    theme-vitesse "^0.6.2"
+
 source-map-js@^1.0.1, source-map-js@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
@@ -3379,6 +3394,11 @@ theme-vitesse@^0.1.12:
   version "0.1.14"
   resolved "https://registry.yarnpkg.com/theme-vitesse/-/theme-vitesse-0.1.14.tgz#e239d44fb0e61b3d0471fc86784b22e8b632dc96"
   integrity sha512-b5s+Zpfaw5+djoCJ9AEbcTbpiTlLsOvGM9oblDmmWRGWNqg9oXtEYO/uwubwx77novHBI6zNuwZRHKNlAIBo4A==
+
+theme-vitesse@^0.6.2:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/theme-vitesse/-/theme-vitesse-0.6.4.tgz#6dcbe2b2cbcf80b62eb33dfec405b3f93cbfed08"
+  integrity sha512-uCn8emUUfEOKoukSZz0GqxB5q+gQ2wVEXx6+cCKWbXIjW56afkozVdosVSqXkRuML7i77tMmzMbvzcY/2uc01w==
 
 to-fast-properties@^2.0.0:
   version "2.0.0"

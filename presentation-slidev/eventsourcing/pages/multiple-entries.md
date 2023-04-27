@@ -1,27 +1,19 @@
 # Multiple Entries
 
-You can split your slides.md into multiple files and organize them as you want using the `src` attribute.
 
-#### `slides.md`
+Use code snippets and get the highlighting directly![^1]
 
-```markdown
-# Page 1
+```cs {all|2|1-6|9|all}
+interface User {
+  id: number
+  firstName: string
+  lastName: string
+  role: string
+}
 
-Page 2 from main entry.
-
----
-src: ./subpage.md
----
+function updateUser(id: number, update: User) {
+  const user = getUser(id)
+  const newUser = { ...user, ...update }
+  saveUser(id, newUser)
+}
 ```
-
-<br>
-
-#### `subpage.md`
-
-```markdown
-# Page 2
-
-Page 2 from another file.
-```
-
-[Learn more](https://sli.dev/guide/syntax.html#multiple-entries)
