@@ -18,4 +18,10 @@ public static class EventStoreUtil
         var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
         return JsonConvert.DeserializeObject<TEvent>(data);
     }
+
+    public static object GetRecordedEvent(ResolvedEvent resolvedEvent, Type type)
+    {
+        var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
+        return JsonConvert.DeserializeObject(data, type);
+    }
 }
