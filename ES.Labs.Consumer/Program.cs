@@ -3,7 +3,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using ES.Labs.Domain;
-using ES.Labs.Domain.Events;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Newtonsoft.Json;
@@ -133,7 +132,7 @@ public class Program
     private static async Task HandleChannelLevelChanged(ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionStream)
     {
         var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
-        var (deviceName, channel, level) = JsonConvert.DeserializeObject<ChannelLevelChanged>(data);
+        var (deviceName, channel, level) = JsonConvert.DeserializeObject<Events.ChannelLevelChanged>(data);
         
         var s = EqStates.AddOrUpdate(deviceName,
             new EqualizerState(),

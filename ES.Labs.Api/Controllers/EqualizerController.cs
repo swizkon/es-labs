@@ -1,5 +1,5 @@
 using System.Text;
-using ES.Labs.Domain.Events;
+using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,7 @@ namespace ES.Labs.Api.Controllers
         }
 
         [HttpPost(Name = "SetChannelLevel")]
-        public async Task<IActionResult> Set(ChannelLevelChanged data)
+        public async Task<IActionResult> Set(Events.ChannelLevelChanged data)
         {
             const string metadata = "{}";
 

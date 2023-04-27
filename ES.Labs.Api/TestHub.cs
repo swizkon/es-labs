@@ -2,7 +2,6 @@
 
 using System.Text;
 using ES.Labs.Domain;
-using ES.Labs.Domain.Events;
 using EventStore.Client;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
@@ -71,7 +70,7 @@ public class TestHub : Hub<ITestHubClient>
 
     public async Task SetChannelLevel(string deviceName, string channel, string value)
     {
-        var data = new ChannelLevelChanged(DeviceName: deviceName, Channel: channel, Level: int.Parse(value));
+        var data = new Events.ChannelLevelChanged(DeviceName: deviceName, Channel: channel, Level: int.Parse(value));
         
         var metadata = new
         {
