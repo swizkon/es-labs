@@ -5,6 +5,7 @@ using System.Text;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
+using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json;
 
 namespace ES.Labs.Consumer;
@@ -22,7 +23,7 @@ public class Program
             .Throttle(TimeSpan.FromMilliseconds(300))
             .Subscribe(state =>
             {
-                Console.WriteLine("EMIT " + state);
+                Console.WriteLine("EMIT state " + state);
                 // Send to the api...
                 try
                 {
@@ -39,7 +40,7 @@ public class Program
         MainAsync(args, projectionStream).GetAwaiter().GetResult();
         Console.ReadKey();
         
-        Console.WriteLine("Clean up...");
+        Console.WriteLine("Cleaning up...");
         projectionStreamS.Dispose();
         projectionStream.Dispose();
 
@@ -54,7 +55,7 @@ public class Program
         await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) => {
                 
-                Console.WriteLine($"SubscriptionId {subscription.SubscriptionId}");
+                // Console.WriteLine($"SubscriptionId {subscription.SubscriptionId}");
 
                 if (e.Event.EventType == "ChannelLevelChanged")
                 {
@@ -131,48 +132,96 @@ public class Program
 
     private static async Task HandleChannelLevelChanged(ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionStream)
     {
-        var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
-        var (deviceName, channel, level) = JsonConvert.DeserializeObject<Events.ChannelLevelChanged>(data);
-        
-        var s = EqStates.AddOrUpdate(deviceName,
-            new EqualizerState(),
-            (s, state) =>
+
+        await TransformState<Events.ChannelLevelChanged>(
+            deviceName: "mainroom",
+            resolvedEvent: resolvedEvent,
+            projectionStream: projectionStream,
+            modifier: (state, setVolume) =>
             {
-                state.Version += 1;
-                state.DeviceName = deviceName;
                 state.Channels
                     = state
                         .Channels
-                        .Where(c => c.Channel != channel)
+                        .Where(c => c.Channel != setVolume.Channel)
                         .Append(new EqualizerState.EqualizerChannelState
                         {
-                            Channel = channel,
-                            Level = level.ToString().PadLeft(3,'0')
+                            Channel = setVolume.Channel,
+                            Level = setVolume.Level.ToString().PadLeft(3, '0')
                         })
                         .ToList();
-                return state;
             });
 
-        // Emit the projection to the subscription...
-        projectionStream.OnNext(s);
+        //var (deviceName, channel, level) = EventStoreUtil.GetRecordedEventAs<Events.ChannelLevelChanged>(resolvedEvent);
+        
+        //var s = EqStates.AddOrUpdate(deviceName,
+        //    new EqualizerState
+        //    {
+        //        DeviceName = deviceName
+        //    },
+        //    (s, state) =>
+        //    {
+        //        state.Version += 1;
+        //        state.Channels
+        //            = state
+        //                .Channels
+        //                .Where(c => c.Channel != channel)
+        //                .Append(new EqualizerState.EqualizerChannelState
+        //                {
+        //                    Channel = channel,
+        //                    Level = level.ToString().PadLeft(3,'0')
+        //                })
+        //                .ToList();
+        //        return state;
+        //    });
+        
+        //projectionStream.OnNext(s);
     }
 
     private static async Task HandleSetVolume(ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionStream)
     {
-        var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
-        var (deviceName, volume) = JsonConvert.DeserializeObject<Commands.SetVolume>(data);
+        await TransformState<Commands.SetVolume>(
+            deviceName: "mainroom",
+            resolvedEvent: resolvedEvent,
+            projectionStream: projectionStream,
+            modifier: (state, setVolume) =>
+            {
+                state.Volume = setVolume.Volume;
+            });
+        /*
+        var (deviceName, volume) = EventStoreUtil.GetRecordedEventAs<Commands.SetVolume>(resolvedEvent);
 
         var s = EqStates.AddOrUpdate(deviceName,
-            new EqualizerState(),
+            new EqualizerState
+            {
+                DeviceName = deviceName
+            },
             (s, state) =>
             {
                 state.Version += 1;
-                state.DeviceName = deviceName;
                 state.Volume = volume;
                 return state;
             });
+        
+        projectionStream.OnNext(s);
+        */
+    }
 
-        // Emit the projection to the subscription...
+
+    private static async Task TransformState<TEvent>(string deviceName, ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionStream, Action<EqualizerState, TEvent> modifier)
+    {
+        var s = EqStates.AddOrUpdate(deviceName,
+            new EqualizerState
+            {
+                DeviceName = deviceName
+            },
+            (s, state) =>
+            {
+                state.Version += 1;
+                modifier(state, EventStoreUtil.GetRecordedEventAs<TEvent>(resolvedEvent));
+                // state.Volume = volume;
+                return state;
+            });
+
         projectionStream.OnNext(s);
     }
 }
