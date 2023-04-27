@@ -13,4 +13,9 @@
 		<PackageReference Include="EventStore.Client.Grpc.Streams" Version="21.2" />
 	</ItemGroup>
 
+
+	<ItemGroup>
+	  <Folder Include="Commands\" />
+	</ItemGroup>
+
 </Project>

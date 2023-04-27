@@ -2,7 +2,6 @@
 
 using System.Text;
 using ES.Labs.Domain;
-using ES.Labs.Domain.Commands;
 using ES.Labs.Domain.Events;
 using EventStore.Client;
 using Microsoft.AspNetCore.SignalR;
@@ -40,7 +39,7 @@ public class TestHub : Hub<ITestHubClient>
 
     public async Task SetVolume(string deviceName, string value)
     {
-        var data = new SetVolume(DeviceName: deviceName, Volume: int.Parse(value));
+        var data = new Commands.SetVolume(DeviceName: deviceName, Volume: int.Parse(value));
         var metadata = new
         {
             Timestamp = DateTime.UtcNow.ToString("o"),

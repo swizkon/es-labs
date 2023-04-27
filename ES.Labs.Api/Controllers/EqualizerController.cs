@@ -54,32 +54,7 @@ namespace ES.Labs.Api.Controllers
 
             return Ok(result);
         }
-
-        //[HttpPost(template: "channel", Name = "AdjustEqChannel")]
-        //public async Task<IActionResult> AdjustEqChannel(ChannelLevelChanged data)
-        //{
-        //    const string metadata = "{}";
-
-        //    var eventType = data.GetType().Name.ToLower();
-        //    var eventData = new EventData(
-        //        eventId: Uuid.NewUuid(),
-        //        type: eventType,
-        //        //isJson: true,
-        //        data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
-        //        metadata: Encoding.UTF8.GetBytes(metadata)
-        //    );
-
-        //    var result = await _eventStoreClient.AppendToStreamAsync(
-        //        streamName: $"device-{data.DeviceName}",
-        //        expectedState: StreamState.Any,
-        //        eventData: new List<EventData>
-        //        {
-        //            eventData
-        //        });
-
-        //    return Ok(result);
-        //}
-
+        
         [HttpPost("projections")]
         public async Task<IActionResult> SetProjection(EqualizerState state)
         {
@@ -93,7 +68,7 @@ namespace ES.Labs.Api.Controllers
         public async Task<IActionResult> GetProjection(
             [FromRoute] string deviceName)
         {
-            return Ok(deviceName);
+            return Ok(_projectionState.EqualizerState);
         }
     }
 }

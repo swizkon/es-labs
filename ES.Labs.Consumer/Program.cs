@@ -1,11 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using ES.Labs.Domain;
-using ES.Labs.Domain.Commands;
 using ES.Labs.Domain.Events;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
@@ -20,25 +17,25 @@ public class Program
     public static void Main(string[] args)
     {
         var httpClient = new HttpClient();
-        
-        var projectionStream = new Subject<EqualizerState>();
+
+        using var projectionStream = new Subject<EqualizerState>();
         var projectionStreamS = projectionStream
             .Throttle(TimeSpan.FromMilliseconds(300))
             .Subscribe(state =>
-        {
-            Console.WriteLine("EMIT " + state);
-            // Send to the api...
-            try
             {
-                var d = new StringContent(JsonConvert.SerializeObject(state), Encoding.UTF8, "application/json");
-                var res = httpClient.PostAsync("https://localhost:6001/equalizer/projections", d).Result;
-                Console.WriteLine(res.StatusCode);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        });
+                Console.WriteLine("EMIT " + state);
+                // Send to the api...
+                try
+                {
+                    var d = new StringContent(JsonConvert.SerializeObject(state), Encoding.UTF8, "application/json");
+                    var res = httpClient.PostAsync("https://localhost:6001/equalizer/projections", d).Result;
+                    Console.WriteLine(res.StatusCode);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            });
 
         MainAsync(args, projectionStream).GetAwaiter().GetResult();
         Console.ReadKey();
@@ -46,6 +43,7 @@ public class Program
         Console.WriteLine("Clean up...");
         projectionStreamS.Dispose();
         projectionStream.Dispose();
+
         httpClient.Dispose();
     }
 
@@ -57,6 +55,8 @@ public class Program
         await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) => {
                 
+                Console.WriteLine($"SubscriptionId {subscription.SubscriptionId}");
+
                 if (e.Event.EventType == "ChannelLevelChanged")
                 {
                     await HandleChannelLevelChanged(e, projectionStream);
@@ -161,7 +161,7 @@ public class Program
     private static async Task HandleSetVolume(ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionStream)
     {
         var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
-        var (deviceName, volume) = JsonConvert.DeserializeObject<SetVolume>(data);
+        var (deviceName, volume) = JsonConvert.DeserializeObject<Commands.SetVolume>(data);
 
         var s = EqStates.AddOrUpdate(deviceName,
             new EqualizerState(),
