@@ -82,19 +82,7 @@ public class Program
             filterOptions: new SubscriptionFilterOptions(EventTypeFilter.ExcludeSystemEvents())
         );
         */
-
-        //var events = client.ReadStreamAsync(
-        //    Direction.Forwards,
-        //    EventStoreConfiguration.StreamName,
-        //    StreamPosition.Start);
-
-        //await foreach (var @event in events)
-        //{
-        //    Console.WriteLine(@event.Event.EventNumber);
-        //    Console.WriteLine(@event.OriginalStreamId);
-        //    Console.WriteLine(Encoding.UTF8.GetString(@event.Event.Data.ToArray()));
-        //}
-
+        
         //var endTime = DateTime.UtcNow.AddMinutes(2);
         //var position = Position.Start;
 

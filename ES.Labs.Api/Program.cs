@@ -1,4 +1,5 @@
 using ES.Labs.Api;
+using ES.Labs.Api.Security;
 using EventStore.Client;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,8 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 services.AddSignalR();
+
+services.AddCustomAuthorization();
 
 services.AddCors(options => options.AddPolicy("AllowAll", builder =>
 {
@@ -35,9 +38,13 @@ services.AddCors(options => options.AddPolicy("AllowAll", builder =>
 services.AddSingleton<AppVersionInfo>();
 services.AddSingleton<ProjectionState>();
 
+services.AddDistributedMemoryCache();
+
 var app = builder.Build();
 
-app.MapGet("/appInfo", ([FromServices] AppVersionInfo appInfo) => Results.Ok(appInfo));
+app.MapGet("/appInfo", ([FromServices] AppVersionInfo appInfo) => Results.Ok(appInfo))
+    .RequireAuthorization(Policies.OnlyEvenSeconds)
+    .RequireAuthorization(Policies.AdminRole);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -45,7 +52,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 
 app.UseCors("AllowAll");
 

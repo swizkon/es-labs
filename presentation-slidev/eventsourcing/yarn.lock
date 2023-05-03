@@ -746,7 +746,7 @@
     prism-theme-vars "^0.2.2"
     theme-vitesse "^0.1.12"
 
-"@slidev/types@0.40.14":
+"@slidev/types@0.40.14", "@slidev/types@^0.40.3":
   version "0.40.14"
   resolved "https://registry.yarnpkg.com/@slidev/types/-/types-0.40.14.tgz#e6712da3b3fb5034ad1074b0428f3ddd4b417ccc"
   integrity sha512-Rd/m9SFQCUcsTV+1CsN7U4OMBbt3qryjvcxWNK+7TIFsZkKgMHV7qorYt8TgMu4ChaXtYJdMA2zg4oGTvtkvGg==
@@ -3262,6 +3262,16 @@ slash@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
   integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
+
+slidev-theme-queenslab@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/slidev-theme-queenslab/-/slidev-theme-queenslab-0.0.3.tgz#c478ea036dd1c4cb8428e640fb7701f7b538f6a8"
+  integrity sha512-axl5P9AlAf1WwJz1DlMFrBvuD78+/IlgEhqKku2JdDtmYBAkW0fAZGI5d3wwJF2FAlSaQyyFsc2O7WUSaidmsA==
+  dependencies:
+    "@slidev/types" "^0.40.3"
+    codemirror-theme-vars "^0.1.1"
+    prism-theme-vars "^0.2.4"
+    theme-vitesse "^0.6.2"
 
 slidev-theme-the-unnamed@^0.0.10:
   version "0.0.10"

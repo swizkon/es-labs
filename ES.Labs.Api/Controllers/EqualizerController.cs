@@ -2,6 +2,7 @@ using System.Text;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
@@ -10,6 +11,7 @@ namespace ES.Labs.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [AllowAnonymous]
     public class EqualizerController : ControllerBase
     {
         private readonly EventStoreClient _eventStoreClient;
@@ -60,15 +62,16 @@ namespace ES.Labs.Api.Controllers
         {
             _projectionState.EqualizerState = state;
             _logger.LogInformation("Got projection {State}", state);
-            
-            return Ok(state);
+
+            return await GetProjection(state.DeviceName); // Ok(state);
         }
 
         [HttpGet("projections/{deviceName}")]
         public async Task<IActionResult> GetProjection(
             [FromRoute] string deviceName)
         {
-            return Ok(_projectionState.EqualizerState);
+            var result = await Task.FromResult(_projectionState.EqualizerState);
+            return Ok(result);
         }
     }
 }

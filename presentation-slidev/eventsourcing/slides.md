@@ -1,6 +1,8 @@
 ---
 # try also 'default' to start simple
-theme: the-unnamed
+# theme: the-unnamed
+theme: slidev-theme-queenslab
+
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
 background: https://source.unsplash.com/collection/94734566/1920x1080
@@ -35,6 +37,23 @@ image: https://source.unsplash.com/collection/94734566/1920x1080
 src: ./pages/multiple-entries.md
 hide: false
 ---
+
+
+---
+layout: image-right
+image: https://source.unsplash.com/collection/94734566/1920x1080
+src: ./pages/setting-the-stage.md
+hide: false
+---
+
+
+---
+layout: center
+class: text-center
+transition: slide-left
+---
+# gagga
+fsdfsdfsdfsdfsdf
 
 ---
 class: 'text-center'
