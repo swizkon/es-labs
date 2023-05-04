@@ -40,7 +40,7 @@ services.AddSingleton<ProjectionState>();
 services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("REDIS_CONNECTION_STRING");
-    options.InstanceName = "ESDemo";
+    options.InstanceName = "ESDemo-";
 });
 
 var app = builder.Build();

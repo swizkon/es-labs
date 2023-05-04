@@ -142,8 +142,9 @@ public class Program
                         .Append(new EqualizerState.EqualizerChannelState
                         {
                             Channel = setVolume.Channel,
-                            Level = setVolume.Level.ToString().PadLeft(3, '0')
+                            Level = setVolume.Level.ToString().PadLeft(2, '0')
                         })
+                        .OrderBy(x => x.Channel)
                         .ToList();
             });
     }

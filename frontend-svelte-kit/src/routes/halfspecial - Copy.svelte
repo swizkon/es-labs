@@ -4,10 +4,13 @@
 	import * as THREE from 'three';
 	import * as SC from 'svelte-cubed';
 
-	import { HubConnectionBuilder } from '@microsoft/signalr';
+	import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
 	import Logo from '../components/Logo.svelte';
 	import Level from '../components/Level.svelte';
+
+	import { of } from 'rxjs';
+	import { delay, startWith } from 'rxjs/operators';
 
 	const baseUrl = 'https://localhost:6001';
 	const roomName = 'mainroom';
@@ -36,6 +39,11 @@
 				bikes[pos][1] = lev;
 			}
 			volume = data.volume;
+		})
+				
+		connection.on('VolumeChanged', (deviceName, volume) => {
+			console.log('VolumeChanged', deviceName, volume);
+			signalRMessageCount++;
 		});
 
 		try {
@@ -53,10 +61,21 @@
 		await start();
 	});
 
+	let width = 1;
 	let volume = 0.1;
+
+	$: onChange(width, volume);
+
+	function onChange(...args) {
+		console.log('onChange', args)
+	}
 
 	function handleLevelChanged(a, b) {
 		connection.send('SetChannelLevel', roomName, '' + a, b);
+	}
+
+	function handleVolumeChanged(v) {
+		connection.send('SetVolume', roomName, v);
 	}
 
 	let levels = [
@@ -107,6 +126,9 @@
 	>
 	{/each}
 
+	<label
+		><input type="range" on:input={(e) => handleVolumeChanged(e.target.value)} bind:value={volume} min={0} max={100} step={1} /> volume</label
+	>
 	<div>
 		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
 		<h2>Messages: <small>{signalRMessageCount}</small></h2>

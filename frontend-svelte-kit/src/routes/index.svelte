@@ -51,7 +51,7 @@
 
 		try {
 			await connection.start();
-			connection.send('Broadcast', 'Me', 'Just connected');
+			connection.send('Broadcast', 'index.svelte', 'Just connected');
 			signalRConnectionState = connection.state;
 			console.log('SignalR Connected.');
 		} catch (err) {
@@ -134,14 +134,14 @@
 
 	{#each levels as level, i}
 	<label
-		><input type="range" on:input={(e) => handleLevelChanged(i, e.target.value)} bind:value={levels[i]} min={1} max={100} step={1} />
+		><input type="range" on:input={(e) => handleLevelChanged(i, e.target.value)} bind:value={levels[i]} min={1} max={50} step={1} />
 		level{i}
 		</label
 	>
 	{/each}
 
 	<label
-		><input type="range" on:input={(e) => handleVolumeChanged(e.target.value)} bind:value={volume} min={0} max={100} step={1} /> volume</label
+		><input type="range" on:input={(e) => handleVolumeChanged(e.target.value)} bind:value={volume} min={0} max={50} step={1} /> volume</label
 	>
 	<div>
 		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
