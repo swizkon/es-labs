@@ -1,10 +1,9 @@
-﻿using EventStore.Client;
-
-namespace ES.Labs.Domain.Projections;
+﻿namespace ES.Labs.Domain.Projections;
 
 public class EqualizerState
 {
-    public StreamPosition Version { get; set; }
+    public ulong? CurrentVersion { get; set; }
+
     public string DeviceName { get; set; }
 
     public int Volume { get; set; }
@@ -19,7 +18,7 @@ public class EqualizerState
 
     public override string ToString()
     {
-        return $"{Version} {DeviceName}: Volume {Volume} " + string.Join(", ", Channels.OrderBy(c => c.Channel).Select(c => $"{c.Channel}={c.Level}"));
+        return $"{CurrentVersion} {DeviceName}: Volume {Volume} " + string.Join(", ", Channels.OrderBy(c => c.Channel).Select(c => $"{c.Channel}={c.Level}"));
     }
 }
 

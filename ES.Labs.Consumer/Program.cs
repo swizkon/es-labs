@@ -172,7 +172,7 @@ public class Program
             },
             (s, state) =>
             {
-                state.Version = resolvedEvent.OriginalEventNumber;
+                state.CurrentVersion = resolvedEvent.OriginalEventNumber;
                 modifier(state, EventStoreUtil.GetRecordedEventAs<TEvent>(resolvedEvent));
                 return state;
             });

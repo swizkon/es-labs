@@ -48,7 +48,7 @@
 
 		try {
 			await connection.start();
-			connection.send('Broadcast', 'Me', 'Just connected');
+			connection.send('Broadcast', 'HalfSpecial', 'Just connected');
 			signalRConnectionState = connection.state;
 			console.log('SignalR Connected.');
 		} catch (err) {

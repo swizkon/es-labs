@@ -47,9 +47,7 @@ namespace ES.Labs.Api.Controllers
             var events = client.ReadStreamAsync(
                 Direction.Forwards,
                 EventStoreConfiguration.DeviceStreamName,
-                State.Version + 1,
-                // deadline: TimeSpan.FromMinutes(2));
-
+                State.CurrentVersion ?? StreamPosition.Start,
                 configureOperationOptions: options =>
                 {
                     options.TimeoutAfter = TimeSpan.FromMinutes(2);
@@ -61,7 +59,7 @@ namespace ES.Labs.Api.Controllers
                 //Console.WriteLine(@event.OriginalStreamId);
                 //Console.WriteLine(Encoding.UTF8.GetString(@event.Event.Data.ToArray()));
 
-                State.Version = @event.OriginalEventNumber;
+                State.CurrentVersion = @event.OriginalEventNumber;
                 State.Volume += 1;
             }
 

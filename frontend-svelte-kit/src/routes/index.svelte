@@ -4,13 +4,10 @@
 	import * as THREE from 'three';
 	import * as SC from 'svelte-cubed';
 
-	import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+	import { HubConnectionBuilder } from '@microsoft/signalr';
 
 	import Logo from '../components/Logo.svelte';
 	import Level from '../components/Level.svelte';
-
-	import { of } from 'rxjs';
-	import { delay, startWith } from 'rxjs/operators';
 
 	const baseUrl = 'https://localhost:6001';
 	const roomName = 'mainroom';
@@ -68,16 +65,16 @@
 	});
 
 	// emit an array with initial delay of 2s
-	const values = of([10]).pipe(delay(2000), startWith([]));
+	// const values = of([10]).pipe(delay(2000), startWith([]));
 
 	let width = 1;
 	let volume = 0.1;
 
-	$: onChange(width, volume);
+	// $: onChange(width, volume);
 
-	function onChange(...args) {
-		console.log('onChange', args)
-	}
+	// function onChange(...args) {
+	// 	console.log('onChange', args)
+	// }
 
 	function handleLevelChanged(a, b) {
 		connection.send('SetChannelLevel', roomName, '' + a, b);
@@ -117,7 +114,7 @@
 	</SC.Group>
 	
 	{#each bikes as b}
-		<Level position={b[0]} level={b[1]} color={b[2]} />
+		<Level volume={volume} position={b[0]} level={b[1]} color={b[2]} />
 	{/each}
 
 	<SC.PerspectiveCamera position={[-40, 15, 30]} />
