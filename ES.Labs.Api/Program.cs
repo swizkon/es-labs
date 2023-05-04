@@ -34,11 +34,14 @@ services.AddCors(options => options.AddPolicy("AllowAll", builder =>
             "https://localhost:7001");
 }));
 
-
 services.AddSingleton<AppVersionInfo>();
 services.AddSingleton<ProjectionState>();
 
-services.AddDistributedMemoryCache();
+services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("REDIS_CONNECTION_STRING");
+    options.InstanceName = "ESDemo";
+});
 
 var app = builder.Build();
 

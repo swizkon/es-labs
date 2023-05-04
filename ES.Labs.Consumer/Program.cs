@@ -29,6 +29,9 @@ public class Program
                     var d = new StringContent(JsonConvert.SerializeObject(state), Encoding.UTF8, "application/json");
                     var res = httpClient.PostAsync("https://localhost:6001/equalizer/projections", d).Result;
                     Console.WriteLine(res.StatusCode);
+
+                    res = httpClient.PostAsync($"https://localhost:6001/projections/{state.DeviceName}", d).Result;
+                    Console.WriteLine(res.StatusCode);
                 }
                 catch (Exception e)
                 {

@@ -1,10 +1,10 @@
-using System.Text;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace ES.Labs.Api.Controllers
 {
@@ -25,6 +25,17 @@ namespace ES.Labs.Api.Controllers
         {
             _cache = cache;
             _logger = logger;
+        }
+
+        [HttpPost("{deviceName}")]
+        public async Task<IActionResult> SetProjection([FromRoute] string deviceName, EqualizerState state)
+        {
+            var cacheData = JsonConvert.SerializeObject(state);
+            await _cache.SetStringAsync($"device-{state.DeviceName}", cacheData);
+
+            _logger.LogInformation("Got projection {cacheData}", cacheData);
+
+            return await GetProjection(state.DeviceName);
         }
 
         [HttpGet("{deviceName}")]
