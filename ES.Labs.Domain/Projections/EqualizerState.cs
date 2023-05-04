@@ -8,9 +8,9 @@ public class EqualizerState
 
     public int Volume { get; set; }
 
-    public List<EqualizerChannelState> Channels { get; set; } = new List<EqualizerChannelState>();
+    public List<EqualizerBandState> Channels { get; set; } = new List<EqualizerBandState>();
 
-    public class EqualizerChannelState
+    public class EqualizerBandState
     {
         public string Channel { get; set; }
         public string Level { get; set; }
@@ -19,13 +19,5 @@ public class EqualizerState
     public override string ToString()
     {
         return $"{CurrentVersion} {DeviceName}: Volume {Volume} " + string.Join(", ", Channels.OrderBy(c => c.Channel).Select(c => $"{c.Channel}={c.Level}"));
-    }
-}
-
-public class Equalizer
-{
-    public void SetVolume(int volume)
-    {
-
     }
 }

@@ -139,7 +139,7 @@ public class Program
                     = state
                         .Channels
                         .Where(c => c.Channel != setVolume.Channel)
-                        .Append(new EqualizerState.EqualizerChannelState
+                        .Append(new EqualizerState.EqualizerBandState
                         {
                             Channel = setVolume.Channel,
                             Level = setVolume.Level.ToString().PadLeft(2, '0')

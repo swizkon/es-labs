@@ -1,6 +1,6 @@
 
 <div>	
-	<img src="/static/logo.jpg" />
+	<img src="/static/logo.jpg" alt="Logo" />
 </div>
 
 <style>

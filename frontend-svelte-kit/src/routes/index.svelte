@@ -44,10 +44,10 @@
 			signalRMessageCount++;
 		});
 		
-		connection.on('VolumeChanged', (deviceName, volume) => {
-			console.log('VolumeChanged', deviceName, volume);
-			signalRMessageCount++;
-		});
+		// connection.on('VolumeChanged', (deviceName, volume) => {
+		// 	console.log('VolumeChanged', deviceName, volume);
+		// 	signalRMessageCount++;
+		// });
 
 		try {
 			await connection.start();
@@ -64,25 +64,7 @@
 		await start();
 	});
 
-	// emit an array with initial delay of 2s
-	// const values = of([10]).pipe(delay(2000), startWith([]));
-
-	let width = 1;
 	let volume = 0.1;
-
-	// $: onChange(width, volume);
-
-	// function onChange(...args) {
-	// 	console.log('onChange', args)
-	// }
-
-	function handleLevelChanged(a, b) {
-		connection.send('SetChannelLevel', roomName, '' + a, b);
-	}
-
-	function handleVolumeChanged(v) {
-		connection.send('SetVolume', roomName, v);
-	}
 
 	let levels = [
 		0,
@@ -98,11 +80,19 @@
 		[[0, 0,  5],  50, 0x339966],
 		[[0, 0, 10],  50, 0x669933]
 	];
+
+	function handleLevelChanged(a, b) {
+		connection.send('SetChannelLevel', roomName, '' + a, b);
+	}
+
+	function handleVolumeChanged(v) {
+		connection.send('SetVolume', roomName, v);
+	}
 </script>
 
 <SC.Canvas
 	antialias
-	background={new THREE.Color('black')}
+	background={new THREE.Color('#101010')}
 	fog={new THREE.FogExp2('papayawhip', 0.01)}
 	shadows
 >
@@ -135,7 +125,7 @@
 	{#each levels as level, i}
 	<label
 		><input type="range" on:input={(e) => handleLevelChanged(i, e.target.value)} bind:value={levels[i]} min={1} max={50} step={1} />
-		level{i}
+		level {i}
 		</label
 	>
 	{/each}
@@ -154,13 +144,12 @@
 		position: absolute;
 		left: 1em;
 		top: 1em;
-		width:500;
+		width:700;
 		color: antiquewhite;
 	}
 
 	label {
 		display: flex;
-		width: 60px;
 		gap: 0.5em;
 		align-items: center;
 	}
