@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace ES.Labs.Api.Security;
 
@@ -8,7 +9,7 @@ public static class SecurityExtensions
 {
     public static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
     {
-        services.AddSingleton<IAuthorizationHandler, SampleAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme)
@@ -26,38 +27,22 @@ public static class SecurityExtensions
                     .Build();
 
                 options.AddPolicy(Policies.AdminRole, policy =>
-                    policy.Requirements.Add(new HasAnyRoleRequirement("Admin")));
+                    policy.Requirements.Add(new HasPermissionRequirement(Permissions.AdminToolAccess)));
 
-                options.AddPolicy(Policies.OnlyEvenSeconds, ConfigurePolicy);
+                options.AddPolicy(Policies.CanAccesAdmin, policy =>
+                    policy.Requirements.Add(new RolesAuthorizationRequirement(new []{ Roles.AdminRole })));
+
+                // TODO Fix better parsing...
+                foreach (var permissionName in Enum.GetNames<Permissions>())
+                {
+                    var permission = (Permissions)Enum.Parse(typeof(Permissions), permissionName);
+                    options.AddPolicy(permissionName, policy =>
+                        policy.Requirements.Add(new HasPermissionRequirement(permission)));
+                }
+
+                options.AddPolicy(Policies.OnlyEvenSeconds, builder => builder.RequireAssertion(context => DateTime.Now.Second % 2 == 0));
             });
             
         return services;
-    }
-
-    private static void ConfigurePolicy(AuthorizationPolicyBuilder obj)
-    {
-        obj.RequireAssertion(context => DateTime.Now.Second % 2 == 0);
-    }
-}
-
-public class SampleAuthorizationHandler : AuthorizationHandler<HasAnyRoleRequirement>
-{
-    private readonly ILogger _logger;
-
-    public SampleAuthorizationHandler(ILoggerFactory loggerFactory)
-        => _logger = loggerFactory.CreateLogger(GetType().FullName);
-
-    protected override Task HandleRequirementAsync(
-        AuthorizationHandlerContext context, HasAnyRoleRequirement requirement)
-    {
-        _logger.LogInformation("Inside my handler at ");
-
-        _logger.LogInformation($"Yead {context.Resource}");
-
-        // context.Fail();
-        context.Succeed(requirement);
-        // ...
-
-        return Task.CompletedTask;
     }
 }
