@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace ES.Labs.Api.Security;
 
@@ -9,6 +8,7 @@ public static class SecurityExtensions
 {
     public static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
     {
+        services.AddSingleton<ISecurityRepository, StaticSecurityRepository>();
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -23,15 +23,12 @@ public static class SecurityExtensions
                     .Build();
 
                 options.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-                    .RequireAssertion(context => true)
+                    .RequireAssertion(_ => true)
                     .Build();
 
                 options.AddPolicy(Policies.AdminRole, policy =>
                     policy.Requirements.Add(new HasPermissionRequirement(Permissions.AdminToolAccess)));
-
-                options.AddPolicy(Policies.CanAccesAdmin, policy =>
-                    policy.Requirements.Add(new RolesAuthorizationRequirement(new []{ Roles.AdminRole })));
-
+                
                 // TODO Fix better parsing...
                 foreach (var permissionName in Enum.GetNames<Permissions>())
                 {
@@ -40,7 +37,7 @@ public static class SecurityExtensions
                         policy.Requirements.Add(new HasPermissionRequirement(permission)));
                 }
 
-                options.AddPolicy(Policies.OnlyEvenSeconds, builder => builder.RequireAssertion(context => DateTime.Now.Second % 2 == 0));
+                options.AddPolicy(Policies.OnlyEvenSeconds, builder => builder.RequireAssertion(_ => DateTime.Now.Second % 2 == 0));
             });
             
         return services;
