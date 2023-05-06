@@ -25,9 +25,6 @@ public static class SecurityExtensions
                 options.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAssertion(_ => true)
                     .Build();
-
-                options.AddPolicy(Policies.AdminRole, policy =>
-                    policy.Requirements.Add(new HasPermissionRequirement(Permissions.AdminToolAccess)));
                 
                 // TODO Fix better parsing...
                 foreach (var permissionName in Enum.GetNames<Permissions>())
@@ -37,7 +34,10 @@ public static class SecurityExtensions
                         policy.Requirements.Add(new HasPermissionRequirement(permission)));
                 }
 
-                options.AddPolicy(Policies.OnlyEvenSeconds, builder => builder.RequireAssertion(_ => DateTime.Now.Second % 2 == 0));
+                foreach (var policy in Policies.AllPolicies)
+                {
+                    options.AddPolicy(policy.Key, policy.Value);
+                }
             });
             
         return services;

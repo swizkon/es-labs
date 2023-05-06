@@ -1,6 +1,7 @@
 using ES.Labs.Api;
 using ES.Labs.Api.Security;
 using EventStore.Client;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,8 +47,13 @@ services.AddStackExchangeRedisCache(options =>
 var app = builder.Build();
 
 app.MapGet("/appInfo", ([FromServices] AppVersionInfo appInfo) => Results.Ok(appInfo))
-    .RequireAuthorization(Policies.OnlyEvenSeconds)
-    .RequireAuthorization(Policies.AdminRole);
+    .RequireAuthorization(policyBuilder =>
+    {
+        policyBuilder.AddRequirements(new HasPermissionRequirement(Permissions.PlaceOrder));
+    })
+    .RequireAuthorization(Policies.OnlyEvenSeconds);
+
+app.MapGet("/me", () => Results.Ok(DateTime.Now)).RequireAuthorization(Policies.MustHaveSession);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
