@@ -1,7 +1,12 @@
 # Setting the stage
 
 
-Use code snippets and get the highlighting directly![^1]
+The tech in use:
+
+ - Eventstore DB
+ - Web api
+ - Consumer console app
+
 
 ```cs {all|2|1-6|9|all}
 interface User {

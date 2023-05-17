@@ -1,14 +1,15 @@
-# Multiple Entries
+# CRUD Sourcing
 
+### Weak events NOT capturing important business events
 
-Use code snippets and get the highlighting directly![^1]
+What is the reason for the state to change?
 
-```cs {all|2|1-6|9|all}
-interface User {
+```cs {none|1-6|9|all}
+// Anemic update event
+record UserUpdated {
   id: number
   firstName: string
   lastName: string
-  role: string
 }
 
 function updateUser(id: number, update: User) {
