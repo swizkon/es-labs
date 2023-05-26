@@ -165,11 +165,10 @@ public class Program
         Subject<EqualizerState> projectionStream,
         Action<EqualizerState, TEvent> modifier)
     {
-        var deviceName = "mainroom";
-        var s = EqStates.AddOrUpdate(deviceName,
+        var s = EqStates.AddOrUpdate(EventStoreConfiguration.DeviceStreamName,
             new EqualizerState
             {
-                DeviceName = deviceName
+                DeviceName = EventStoreConfiguration.DeviceStreamName
             },
             (s, state) =>
             {

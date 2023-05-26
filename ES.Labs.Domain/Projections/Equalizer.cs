@@ -6,6 +6,11 @@
 public class EqualizerAggregate
 {
     private readonly EqualizerState _state = new EqualizerState();
+
+    public EqualizerAggregate()
+    {
+
+    }
     
     public void SetVolume(int volume)
     {
@@ -19,6 +24,16 @@ public class EqualizerAggregate
 
         if (volume > _state.Volume)
             Apply(new Events.VolumeIncreased(_state.DeviceName, volume - _state.Volume));
+    }
+
+    public async Task Hydrate()
+    {
+
+    }
+
+    public async Task EmitEvent(object evt)
+    {
+
     }
 
     private void Apply(Events.VolumeDecreased volumeDecreased)
