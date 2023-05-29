@@ -34,8 +34,6 @@ namespace ES.Labs.Api.Controllers
         [HttpPost(Name = "SetChannelLevel")]
         public async Task<IActionResult> Set(Events.ChannelLevelChanged data)
         {
-            const string metadata = "{}";
-
             var eventType = data.GetType().Name.ToLower();
             var eventData = new EventData(
                 eventId: Uuid.NewUuid(),

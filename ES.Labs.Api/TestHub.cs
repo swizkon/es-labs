@@ -42,23 +42,13 @@ public class TestHub : Hub<ITestHubClient>
     public async Task SetVolume(string deviceName, string value)
     {
         var data = new Commands.SetVolume(DeviceName: deviceName, Volume: int.Parse(value));
-        var metadata = _eventDataBuilder.BuildMetadata(data);
-        //new
-        //{
-        //    Timestamp = DateTime.UtcNow.ToString("o"),
-        //    CtrlType = data.GetType().FullName,
-        //    data.GetType().AssemblyQualifiedName,
-
-        //};
-
-        // var metaDee = _eventDataBuilder.BuildMetadata(data);
 
         var eventType = data.GetType().Name;
         var eventData = new EventData(
             eventId: Uuid.NewUuid(),
             type: eventType,
             data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
-            metadata: metadata,
+            metadata: _eventDataBuilder.BuildMetadata(data),
             contentType: "application/json"
         );
 
@@ -79,19 +69,12 @@ public class TestHub : Hub<ITestHubClient>
     {
         var data = new Events.ChannelLevelChanged(DeviceName: deviceName, Channel: channel, Level: int.Parse(value));
         
-        var metadata = new
-        {
-            Timestamp = DateTime.UtcNow.ToString("o"),
-            CtrlType = data.GetType().FullName,
-            data.GetType().AssemblyQualifiedName
-        };
-
         var eventType = data.GetType().Name;
         var eventData = new EventData(
             eventId: Uuid.NewUuid(),
             type: eventType,
             data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
-            metadata: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)),
+            metadata: _eventDataBuilder.BuildMetadata(data),
             contentType: "application/json"
         );
 
