@@ -2,10 +2,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using ES.Labs.Domain;
 
 namespace ES.Labs.Api;
 
-public class AppVersionInfo
+public class AppVersionInfo : IEventMetadataInfo
 {
     public string Version { get; }
 
@@ -63,4 +64,6 @@ public class AppVersionInfo
         var result = outputBuilder.ToString().Trim();
         return informationalVersion + "+" + result;
     }
+
+    public string GetCommitVersion() => Version;
 }

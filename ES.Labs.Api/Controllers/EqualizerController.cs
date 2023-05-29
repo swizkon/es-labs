@@ -1,6 +1,5 @@
 using System.Text;
 using ES.Labs.Domain;
-using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,19 +14,19 @@ namespace ES.Labs.Api.Controllers
     public class EqualizerController : ControllerBase
     {
         private readonly EventStoreClient _eventStoreClient;
-        private readonly ProjectionState _projectionState;
+        private readonly EventDataBuilder _eventDataBuilder;
         private readonly IHubContext<TestHub> _hubContext;
 
         private readonly ILogger<EqualizerController> _logger;
 
         public EqualizerController(
             EventStoreClient eventStoreClient,
-            ProjectionState projectionState,
+            EventDataBuilder eventDataBuilder,
             IHubContext<TestHub> hubContext,
             ILogger<EqualizerController> logger)
         {
             _eventStoreClient = eventStoreClient;
-            _projectionState = projectionState;
+            _eventDataBuilder = eventDataBuilder;
             _hubContext = hubContext;
             _logger = logger;
         }
@@ -43,7 +42,7 @@ namespace ES.Labs.Api.Controllers
                 type: eventType,
                 //isJson: true,
                 data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
-                metadata: Encoding.UTF8.GetBytes(metadata)
+                metadata: _eventDataBuilder.BuildMetadata(data)
             );
 
             var result = await _eventStoreClient.AppendToStreamAsync(
@@ -57,21 +56,21 @@ namespace ES.Labs.Api.Controllers
             return Ok(result);
         }
         
-        [HttpPost("projections")]
-        public async Task<IActionResult> SetProjection(EqualizerState state)
-        {
-            _projectionState.EqualizerState = state;
-            _logger.LogInformation("Got projection {State}", state);
+        //[HttpPost("projections")]
+        //public async Task<IActionResult> SetProjection(EqualizerState state)
+        //{
+        //    _projectionState.EqualizerState = state;
+        //    _logger.LogInformation("Got projection {State}", state);
 
-            return await GetProjection(state.DeviceName); // Ok(state);
-        }
+        //    return await GetProjection(state.DeviceName);
+        //}
 
-        [HttpGet("projections/{deviceName}")]
-        public async Task<IActionResult> GetProjection(
-            [FromRoute] string deviceName)
-        {
-            var result = await Task.FromResult(_projectionState.EqualizerState);
-            return Ok(result);
-        }
+        //[HttpGet("projections/{deviceName}")]
+        //public async Task<IActionResult> GetProjection(
+        //    [FromRoute] string deviceName)
+        //{
+        //    var result = await Task.FromResult(_projectionState.EqualizerState);
+        //    return Ok(result);
+        //}
     }
 }

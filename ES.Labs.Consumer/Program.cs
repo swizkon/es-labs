@@ -19,7 +19,7 @@ public class Program
 
         using var projectionStream = new Subject<EqualizerState>();
         var projectionStreamS = projectionStream
-            .Throttle(TimeSpan.FromMilliseconds(300))
+            .Throttle(TimeSpan.FromMilliseconds(1000))
             .Subscribe(state =>
             {
                 Console.WriteLine("EMIT state " + state);
@@ -27,10 +27,8 @@ public class Program
                 try
                 {
                     var d = new StringContent(JsonConvert.SerializeObject(state), Encoding.UTF8, "application/json");
-                    var res = httpClient.PostAsync("https://localhost:6001/equalizer/projections", d).Result;
-                    Console.WriteLine(res.StatusCode);
-
-                    res = httpClient.PostAsync($"https://localhost:6001/projections/{state.DeviceName}", d).Result;
+                    
+                    var res = httpClient.PostAsync($"https://localhost:6001/projections/{state.DeviceName}", d).Result;
                     Console.WriteLine(res.StatusCode);
                 }
                 catch (Exception e)
@@ -52,8 +50,14 @@ public class Program
     public static async Task MainAsync(string[] args, Subject<EqualizerState> projectionStream)
     {
         Console.WriteLine($"Hello {typeof(Program).Namespace}!");
-        
+
         var client = EventStoreUtil.GetDefaultClient();
+
+        var dd = new EqualizerAggregate(client);
+        await dd.Hydrate();
+
+        // return;
+
         await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) =>
             {
@@ -67,7 +71,7 @@ public class Program
                 }
                 else
                 {
-                    Console.WriteLine(e.Event.EventType);
+                    Console.WriteLine($"Unknown event type {e.Event.EventType}");
                 }
             });
 
@@ -85,7 +89,7 @@ public class Program
             filterOptions: new SubscriptionFilterOptions(EventTypeFilter.ExcludeSystemEvents())
         );
         */
-        
+
         //var endTime = DateTime.UtcNow.AddMinutes(2);
         //var position = Position.Start;
 
@@ -173,7 +177,7 @@ public class Program
             (s, state) =>
             {
                 state.CurrentVersion = resolvedEvent.OriginalEventNumber;
-                modifier(state, EventStoreUtil.GetRecordedEventAs<TEvent>(resolvedEvent));
+                modifier(state, EventStoreUtil.GetRecordedEventAs<TEvent>(resolvedEvent.Event));
                 return state;
             });
 

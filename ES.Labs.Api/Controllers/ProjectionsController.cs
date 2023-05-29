@@ -15,7 +15,10 @@ namespace ES.Labs.Api.Controllers
     {
         private readonly IDistributedCache _cache;
 
-        private static readonly EqualizerState State = new EqualizerState();
+        private static readonly EqualizerState State = new EqualizerState()
+        {
+            DeviceName = EventStoreConfiguration.DeviceStreamName
+        };
 
         private readonly ILogger<EqualizerController> _logger;
 
@@ -41,7 +44,7 @@ namespace ES.Labs.Api.Controllers
         [HttpGet("{deviceName}")]
         public async Task<IActionResult> GetProjection([FromRoute] string deviceName)
         {
-            var snap = await _cache.GetStringAsync($"device-{deviceName}");
+            var snap = await _cache.GetStringAsync($"device-{State.DeviceName}");
 
             var client = EventStoreUtil.GetDefaultClient();
             var events = client.ReadStreamAsync(
@@ -59,9 +62,12 @@ namespace ES.Labs.Api.Controllers
                 //Console.WriteLine(@event.OriginalStreamId);
                 //Console.WriteLine(Encoding.UTF8.GetString(@event.Event.Data.ToArray()));
 
+                _logger.LogInformation("Got projection {OriginalEventNumber}", @event.OriginalEventNumber);
                 State.CurrentVersion = @event.OriginalEventNumber;
                 State.Volume += 1;
             }
+            var cacheData = JsonConvert.SerializeObject(State);
+            await _cache.SetStringAsync($"device-{State.DeviceName}", cacheData);
 
             return Ok(State);
         }

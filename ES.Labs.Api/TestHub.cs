@@ -11,11 +11,13 @@ namespace ES.Labs.Api;
 public class TestHub : Hub<ITestHubClient>
 {
     private readonly ProjectionState _projectionState;
+    private readonly EventDataBuilder _eventDataBuilder;
     private readonly ILogger<TestHub> _logger;
     private readonly EventStoreClient _client;
 
     public TestHub(
         ProjectionState projectionState,
+        EventDataBuilder eventDataBuilder,
         ILogger<TestHub> logger)
     {
         var settings = EventStoreClientSettings
@@ -23,6 +25,7 @@ public class TestHub : Hub<ITestHubClient>
         _client = new EventStoreClient(settings);
 
         _projectionState = projectionState;
+        _eventDataBuilder = eventDataBuilder;
         _logger = logger;
     }
 
@@ -39,19 +42,23 @@ public class TestHub : Hub<ITestHubClient>
     public async Task SetVolume(string deviceName, string value)
     {
         var data = new Commands.SetVolume(DeviceName: deviceName, Volume: int.Parse(value));
-        var metadata = new
-        {
-            Timestamp = DateTime.UtcNow.ToString("o"),
-            CtrlType = data.GetType().FullName,
-            data.GetType().AssemblyQualifiedName
-        };
+        var metadata = _eventDataBuilder.BuildMetadata(data);
+        //new
+        //{
+        //    Timestamp = DateTime.UtcNow.ToString("o"),
+        //    CtrlType = data.GetType().FullName,
+        //    data.GetType().AssemblyQualifiedName,
+
+        //};
+
+        // var metaDee = _eventDataBuilder.BuildMetadata(data);
 
         var eventType = data.GetType().Name;
         var eventData = new EventData(
             eventId: Uuid.NewUuid(),
             type: eventType,
             data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
-            metadata: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)),
+            metadata: metadata,
             contentType: "application/json"
         );
 

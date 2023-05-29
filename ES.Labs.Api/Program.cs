@@ -1,7 +1,7 @@
 using ES.Labs.Api;
 using ES.Labs.Api.Security;
+using ES.Labs.Domain;
 using EventStore.Client;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +37,9 @@ services.AddCors(options => options.AddPolicy("AllowAll", builder =>
 
 services.AddSingleton<AppVersionInfo>();
 services.AddSingleton<ProjectionState>();
+
+services.AddSingleton<IEventMetadataInfo, AppVersionInfo>();
+services.AddScoped<EventDataBuilder>();
 
 services.AddStackExchangeRedisCache(options =>
 {

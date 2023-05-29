@@ -13,18 +13,14 @@ public static class EventStoreUtil
         return new EventStoreClient(settings);
     }
 
-    public static TEvent GetRecordedEventAs<TEvent>(ResolvedEvent resolvedEvent)
+    public static TEvent GetRecordedEventAs<TEvent>(EventRecord evt)
     {
-        var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
-        return JsonConvert.DeserializeObject<TEvent>(data);
+        return  (TEvent) GetRecordedEvent(evt, typeof(TEvent));
     }
 
-    public static object? GetRecordedEvent(ResolvedEvent resolvedEvent, Type type)
+    public static object GetRecordedEvent(EventRecord evt, Type type)
     {
-        var t = Type.GetType(resolvedEvent.Event.EventType);
-        if (t == null) return null;
-
-        var data = Encoding.UTF8.GetString(resolvedEvent.Event.Data.Span);
+        var data = Encoding.UTF8.GetString(evt.Data.Span);
         return JsonConvert.DeserializeObject(data, type);
     }
 }
