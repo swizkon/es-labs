@@ -1,5 +1,7 @@
 ﻿using Akka.Actor;
 
+namespace GameSimulator;
+
 public class CalculatorActor : ReceiveActor
 {
     private int result;

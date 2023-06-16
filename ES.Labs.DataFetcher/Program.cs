@@ -1,10 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
-using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
-using EventStore.Client;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace ES.Labs.DataFetcher;
@@ -23,35 +19,23 @@ public class Program
 
     public static async Task MainAsync(string[] args)
     {
+        var config = new ConfigurationBuilder()
+            .AddUserSecrets<Program>()
+            .Build();
+
+        var apiKey = config["X-RapidAPI-Key"];
+
         Console.WriteLine($"Hello {typeof(Program).Namespace}!");
 
-        var games = await FetchGames(16);
+        var games = await FetchGames(16, apiKey);
 
         foreach (var game in games)
         {
-            await FetchPlayByPlay(game.id);
+            await FetchPlayByPlay(game.id, apiKey);
         }
-
-        //var client = new HttpClient();
-        //var request = new HttpRequestMessage
-        //{
-        //    Method = HttpMethod.Get,
-        //    RequestUri = new Uri("https://free-nba.p.rapidapi.com/stats?page=0&per_page=25&game_ids[]=47179"),
-        //    Headers =
-        //    {
-        //        { "X-RapidAPI-Key", "a2cbeae557msh805898c556b96f3p1deb37jsncf7afb577490" },
-        //        { "X-RapidAPI-Host", "free-nba.p.rapidapi.com" },
-        //    },
-        //};
-        //using (var response = await client.SendAsync(request))
-        //{
-        //    response.EnsureSuccessStatusCode();
-        //    var body = await response.Content.ReadAsStringAsync();
-        //    Console.WriteLine(body);
-        //}
     }
 
-    private static async Task FetchPlayByPlay(int gameId)
+    private static async Task FetchPlayByPlay(int gameId, string apiKey)
     {
         var games = new List<Datum>();
         int? nextPage = 0;
@@ -60,7 +44,7 @@ public class Program
 
         while (nextPage.HasValue)
         {
-            var request = BuildStatsRequest(gameId, page: nextPage.GetValueOrDefault());
+            var request = BuildStatsRequest(gameId, page: nextPage.GetValueOrDefault(), apiKey: apiKey);
 
             using (var response = await client.SendAsync(request))
             {
@@ -72,13 +56,11 @@ public class Program
                 games.AddRange(respo.data);
             }
         }
-
-
     }
 
-    private static async Task<IEnumerable<Game>> FetchGames(int teamId)
+    private static async Task<IEnumerable<Game>> FetchGames(int teamId, string apiKey)
     {
-        var games = await GetGames(teamId);
+        var games = await GetGames(teamId, apiKey);
         Console.WriteLine(games);
 
         await File.WriteAllTextAsync("team-16-games.json", JsonConvert.SerializeObject(games, Formatting.Indented));
@@ -86,7 +68,7 @@ public class Program
         return games;
     }
 
-    private static async Task<IEnumerable<Game>> GetGames(int teamId)
+    private static async Task<IEnumerable<Game>> GetGames(int teamId, string apiKey)
     {
         var games = new List<Game>();
         int? nextPage = 0;
@@ -95,7 +77,7 @@ public class Program
 
         while (nextPage.HasValue)
         {
-            var request = BuildGamesRequest(teamId: teamId, page: nextPage.GetValueOrDefault());
+            var request = BuildGamesRequest(teamId: teamId, page: nextPage.GetValueOrDefault(), apiKey: apiKey);
 
             using (var response = await client.SendAsync(request))
             {
@@ -111,7 +93,7 @@ public class Program
         return games;
     }
 
-    private static HttpRequestMessage BuildStatsRequest(int gameId, int page)
+    private static HttpRequestMessage BuildStatsRequest(int gameId, int page, string apiKey)
     {
         return new HttpRequestMessage
         {
@@ -119,13 +101,13 @@ public class Program
             RequestUri = new Uri($"https://free-nba.p.rapidapi.com/stats?page={page}&per_page=50&seasons[]=2018&game_ids[]={gameId}"),
             Headers =
             {
-                { "X-RapidAPI-Key", "a2cbeae557msh805898c556b96f3p1deb37jsncf7afb577490" },
+                { "X-RapidAPI-Key", apiKey },
                 { "X-RapidAPI-Host", "free-nba.p.rapidapi.com" },
             }
         };
     }
 
-    private static HttpRequestMessage BuildGamesRequest(int teamId, int page)
+    private static HttpRequestMessage BuildGamesRequest(int teamId, int page, string apiKey)
     {
         return new HttpRequestMessage
         {
@@ -133,11 +115,9 @@ public class Program
             RequestUri = new Uri($"https://free-nba.p.rapidapi.com/games?page={page}&per_page=50&seasons[]=2018&team_ids[]={teamId}"),
             Headers =
             {
-                { "X-RapidAPI-Key", "a2cbeae557msh805898c556b96f3p1deb37jsncf7afb577490" },
+                { "X-RapidAPI-Key", apiKey },
                 { "X-RapidAPI-Host", "free-nba.p.rapidapi.com" },
             }
         };
     }
 }
-
-// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);

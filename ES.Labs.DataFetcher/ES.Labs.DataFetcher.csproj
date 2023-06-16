@@ -6,11 +6,13 @@
 	  <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>9fbe6ece-3be3-4a8d-988c-71b657bdebda</UserSecretsId>
   </PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="EventStore.Client" Version="21.2.1" />
 		<PackageReference Include="EventStore.Client.Grpc.Streams" Version="21.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
 		<PackageReference Include="System.Reactive" Version="5.0.0" />
 	</ItemGroup>
 
