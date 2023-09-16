@@ -12,6 +12,7 @@
     "@aspnet/signalr": "^1.1.4",
     "@microsoft/signalr": "^5.0.2",
     "@sveltejs/kit": "next",
+    "@sveltejs/adapter-static": "^2.0.3",
     "@types/three": "^0.134.0",
     "fluent-svelte": "^1.6.0",
     "prettier": "^2.4.1",

@@ -17,8 +17,8 @@ public class Program
     {
         var httpClient = new HttpClient();
 
-        using var projectionStream = new Subject<EqualizerState>();
-        var projectionStreamS = projectionStream
+        using var projectionSubscription = new Subject<EqualizerState>();
+        var projectionStreamS = projectionSubscription
             .Throttle(TimeSpan.FromMilliseconds(1000))
             .Subscribe(state =>
             {
@@ -37,17 +37,17 @@ public class Program
                 }
             });
 
-        MainAsync(args, projectionStream).GetAwaiter().GetResult();
+        MainAsync(args, projectionSubscription).GetAwaiter().GetResult();
         Console.ReadKey();
 
         Console.WriteLine("Cleaning up...");
         projectionStreamS.Dispose();
-        projectionStream.Dispose();
+        projectionSubscription.Dispose();
 
         httpClient.Dispose();
     }
 
-    public static async Task MainAsync(string[] args, Subject<EqualizerState> projectionStream)
+    public static async Task MainAsync(string[] args, Subject<EqualizerState> projectionSubscription)
     {
         Console.WriteLine($"Hello {typeof(Program).Namespace}!");
 
@@ -63,11 +63,11 @@ public class Program
             {
                 if (e.Event.EventType == nameof(Events.ChannelLevelChanged))
                 {
-                    await HandleChannelLevelChanged(e, projectionStream);
+                    await HandleChannelLevelChanged(e, projectionSubscription);
                 }
                 else if (e.Event.EventType == nameof(Commands.SetVolume))
                 {
-                    await HandleSetVolume(e, projectionStream);
+                    await HandleSetVolume(e, projectionSubscription);
                 }
                 else
                 {
@@ -132,11 +132,11 @@ public class Program
         return result;
     }
 
-    private static async Task HandleChannelLevelChanged(ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionStream)
+    private static async Task HandleChannelLevelChanged(ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionSubscription)
     {
         await TransformState<Events.ChannelLevelChanged>(
             resolvedEvent: resolvedEvent,
-            projectionStream: projectionStream,
+            projectionSubscription: projectionSubscription,
             modifier: (state, setVolume) =>
             {
                 state.Channels
@@ -153,11 +153,11 @@ public class Program
             });
     }
 
-    private static async Task HandleSetVolume(ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionStream)
+    private static async Task HandleSetVolume(ResolvedEvent resolvedEvent, Subject<EqualizerState> projectionSubscription)
     {
         await TransformState<Commands.SetVolume>(
             resolvedEvent: resolvedEvent,
-            projectionStream: projectionStream,
+            projectionSubscription: projectionSubscription,
             modifier: (state, setVolume) =>
             {
                 state.Volume = setVolume.Volume;
@@ -166,7 +166,7 @@ public class Program
 
     private static async Task TransformState<TEvent>(
         ResolvedEvent resolvedEvent,
-        Subject<EqualizerState> projectionStream,
+        Subject<EqualizerState> projectionSubscription,
         Action<EqualizerState, TEvent> modifier)
     {
         var s = EqStates.AddOrUpdate(EventStoreConfiguration.DeviceStreamName,
@@ -181,6 +181,6 @@ public class Program
                 return state;
             });
 
-        projectionStream.OnNext(s);
+        projectionSubscription.OnNext(s);
     }
 }

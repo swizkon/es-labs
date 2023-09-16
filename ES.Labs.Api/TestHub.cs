@@ -93,9 +93,10 @@ public class TestHub : Hub<ITestHubClient>
 
     public override async Task OnConnectedAsync()
     {
-        _logger.LogDebug("OnConnectedAsync");
+        _logger.LogInformation("OnConnectedAsync");
         if (_projectionState.EqualizerState != null)
         {
+            _logger.LogInformation("Send state");
             await Clients.All.EqualizerStateChanged(_projectionState.EqualizerState);
         }
         await Groups.AddToGroupAsync(Context.ConnectionId, "All Connected Users");

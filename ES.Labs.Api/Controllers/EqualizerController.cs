@@ -53,22 +53,5 @@ namespace ES.Labs.Api.Controllers
 
             return Ok(result);
         }
-        
-        //[HttpPost("projections")]
-        //public async Task<IActionResult> SetProjection(EqualizerState state)
-        //{
-        //    _projectionState.EqualizerState = state;
-        //    _logger.LogInformation("Got projection {State}", state);
-
-        //    return await GetProjection(state.DeviceName);
-        //}
-
-        //[HttpGet("projections/{deviceName}")]
-        //public async Task<IActionResult> GetProjection(
-        //    [FromRoute] string deviceName)
-        //{
-        //    var result = await Task.FromResult(_projectionState.EqualizerState);
-        //    return Ok(result);
-        //}
     }
 }
