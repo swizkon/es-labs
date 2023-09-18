@@ -24,7 +24,7 @@
 			.withUrl(`${baseUrl}/hubs/testHub`)
 			.withAutomaticReconnect()
 			.build();
-			
+
 		connection.on('EqualizerStateChanged', function (data) {
 			console.log('EqualizerStateChanged', data);
 
@@ -59,12 +59,8 @@
 		connection.send('SetChannelLevel', roomName, '' + a, b);
 	}
 
-	let levels = [
-		0
-	];
-	let bikes = [
-		[[0, 0, 10],  50, 0x669933]
-	];
+	let levels = [0];
+	let bikes = [[[0, 0, 10], 50, 0x669933]];
 </script>
 
 <SC.Canvas
@@ -79,7 +75,7 @@
 			position={[0, 0.1, 0]}
 		/>
 	</SC.Group>
-	
+
 	{#each bikes as b}
 		<Level position={b[0]} level={b[1]} color={b[2]} />
 	{/each}
@@ -94,17 +90,21 @@
 	/>
 </SC.Canvas>
 
-
 <Logo />
 
 <div class="controls">
-
 	{#each levels as level, i}
-	<label
-		><input type="range" on:input={(e) => handleLevelChanged(i, e.target.value)} bind:value={levels[i]} min={1} max={100} step={1} />
-		level{i}
-		</label
-	>
+		<label
+			><input
+				type="range"
+				on:input={(e) => handleLevelChanged(i, e.target.value)}
+				bind:value={levels[i]}
+				min={1}
+				max={100}
+				step={1}
+			/>
+			level{i}
+		</label>
 	{/each}
 
 	<div>
@@ -118,7 +118,7 @@
 		position: absolute;
 		left: 1em;
 		top: 1em;
-		width:500;
+		width: 500;
 		color: antiquewhite;
 	}
 

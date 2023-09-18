@@ -10,6 +10,6 @@
 	material={new THREE.MeshStandardMaterial({ color: 0x333333 })}
 	scale={[0.1, 0.1, 0.1]}
 	rotation={[0, 0, 0]}
-	position={position}
+	{position}
 	castShadow
 />

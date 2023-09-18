@@ -27,7 +27,7 @@
 			.withUrl(`${baseUrl}/hubs/testHub`)
 			.withAutomaticReconnect()
 			.build();
-			
+
 		connection.on('EqualizerStateChanged', function (data) {
 			console.log('EqualizerStateChanged', data);
 
@@ -39,8 +39,8 @@
 				bikes[pos][1] = lev;
 			}
 			volume = data.volume;
-		})
-				
+		});
+
 		connection.on('VolumeChanged', (deviceName, volume) => {
 			console.log('VolumeChanged', deviceName, volume);
 			signalRMessageCount++;
@@ -67,7 +67,7 @@
 	$: onChange(width, volume);
 
 	function onChange(...args) {
-		console.log('onChange', args)
+		console.log('onChange', args);
 	}
 
 	function handleLevelChanged(a, b) {
@@ -78,12 +78,8 @@
 		connection.send('SetVolume', roomName, v);
 	}
 
-	let levels = [
-		0
-	];
-	let bikes = [
-		[[0, 0, 10],  50, 0x669933]
-	];
+	let levels = [0];
+	let bikes = [[[0, 0, 10], 50, 0x669933]];
 </script>
 
 <SC.Canvas
@@ -98,7 +94,7 @@
 			position={[0, 0.1, 0]}
 		/>
 	</SC.Group>
-	
+
 	{#each bikes as b}
 		<Level position={b[0]} level={b[1]} color={b[2]} />
 	{/each}
@@ -113,21 +109,32 @@
 	/>
 </SC.Canvas>
 
-
 <Logo />
 
 <div class="controls">
-
 	{#each levels as level, i}
-	<label
-		><input type="range" on:input={(e) => handleLevelChanged(i, e.target.value)} bind:value={levels[i]} min={1} max={100} step={1} />
-		level{i}
-		</label
-	>
+		<label
+			><input
+				type="range"
+				on:input={(e) => handleLevelChanged(i, e.target.value)}
+				bind:value={levels[i]}
+				min={1}
+				max={100}
+				step={1}
+			/>
+			level{i}
+		</label>
 	{/each}
 
 	<label
-		><input type="range" on:input={(e) => handleVolumeChanged(e.target.value)} bind:value={volume} min={0} max={100} step={1} /> volume</label
+		><input
+			type="range"
+			on:input={(e) => handleVolumeChanged(e.target.value)}
+			bind:value={volume}
+			min={0}
+			max={100}
+			step={1}
+		/> volume</label
 	>
 	<div>
 		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
@@ -140,7 +147,7 @@
 		position: absolute;
 		left: 1em;
 		top: 1em;
-		width:500;
+		width: 500;
 		color: antiquewhite;
 	}
 

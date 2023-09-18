@@ -6,7 +6,7 @@
 	export let position = [0, 0, 0];
 </script>
 
-<SC.Group scale={[0.5, 0.5, 0.5]} position={position}>
+<SC.Group scale={[0.5, 0.5, 0.5]} {position}>
 	<SC.Mesh
 		geometry={new THREE.BoxGeometry(50, 5, 10)}
 		material={new THREE.MeshStandardMaterial({ color: 0x0099ff })}
@@ -14,7 +14,7 @@
 		position={[4, 1.6, 0]}
 		castShadow
 	/>
-	
+
 	<SC.Mesh
 		geometry={new THREE.BoxGeometry(3, 50, 5)}
 		material={new THREE.MeshStandardMaterial({ color: 0x0099ff })}
@@ -22,11 +22,11 @@
 		position={[1.6, 3.9, 0]}
 		castShadow
 	/>
-	
+
 	<SC.Mesh
 		geometry={new THREE.BoxGeometry(3, 3, 30)}
 		material={new THREE.MeshStandardMaterial({ color: 0x003eff })}
-		scale={[0.1, .1, 0.1]}
+		scale={[0.1, 0.1, 0.1]}
 		position={[1.6, 6.3, 0]}
 		castShadow
 	/>
