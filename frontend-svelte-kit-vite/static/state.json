@@ -1,0 +1,13 @@
+{
+  "bike": [
+    {
+      "name": "The Doctor",
+      "pos": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "bearing": 90
+    }
+  ]
+}
