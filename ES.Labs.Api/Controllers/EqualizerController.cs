@@ -20,7 +20,6 @@ namespace ES.Labs.Api.Controllers
         private readonly IHubContext<TestHub> _hubContext = hubContext;
 
         private readonly ILogger<EqualizerController> _logger = logger;
-        private readonly EventDataBuilder _eventDataBuilder = eventDataBuilder;
 
         [HttpPost(Name = "SetChannelLevel")]
         public async Task<IActionResult> Set(Events.ChannelLevelChanged data)
@@ -35,7 +34,7 @@ namespace ES.Labs.Api.Controllers
                         type: data.GetType().Name.ToLower(),
                         //isJson: true,
                         data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
-                        metadata: _eventDataBuilder.BuildMetadata(data)
+                        metadata: eventDataBuilder.BuildMetadata(data)
                     )
                 }));
         }
