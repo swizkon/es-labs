@@ -13,4 +13,6 @@ public interface ITestHubClient
     Task VolumeChanged(string deviceName, int volume);
 
     Task EqualizerStateChanged(EqualizerState state);
+
+    Task Subscribe(string streamName);
 }

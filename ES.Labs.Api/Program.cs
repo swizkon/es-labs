@@ -1,6 +1,7 @@
 using ES.Labs.Api;
 using ES.Labs.Api.Security;
 using ES.Labs.Domain;
+using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,14 +30,35 @@ services.AddCors(options => options.AddPolicy("AllowAll", builder =>
         .WithOrigins(
             "http://localhost:3000",
             "http://localhost:5000",
+            "http://localhost:5173",
+
             "http://localhost:6000",
             "https://localhost:6001",
+            
             "http://localhost:7000",
             "https://localhost:7001");
 }));
 
 services.AddSingleton<AppVersionInfo>();
-services.AddSingleton<ProjectionState>();
+services.AddSingleton<ProjectionState>(new ProjectionState
+{
+    Date = DateTime.UtcNow,
+    EqualizerState = new EqualizerState
+    {
+        DeviceName = EventStoreConfiguration.DeviceStreamName,
+        Volume = 33,
+        CurrentVersion = null,
+        Channels = new List<EqualizerState.EqualizerBandState>
+        {
+            new()
+            {
+                Channel = "0",
+                Level = "10"
+            }
+        }
+    }
+    
+});
 
 services.AddSingleton<IEventMetadataInfo, AppVersionInfo>();
 services.AddScoped<EventDataBuilder>();

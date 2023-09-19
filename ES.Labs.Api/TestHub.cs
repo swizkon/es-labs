@@ -91,6 +91,15 @@ public class TestHub : Hub<ITestHubClient>
         await Clients.All.ChannelLevel(deviceName, channel, int.Parse(value));
     }
 
+
+    public async Task Subscribe(string streamName)
+    {
+        _logger.LogInformation("Subscribe to {streamName}", streamName);
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, streamName);
+    }
+
+
     public override async Task OnConnectedAsync()
     {
         _logger.LogInformation("OnConnectedAsync");
@@ -109,4 +118,3 @@ public class TestHub : Hub<ITestHubClient>
         return base.OnDisconnectedAsync(exception);
     }
 }
-        

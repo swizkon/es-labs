@@ -11,8 +11,10 @@ namespace ES.Labs.Api.Controllers
     [ApiController]
     [Route("[controller]")]
     [AllowAnonymous]
-    public class EqualizerController(EventStoreClient eventStoreClient,
+    public class EqualizerController(
+            EventStoreClient eventStoreClient,
             EventDataBuilder eventDataBuilder,
+            ProjectionState projectionState,
             IHubContext<TestHub> hubContext,
             ILogger<EqualizerController> logger)
         : ControllerBase
@@ -27,7 +29,7 @@ namespace ES.Labs.Api.Controllers
             return Ok(await eventStoreClient.AppendToStreamAsync(
                 streamName: $"device-{data.DeviceName}",
                 expectedState: StreamState.Any,
-                eventData: new []
+                eventData: new[]
                 {
                     new EventData(
                         eventId: Uuid.NewUuid(),
@@ -37,6 +39,15 @@ namespace ES.Labs.Api.Controllers
                         metadata: eventDataBuilder.BuildMetadata(data)
                     )
                 }));
+        }
+
+        [HttpPost("PushState", Name = "PushState")]
+        public async Task<IActionResult> PushState()
+        {
+            _logger.LogInformation("PushState to group VolumeIncreased");
+            await _hubContext.Clients.Group("VolumeIncreased").SendAsync("EqualizerStateChanged", projectionState);
+
+            return Ok(projectionState);
         }
     }
 }

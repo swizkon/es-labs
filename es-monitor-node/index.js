@@ -8,7 +8,11 @@ const API_URL = process.env['BUYSCOUT__API_URL'] || "https://prod-api-url.com";
 console.log('BUYSCOUT__API_URL', API_URL);
 
 var connection = new signalR.HubConnectionBuilder()
- .withUrl(`${API_URL}/hubs/testHub`)
+ .withUrl(`${API_URL}/hubs/testHub`, {
+      skipNegotiation: true,
+      transport: signalR.HttpTransportType.WebSockets,
+      withCredentials: true
+    })
  .withAutomaticReconnect()
  .build();
 
@@ -27,6 +31,11 @@ connection.on('EqualizerStateChanged', function (data) {
   console.log(arguments);
 })
 
+connection.on('VolumeIncreased', function (data) {
+  console.log('VolumeIncreased', data);
+  console.log('arguments', arguments);
+})
+
 connection.on('Send', function (data) {
   console.log('Send', data);
 })
@@ -39,11 +48,17 @@ connection.on('RemoveItem', function (data) {
   console.log('RemoveItem', data, arguments);
 })
 
+connection.on('subscribe', function (data) {
+  console.log('subscribe', data, arguments);
+})
+
 async function start() {
   console.log('start');
   try {
       await connection.start();
       console.log("SignalR Connected.");
+      // Set a subscription to the volume changes
+      connection.send('subscribe', 'VolumeIncreased');
   } catch (err) {
       console.log("SignalR failed. Will retry in 5 secs...");
       console.log(err);
