@@ -60,7 +60,7 @@ public class TestHub : Hub<ITestHubClient>
                 eventData
             });
 
-        _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
+        // _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
         
         await Clients.All.VolumeChanged(deviceName, int.Parse(value));
     }
@@ -86,7 +86,7 @@ public class TestHub : Hub<ITestHubClient>
                 eventData
             });
 
-        _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
+        // _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
 
         await Clients.All.ChannelLevel(deviceName, channel, int.Parse(value));
     }

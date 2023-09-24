@@ -31,6 +31,7 @@ services.AddCors(options => options.AddPolicy("AllowAll", builder =>
             "http://localhost:3000",
             "http://localhost:5000",
             "http://localhost:5173",
+            "http://localhost:4173",
 
             "http://localhost:6000",
             "https://localhost:6001",
@@ -95,6 +96,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseWebSockets();
+
+app.UseStaticFiles();
 
 //app.MapControllers();
 app.UseEndpoints(endpoints =>

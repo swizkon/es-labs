@@ -4,8 +4,6 @@ using NAudio.Wave;
 
 Console.WriteLine("Hello! Press any key to continue");
 
-Console.ReadKey();
-
 // Provide the path to your MP3 file
 var mp3FilePath = "You_Suffer.mp3";
 
@@ -25,13 +23,11 @@ ConsoleKeyInfo k;
 
 do
 {
-    Console.WriteLine("Init and Playing MP3 file...");
-    mp3Reader.Position = 0;
-    outputDevice.Play();
+    Console.WriteLine("Press any key to play or Q to exit...");
     k = Console.ReadKey();
+    mp3Reader.Position = 500;
+    outputDevice.Play();
 } while (k.Key != ConsoleKey.Q);
-
-Task.Delay(2000).GetAwaiter().GetResult();
 
 // Stop and dispose of the output device
 outputDevice.Stop();
