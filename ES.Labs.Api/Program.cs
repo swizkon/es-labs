@@ -1,4 +1,5 @@
 using ES.Labs.Api;
+using ES.Labs.Api.BackgroundServices;
 using ES.Labs.Api.Security;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
@@ -61,6 +62,8 @@ services.AddSingleton<ProjectionState>(new ProjectionState
     
 });
 
+services.AddHttpClient();
+
 services.AddSingleton<IEventMetadataInfo, AppVersionInfo>();
 services.AddScoped<EventDataBuilder>();
 
@@ -69,6 +72,8 @@ services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("REDIS_CONNECTION_STRING");
     options.InstanceName = "ESDemo-";
 });
+
+services.AddHostedService<ConsumerHostedService>();
 
 var app = builder.Build();
 
