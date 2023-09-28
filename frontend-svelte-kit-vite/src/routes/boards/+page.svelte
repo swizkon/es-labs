@@ -1,11 +1,24 @@
-
 <script>
-    export let data;
-    $: ( { products } = data )
+	export let data;
+	$: ({ products } = data);
 </script>
 
-<h1>The boards page</h1>
+<div class="container h-full mx-auto flex justify-center items-center">
+	<div class="space-y-5">
+		<h1>Let's get cracking bones!</h1>
+		<p>Start by exploring:</p>
+		<ul>
+			<li><code class="code">/src/routes/+layout.svelte</code> - barebones layout</li>
+			<li><code class="code">/src/app.postcss</code> - app wide css</li>
+			<li>
+				<code class="code">/src/routes/+page.svelte</code> - this page, you can replace the contents
+			</li>
+		</ul>
+	</div>
+</div>
+
+<h1 class="h1 gradient-heading">The boards page</h1>
 {#each products as product}
-    <h2>{product.title}</h2>
-    <a href="/boards/board-{product.id}">Show</a>
+	<h2>{product.title}</h2>
+	<a href="/boards/board-{product.id}">Show</a>
 {/each}
