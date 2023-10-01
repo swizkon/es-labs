@@ -1,162 +1,177 @@
 <script>
-  import { onMount } from "svelte";
-  import { browser } from "$app/environment";
-  import * as THREE from "three";
-  import * as SC from "svelte-cubed";
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import * as THREE from 'three';
+	import * as SC from 'svelte-cubed';
 
-  import { HubConnectionBuilder } from "@microsoft/signalr";
+	import { RangeSlider } from '@skeletonlabs/skeleton';
 
-  import Logo from "../components/Logo.svelte";
-  import Level from "../components/Level.svelte";
+	import { HubConnectionBuilder } from '@microsoft/signalr';
 
-  const baseUrl = "https://localhost:6001";
-  const roomName = "mainroom";
+	import Logo from '../components/Logo.svelte';
+	import Level from '../components/Level.svelte';
 
-  let signalRConnectionState = "Unknown";
-  let signalRMessageCount = 0;
-  let connection;
+	const baseUrl = 'https://localhost:6001';
+	const roomName = 'mainroom';
 
-  async function start() {
-    console.log(browser);
-    if (!browser) return;
+	let signalRConnectionState = 'Unknown';
+	let signalRMessageCount = 0;
+	let connection;
 
-    connection = new HubConnectionBuilder()
-      .withUrl(`${baseUrl}/hubs/testHub`)
-      .withAutomaticReconnect()
-      .build();
+	async function start() {
+		console.log(browser);
+		if (!browser) return;
 
-    connection.on("EqualizerStateChanged", function (data) {
-      console.log("EqualizerStateChanged", data);
+		connection = new HubConnectionBuilder()
+			.withUrl(`${baseUrl}/hubs/testHub`)
+			.withAutomaticReconnect()
+			.build();
 
-      for (let index = 0; index < data.channels.length; index++) {
-        const element = data.channels[index];
-        const pos = parseInt(element.channel);
-        const lev = parseInt(element.level);
-        levels[pos] = lev;
-        bikes[pos][1] = lev;
-      }
-      volume = data.volume;
-    });
+		connection.on('EqualizerStateChanged', function (data) {
+			console.log('EqualizerStateChanged', data);
 
-    connection.on("ChannelLevel", (player, x, y) => {
-      console.log("ChannelLevel", player, x, y);
-      bikes[x][1] = y;
-      signalRMessageCount++;
-    });
+			for (let index = 0; index < data.channels.length; index++) {
+				const element = data.channels[index];
+				const pos = parseInt(element.channel);
+				const lev = parseInt(element.level);
+				levels[pos] = lev;
+				bikes[pos][1] = lev;
+			}
+			volume = data.volume;
+		});
 
-    // connection.on('VolumeChanged', (deviceName, volume) => {
-    // 	console.log('VolumeChanged', deviceName, volume);
-    // 	signalRMessageCount++;
-    // });
+		connection.on('ChannelLevel', (player, x, y) => {
+			console.log('ChannelLevel', player, x, y);
+			bikes[x][1] = y;
+			signalRMessageCount++;
+		});
 
-    try {
-      await connection.start();
-      connection.send("Broadcast", "index.svelte", "Just connected");
-      signalRConnectionState = connection.state;
-      console.log("SignalR Connected.");
-    } catch (err) {
-      signalRConnectionState = connection.state;
-      console.log("err", err);
-    }
-  }
+		// connection.on('VolumeChanged', (deviceName, volume) => {
+		// 	console.log('VolumeChanged', deviceName, volume);
+		// 	signalRMessageCount++;
+		// });
 
-  onMount(async () => {
-    await start();
-  });
+		try {
+			await connection.start();
+			connection.send('Broadcast', 'index.svelte', 'Just connected');
+			signalRConnectionState = connection.state;
+			console.log('SignalR Connected.');
+		} catch (err) {
+			signalRConnectionState = connection.state;
+			console.log('err', err);
+		}
+	}
 
-  let volume = 0.1;
+	onMount(async () => {
+		await start();
+	});
 
-  let levels = [0, 0, 0, 0, 0];
-  let bikes = [
-    [[0, 0, -10], 50, 0x663399],
-    [[0, 0, -5], 50, 0x336699],
-    [[0, 0, 0], 50, 0x996633],
-    [[0, 0, 5], 50, 0x339966],
-    [[0, 0, 10], 50, 0x669933]
-  ];
+	let volume = 0.1;
 
-  function handleLevelChanged(a, b) {
-    connection.send("SetChannelLevel", roomName, "" + a, b);
-  }
+	let levels = [0, 0, 0, 0, 0];
+	let bikes = [
+		[[0, 0, -10], 50, 0x663399],
+		[[0, 0, -5], 50, 0x336699],
+		[[0, 0, 0], 50, 0x996633],
+		[[0, 0, 5], 50, 0x339966],
+		[[0, 0, 10], 50, 0x669933]
+	];
 
-  function handleVolumeChanged(v) {
-    connection.send("SetVolume", roomName, v);
-  }
+	function handleLevelChanged(a, b) {
+		connection.send('SetChannelLevel', roomName, '' + a, b);
+	}
+
+	function handleVolumeChanged(v) {
+		connection.send('SetVolume', roomName, v);
+	}
 </script>
 
 <SC.Canvas
-  antialias
-  background={new THREE.Color("#101010")}
-  fog={new THREE.FogExp2("papayawhip", 0.01)}
-  shadows
+	style="position:bottom;widht:30px;height:300px;"
+	antialias
+	background={new THREE.Color('#101010')}
+	fog={new THREE.FogExp2('papayawhip', 0.01)}
+	shadows
 >
-  <SC.Group position={[0, 0, 0]}>
-    <SC.Primitive
-      object={new THREE.GridHelper(40, 40, "papayawhip2", "papayawhip2")}
-      position={[0, 0.1, 0]}
-    />
-  </SC.Group>
+	<SC.Group position={[0, 0, 0]}>
+		<SC.Primitive
+			object={new THREE.GridHelper(40, 40, 'papayawhip2', 'papayawhip2')}
+			position={[0, 0.1, 0]}
+		/>
+	</SC.Group>
 
-  {#each bikes as b}
-    <Level {volume} position={b[0]} level={b[1]} color={b[2]} />
-  {/each}
+	{#each bikes as b}
+		<Level {volume} position={b[0]} level={b[1]} color={b[2]} />
+	{/each}
 
-  <SC.PerspectiveCamera position={[-40, 15, 30]} />
-  <SC.OrbitControls enableZoom={true} maxPolarAngle={Math.PI * 0.51} />
-  <SC.AmbientLight intensity={0.6} />
-  <SC.DirectionalLight intensity={0.5} position={[-2, 3, 2]} shadow={{ mapSize: [2048, 2048] }} />
+	<SC.PerspectiveCamera position={[-40, 15, 30]} />
+	<SC.OrbitControls enableZoom={true} maxPolarAngle={Math.PI * 0.51} />
+	<SC.AmbientLight intensity={0.6} />
+	<SC.DirectionalLight intensity={0.5} position={[-2, 3, 2]} shadow={{ mapSize: [2048, 2048] }} />
 </SC.Canvas>
 
 <Logo />
 
 <div class="controls">
-  {#each levels as level, i}
-    <label
-      ><input
-        type="range"
-        on:input={(e) => handleLevelChanged(i, e.target.value)}
-        bind:value={levels[i]}
-        min={1}
-        max={50}
-        step={1}
-      />
-      level {i}
-    </label>
-  {/each}
+	{#each levels as level, i}
+		<label
+			><input
+				type="range"
+				on:input={(e) => handleLevelChanged(i, e.target.value)}
+				bind:value={levels[i]}
+				min={1}
+				max={50}
+				step={1}
+			/>
+			level {i}
+		</label>
+		<RangeSlider
+			name="range-slider"
+			on:change={(e) => handleLevelChanged(i, e.target.value)}
+			bind:value={levels[i]}
+			max={50}
+			step={1}
+			>Label
+			<div class="flex justify-between items-center">
+				<div class="font-bold">Level {i}</div>
+				<div class="text-xs">{levels[i]} / {25}</div>
+			</div></RangeSlider
+		>
+	{/each}
 
-  <label
-    ><input
-      type="range"
-      on:input={(e) => handleVolumeChanged(e.target.value)}
-      bind:value={volume}
-      min={0}
-      max={50}
-      step={1}
-    /> volume</label
-  >
-  <div>
-    <h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
-    <h2>Messages: <small>{signalRMessageCount}</small></h2>
-  </div>
+	<label
+		><input
+			type="range"
+			on:input={(e) => handleVolumeChanged(e.target.value)}
+			bind:value={volume}
+			min={0}
+			max={50}
+			step={1}
+		/> volume</label
+	>
+	<div>
+		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
+		<h2>Messages: <small>{signalRMessageCount}</small></h2>
+	</div>
 </div>
 
 <style>
-  .controls {
-    position: absolute;
-    left: 1em;
-    top: 1em;
-    width: 700;
-    color: antiquewhite;
-  }
+	.controls {
+		position: absolute;
+		left: 1em;
+		top: 1em;
+		width: 700;
+		color: antiquewhite;
+	}
 
-  label {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
-  }
+	label {
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
+	}
 
-  input {
-    width: 200px;
-    margin: 0;
-  }
+	input {
+		width: 200px;
+		margin: 0;
+	}
 </style>
