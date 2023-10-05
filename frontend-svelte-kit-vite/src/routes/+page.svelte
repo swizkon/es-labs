@@ -4,12 +4,14 @@
 	import * as THREE from 'three';
 	import * as SC from 'svelte-cubed';
 
-	import { RangeSlider } from '@skeletonlabs/skeleton';
-
 	import { HubConnectionBuilder } from '@microsoft/signalr';
 
 	import Logo from '../components/Logo.svelte';
 	import Level from '../components/Level.svelte';
+	import Slider from '../lib/components/Slider.svelte';
+
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
 
 	const baseUrl = 'https://localhost:6001';
 	const roomName = 'mainroom';
@@ -46,19 +48,28 @@
 			signalRMessageCount++;
 		});
 
-		// connection.on('VolumeChanged', (deviceName, volume) => {
-		// 	console.log('VolumeChanged', deviceName, volume);
-		// 	signalRMessageCount++;
-		// });
+		connection.on('VolumeChanged', (deviceName, v) => {
+			console.log('VolumeChanged', deviceName, v);
+			projection.volume = parseInt(v);
+			signalRMessageCount++;
+		});
 
 		try {
 			await connection.start();
 			connection.send('Broadcast', 'index.svelte', 'Just connected');
 			signalRConnectionState = connection.state;
 			console.log('SignalR Connected.');
+			const toast = { message: 'SignalR Connected.' };
+			toastStore.trigger(toast);
 		} catch (err) {
 			signalRConnectionState = connection.state;
 			console.log('err', err);
+			const toast = {
+				message: `SignalR Error : ${err.message}`,
+				background: 'variant-filled-error'
+			};
+			toastStore.trigger(toast);
+			await start();
 		}
 	}
 
@@ -69,6 +80,10 @@
 	let volume = 0.1;
 
 	let levels = [0, 0, 0, 0, 0];
+
+	let projection = {
+		volume: 0.1
+	};
 	let bikes = [
 		[[0, 0, -10], 50, 0x663399],
 		[[0, 0, -5], 50, 0x336699],
@@ -81,13 +96,24 @@
 		connection.send('SetChannelLevel', roomName, '' + a, b);
 	}
 
+	function handleLevelChangedEvent(event) {
+		console.log('page.svelte:handleLevelChangedEvent', event.detail);
+		handleLevelChanged('' + event.detail.key, '' + event.detail.value);
+	}
+
 	function handleVolumeChanged(v) {
+		console.log('handleVolumeChanged', 'v', v, typeof v);
 		connection.send('SetVolume', roomName, v);
+	}
+
+	function handleVolumeChangedEvent(event) {
+		console.log('page.svelte:handleVolumeChangedEvent', event.detail);
+		handleVolumeChanged('' + event.detail.value);
 	}
 </script>
 
 <SC.Canvas
-	style="position:bottom;widht:30px;height:300px;"
+	style="position:bottom;height:300px;"
 	antialias
 	background={new THREE.Color('#101010')}
 	fog={new THREE.FogExp2('papayawhip', 0.01)}
@@ -101,7 +127,7 @@
 	</SC.Group>
 
 	{#each bikes as b}
-		<Level {volume} position={b[0]} level={b[1]} color={b[2]} />
+		<Level volume={projection.volume} position={b[0]} level={b[1]} color={b[2]} />
 	{/each}
 
 	<SC.PerspectiveCamera position={[-40, 15, 30]} />
@@ -114,41 +140,20 @@
 
 <div class="controls">
 	{#each levels as level, i}
-		<label
-			><input
-				type="range"
-				on:input={(e) => handleLevelChanged(i, e.target.value)}
-				bind:value={levels[i]}
-				min={1}
-				max={50}
-				step={1}
-			/>
-			level {i}
-		</label>
-		<RangeSlider
-			name="range-slider"
-			on:change={(e) => handleLevelChanged(i, e.target.value)}
-			bind:value={levels[i]}
-			max={50}
-			step={1}
-			>Label
-			<div class="flex justify-between items-center">
-				<div class="font-bold">Level {i}</div>
-				<div class="text-xs">{levels[i]} / {25}</div>
-			</div></RangeSlider
-		>
+		<Slider
+			on:sliderChange={handleLevelChangedEvent}
+			label="Level {i}"
+			key={i}
+			bind:value={level}
+		/>
 	{/each}
 
-	<label
-		><input
-			type="range"
-			on:input={(e) => handleVolumeChanged(e.target.value)}
-			bind:value={volume}
-			min={0}
-			max={50}
-			step={1}
-		/> volume</label
-	>
+	<Slider
+		on:sliderChange={handleVolumeChangedEvent}
+		label="Volume II"
+		key="volume"
+		bind:value={volume}
+	/>
 	<div>
 		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
 		<h2>Messages: <small>{signalRMessageCount}</small></h2>
@@ -159,19 +164,8 @@
 	.controls {
 		position: absolute;
 		left: 1em;
-		top: 1em;
+		bottom: 1em;
 		width: 700;
 		color: antiquewhite;
-	}
-
-	label {
-		display: flex;
-		gap: 0.5em;
-		align-items: center;
-	}
-
-	input {
-		width: 200px;
-		margin: 0;
 	}
 </style>

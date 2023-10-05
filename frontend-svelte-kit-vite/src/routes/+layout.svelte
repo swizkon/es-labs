@@ -3,6 +3,8 @@
 	layoutContent.set(null);
 
 	import { AppShell, AppBar, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
+	import { Toast } from '@skeletonlabs/skeleton';
+
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	initializeStores();
 
@@ -14,14 +16,13 @@
 	function drawerOpen() {
 		drawerStore.open();
 	}
-	function drawerClose(params) {
-		drawerStore.close();
-	}
 </script>
 
 <Drawer>
 	<Navigation />
 </Drawer>
+
+<Toast />
 
 <AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
 	<svelte:fragment slot="header">
