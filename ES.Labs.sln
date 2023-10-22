@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ES.Labs.Domain", "ES.Labs.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ES.Labs.DataFetcher", "ES.Labs.DataFetcher\ES.Labs.DataFetcher.csproj", "{A83931FC-B567-45D6-A856-174E00764F6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameSimulator", "GameSimulator\GameSimulator.csproj", "{DF7ACF81-C4E9-4CCF-BA8A-4451313C0771}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameSimulator", "GameSimulator\GameSimulator.csproj", "{DF7ACF81-C4E9-4CCF-BA8A-4451313C0771}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{68928986-AEF0-49BB-9902-958F9223D2EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{DF7ACF81-C4E9-4CCF-BA8A-4451313C0771}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF7ACF81-C4E9-4CCF-BA8A-4451313C0771}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF7ACF81-C4E9-4CCF-BA8A-4451313C0771}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68928986-AEF0-49BB-9902-958F9223D2EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68928986-AEF0-49BB-9902-958F9223D2EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68928986-AEF0-49BB-9902-958F9223D2EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68928986-AEF0-49BB-9902-958F9223D2EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

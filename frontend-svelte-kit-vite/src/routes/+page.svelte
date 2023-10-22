@@ -79,7 +79,7 @@
 
 	let volume = 0.1;
 
-	let levels = [0, 0, 0, 0, 0];
+	let levels = []; // [0, 0, 0, 0, 0];
 
 	let projection = {
 		volume: 0.1
