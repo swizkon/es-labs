@@ -4,7 +4,7 @@ public class EqualizerState
 {
     public ulong? CurrentVersion { get; set; }
 
-    public string DeviceName { get; set; }
+    public string? DeviceName { get; set; }
 
     public int Volume { get; set; }
 

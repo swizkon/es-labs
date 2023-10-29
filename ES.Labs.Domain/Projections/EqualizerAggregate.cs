@@ -3,27 +3,45 @@ using System.Reflection;
 using System.Text;
 using EventStore.Client;
 using Newtonsoft.Json;
+using static ES.Labs.Domain.Events;
 
 namespace ES.Labs.Domain.Projections;
 
 /// <summary>
 /// A unit that maintains data integrity, invariants and constraints
 /// </summary>
-public class EqualizerAggregate 
+public class EqualizerAggregate(
+    EventStoreClient client,
+    EventDataBuilder eventDataBuilder)
 {
-    private readonly EventStoreClient _client;
     private readonly EqualizerState _state = new EqualizerState();
-    
+
     public StreamPosition? CurrentStreamPosition { get; set; }
 
-    public EqualizerAggregate(EventStoreClient client) => _client = client;
+    public async Task InitStream()
+    {
+        var data = new DeviceRegistered(DeviceName: EventStoreConfiguration.DeviceStreamName);
+        await client.AppendToStreamAsync(
+            streamName: EventStoreConfiguration.DeviceStreamName,
+            expectedState: StreamState.NoStream,
+            eventData: new[]
+            {
+                new EventData(
+                    eventId: Uuid.NewUuid(),
+                    type: data.GetType().Name.ToLower(),
+                //isJson: true,
+                    data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
+                    metadata: eventDataBuilder.BuildMetadata(data)
+                )
+            });
+    }
 
     public async Task Hydrate()
     {
         var timer = Stopwatch.StartNew();
         Console.WriteLine("Begin hydrate");
         Console.WriteLine($"{timer.Elapsed} Start read");
-        var allEvents = _client.ReadStreamAsync(
+        var allEvents = client.ReadStreamAsync(
             direction: Direction.Forwards,
             streamName: EventStoreConfiguration.DeviceStreamName,
             revision: CurrentStreamPosition ?? StreamPosition.Start,
@@ -39,10 +57,10 @@ public class EqualizerAggregate
             {
                 continue;
             }
-            
+
             if (e.OriginalStreamId != EventStoreConfiguration.DeviceStreamName)
                 continue;
-            
+
             await ApplyEvent(e.Event);
         }
         Console.WriteLine($"hydrate done in {timer.Elapsed}");
@@ -65,20 +83,20 @@ public class EqualizerAggregate
 
     private async Task ApplyEvent(EventRecord evt)
     {
-        var metadata = JsonConvert.DeserializeObject<IDictionary<string,string>>(
+        var metadata = JsonConvert.DeserializeObject<IDictionary<string, string>>(
             Encoding.UTF8.GetString(evt.Metadata.ToArray()));
-        
+
         var eventType = Type.GetType(metadata["CtrlType"])!;
 
         var parsedEvent = EventStoreUtil.GetRecordedEvent(evt, eventType);
 
         var methods = this.GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
 
-        var matchingmethods = methods
+        var matchingMethods = methods
             .FirstOrDefault(m => m.GetParameters().FirstOrDefault()?.ParameterType == eventType);
         try
         {
-            matchingmethods?.Invoke(this, new []{parsedEvent} );
+            matchingMethods?.Invoke(this, new[] { parsedEvent });
         }
         catch (Exception e)
         {

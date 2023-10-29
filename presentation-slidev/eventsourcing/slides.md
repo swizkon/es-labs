@@ -45,6 +45,7 @@ layout: image-right
 image: https://source.unsplash.com/collection/94734566/1920x1080
 src: ./pages/crud-sourcing.md
 hide: false
+transition: fade-out
 ---
 
 ---
@@ -52,6 +53,7 @@ layout: image-right
 image: https://source.unsplash.com/collection/94734566/1920x1080
 src: ./pages/projections.md
 hide: false
+transition: fade-out
 ---
 
 
@@ -70,7 +72,22 @@ class: text-center
 transition: fade-out
 ---
 # Demo-time
-fsdfsdfsdfsdfsdf
+Yo yo yo
+
+
+---
+transition: fade-out
+---
+# Data Migration & Versioning
+
+- 📝 **Text-based** - focus on the content with Markdown, and then style them later
+- 🎨 **Themable** - theme can be shared and used with npm packages
+- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
+- 🤹 **Interactive** - embedding Vue components to enhance your expressions
+- 🎥 **Recording** - built-in recording and camera view
+- 📤 **Portable** - export into PDF, PNGs, or even a hostable SPA
+- 🛠 **Hackable** - anything possible on a webpage
+
 
 ---
 transition: fade-out
@@ -94,10 +111,6 @@ Slidev is a slides maker and presenter designed for developers, consist of the f
 Read more about [Why Slidev?](https://sli.dev/guide/why)
 
 
-<!--
-Here is another comment.
--->
-
 ---
 layout: default
 ---
@@ -105,7 +118,7 @@ layout: default
 # Table of contents
 
 ```
-<Toc minDepth="1" maxDepth="5"></Toc>
+<Toc minDepth="1" maxDepth="1"></Toc>
 ```
 
 <Toc></Toc>
@@ -168,31 +181,6 @@ function updateUser(id: number, update: User) {
   saveUser(id, newUser)
 }
 ```
-
----
-
-# Components
-
-<div grid="~ cols-2 gap-4">
-
-  <div>
-    You can use Vue components directly inside your slides.
-  </div>
-
-  <div>
-    sdfsd
-  </div>
-</div>
-
-<!--
-Presenter note with **bold**, *italic*, and ~~striked~~ text.
-
-Also, HTML elements are valid:
-<div class="flex w-full">
-  <span style="flex-grow: 1;">Left content</span>
-  <span>Right content</span>
-</div>
--->
 
 
 ---
@@ -281,4 +269,4 @@ class: text-center
 
 for your time
 
-[Documentations](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/showcases.html)
+[Code](https://github.com/swizkon/es-labs) · [GitHub](https://github.com/slidevjs/slidev) · [Queenslab](https://www.queenslab.co/)

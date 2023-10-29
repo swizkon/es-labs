@@ -53,10 +53,10 @@ public class Program
 
         var client = EventStoreUtil.GetDefaultClient();
 
-        var dd = new EqualizerAggregate(client);
-        await dd.Hydrate();
+        //var dd = new EqualizerAggregate(client,new EventDataBuilder());
+        //await dd.Hydrate();
 
-        // return;
+        // return;  
 
         await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) =>
