@@ -18,8 +18,8 @@ namespace WebApplication1;
 
 [FilterAlias("ActivePermissions")]
 public class ActivePermissionsFilter :
-    IContextualFeatureFilter<Func<string, bool>>,
-    IContextualFeatureFilter<DateTimeOffset>
+    IContextualFeatureFilter<Func<string, bool>>
+    // IContextualFeatureFilter<DateTimeOffset>
 {
     public Task<bool> EvaluateAsync(FeatureFilterEvaluationContext featureFilterContext, Func<string, bool> context)
     {
