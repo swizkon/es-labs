@@ -12,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 services.AddEventStoreClient(settings => EventStoreClientSettings
-    .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false"));
+    // .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false"));
+    .Create("esdb://admin:changeit@127.0.0.1:2113?tls=false&tlsVerifyCert=false"));
 
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -73,7 +74,7 @@ services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "ESDemo-";
 });
 
-services.AddHostedService<ConsumerHostedService>();
+// services.AddHostedService<ConsumerHostedService>();
 
 var app = builder.Build();
 

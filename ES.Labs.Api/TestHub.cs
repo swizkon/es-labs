@@ -20,9 +20,7 @@ public class TestHub : Hub<ITestHubClient>
         EventDataBuilder eventDataBuilder,
         ILogger<TestHub> logger)
     {
-        var settings = EventStoreClientSettings
-            .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
-        _client = new EventStoreClient(settings);
+        _client = EventStoreUtil.GetDefaultClient();
 
         _projectionState = projectionState;
         _eventDataBuilder = eventDataBuilder;
@@ -41,6 +39,7 @@ public class TestHub : Hub<ITestHubClient>
 
     public async Task SetVolume(string deviceName, string value)
     {
+        _logger.LogInformation("SetVolume {DeviceName} {Value}", deviceName, value);
         var data = new Commands.SetVolume(DeviceName: deviceName, Volume: int.Parse(value));
 
         var eventType = data.GetType().Name;
@@ -58,9 +57,12 @@ public class TestHub : Hub<ITestHubClient>
             eventData: new List<EventData>
             {
                 eventData
+            }, options =>
+            {
+                options.TimeoutAfter = TimeSpan.FromSeconds(30);
             });
 
-        // _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
+        _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
         
         await Clients.All.VolumeChanged(deviceName, int.Parse(value));
     }
