@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ES.Labs.DataFetcher", "ES.L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameSimulator", "GameSimulator\GameSimulator.csproj", "{DF7ACF81-C4E9-4CCF-BA8A-4451313C0771}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{68928986-AEF0-49BB-9902-958F9223D2EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{68928986-AEF0-49BB-9902-958F9223D2EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActiveMqConsumer", "ActiveMqConsumer\ActiveMqConsumer.csproj", "{D91A03C4-3D55-4046-BA25-A2076364AF62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{68928986-AEF0-49BB-9902-958F9223D2EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68928986-AEF0-49BB-9902-958F9223D2EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68928986-AEF0-49BB-9902-958F9223D2EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D91A03C4-3D55-4046-BA25-A2076364AF62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D91A03C4-3D55-4046-BA25-A2076364AF62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D91A03C4-3D55-4046-BA25-A2076364AF62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D91A03C4-3D55-4046-BA25-A2076364AF62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

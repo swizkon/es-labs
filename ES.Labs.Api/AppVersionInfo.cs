@@ -62,7 +62,7 @@ public class AppVersionInfo : IEventMetadataInfo
         
         // git.
         var result = outputBuilder.ToString().Trim();
-        return informationalVersion + "+" + result;
+        return $"{informationalVersion}+{result}";
     }
 
     public string GetCommitVersion() => Version;

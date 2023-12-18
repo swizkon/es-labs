@@ -5,3 +5,14 @@ export const load = async ({ fetch }) => {
 		products: prodData.products
 	};
 };
+
+function getHighestNumber(a, b) {
+	// Id a and b are equal return null	
+	if (a === b) {		
+		return null;
+
+	return a > b ? a : b;
+
+
+
+}
