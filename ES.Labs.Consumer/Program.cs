@@ -61,17 +61,17 @@ public class Program
         await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) =>
             {
-                if (e.Event.EventType == nameof(Events.ChannelLevelChanged))
+                switch (e.Event.EventType)
                 {
-                    await HandleChannelLevelChanged(e, projectionSubscription);
-                }
-                else if (e.Event.EventType == nameof(Commands.SetVolume))
-                {
-                    await HandleSetVolume(e, projectionSubscription);
-                }
-                else
-                {
-                    Console.WriteLine($"Unknown event type {e.Event.EventType}");
+                    case nameof(Events.ChannelLevelChanged):
+                        await HandleChannelLevelChanged(e, projectionSubscription);
+                        break;
+                    case nameof(Commands.SetVolume):
+                        await HandleSetVolume(e, projectionSubscription);
+                        break;
+                    default:
+                        Console.WriteLine($"Unknown event type {e.Event.EventType}");
+                        break;
                 }
             });
 
@@ -89,37 +89,6 @@ public class Program
             filterOptions: new SubscriptionFilterOptions(EventTypeFilter.ExcludeSystemEvents())
         );
         */
-
-        //var endTime = DateTime.UtcNow.AddMinutes(2);
-        //var position = Position.Start;
-
-        //while (DateTime.UtcNow < endTime)
-        //{
-        //    var allEvents = client.ReadAllAsync(Direction.Forwards, position);
-        //    await foreach (var e in allEvents)
-        //    {
-        //        position = e.OriginalPosition ?? e.Event.Position;
-        //        if (e.Event.EventType.StartsWith("$"))
-        //        {
-        //            continue;
-        //        }
-
-        //        Console.WriteLine($"OriginalStreamId: {e.OriginalStreamId}");
-        //        Console.WriteLine($"e.Event.EventType: {e.Event.EventType}");
-        //        Console.WriteLine($"e.Event.EventNumber: {e.Event.EventNumber}");
-        //        Console.WriteLine($"e.Event.EventStreamId: {e.Event.EventStreamId}");
-
-        //        // Console.WriteLine(e.Event.EventType);
-
-        //        if (e.OriginalStreamId != EventStoreConfiguration.StreamName)
-        //            continue;
-
-        //        Console.WriteLine(Encoding.UTF8.GetString(e.Event.Data.ToArray()));
-        //    }
-
-        //    Console.WriteLine("Wait for new round...");
-        //    await Task.Delay(10_000);
-        //}
     }
 
     private static Dictionary<string, Action<EqualizerState, TEvent>> RegisterHandler<TEvent>(Action<EqualizerState, TEvent> modifier)

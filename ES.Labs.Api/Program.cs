@@ -1,5 +1,5 @@
+
 using ES.Labs.Api;
-using ES.Labs.Api.BackgroundServices;
 using ES.Labs.Api.Security;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
@@ -49,18 +49,14 @@ services.AddSingleton<ProjectionState>(new ProjectionState
     EqualizerState = new EqualizerState
     {
         DeviceName = EventStoreConfiguration.DeviceStreamName,
-        Volume = 33,
+        Volume = 50,
         CurrentVersion = null,
-        Channels = new List<EqualizerState.EqualizerBandState>
+        Channels = Enumerable.Range(0, 5).Select(c => new EqualizerState.EqualizerBandState
         {
-            new()
-            {
-                Channel = "0",
-                Level = "10"
-            }
-        }
+            Channel = $"{c}",
+            Level = "10"
+        }).ToList()
     }
-    
 });
 
 services.AddHttpClient();

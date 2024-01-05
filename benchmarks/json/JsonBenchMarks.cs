@@ -27,19 +27,19 @@ public class JsonBenchMarks
         _org = fixture.Create<Organization>();
     }
 
+    //[Benchmark(Baseline = true)]
+    //public void SmallSerializeNewtonsoft()
+    //{
+    //    _newtonsoft.DoIt(_small);
+    //}
+
+    //[Benchmark]
+    //public void SmallSerializeSystemText()
+    //{
+    //    _systemText.DoIt(_small);
+    //}
+
     [Benchmark(Baseline = true)]
-    public void SmallSerializeNewtonsoft()
-    {
-        _newtonsoft.DoIt(_small);
-    }
-
-    [Benchmark]
-    public void SmallSerializeSystemText()
-    {
-        _systemText.DoIt(_small);
-    }
-
-    [Benchmark]
     public void MediumSerializeNewtonsoft()
     {
         _newtonsoft.DoIt(_dep);
@@ -51,15 +51,15 @@ public class JsonBenchMarks
         _systemText.DoIt(_dep);
     }
 
-    [Benchmark]
-    public void BigSerializeNewtonsoft()
-    {
-        _newtonsoft.DoIt(_org);
-    }
+    //[Benchmark]
+    //public void BigSerializeNewtonsoft()
+    //{
+    //    _newtonsoft.DoIt(_org);
+    //}
 
-    [Benchmark]
-    public void BigSerializeSystemText()
-    {
-        _systemText.DoIt(_org);
-    }
+    //[Benchmark]
+    //public void BigSerializeSystemText()
+    //{
+    //    _systemText.DoIt(_org);
+    //}
 }

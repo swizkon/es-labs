@@ -40,6 +40,7 @@
 				bikes[pos][1] = lev;
 			}
 			volume = data.volume;
+			projection.volume = data.volume;
 		});
 
 		connection.on('ChannelLevel', (player, x, y) => {
@@ -79,7 +80,7 @@
 
 	let volume = 0.1;
 
-	let levels = []; // [0, 0, 0, 0, 0];
+	let levels = [];
 
 	let projection = {
 		volume: 0.1

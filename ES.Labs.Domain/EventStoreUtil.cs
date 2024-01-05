@@ -14,9 +14,7 @@ public static class EventStoreUtil
     }
 
     public static TEvent GetRecordedEventAs<TEvent>(EventRecord evt)
-    {
-        return  (TEvent) GetRecordedEvent(evt, typeof(TEvent));
-    }
+        => (TEvent) GetRecordedEvent(evt, typeof(TEvent));
 
     public static object GetRecordedEvent(EventRecord evt, Type type)
     {
