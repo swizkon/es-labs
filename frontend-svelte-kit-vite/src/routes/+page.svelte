@@ -76,6 +76,10 @@
 
 	onMount(async () => {
 		await start();
+
+		return () => {
+			connection.stop();
+		};
 	});
 
 	let volume = 0.1;

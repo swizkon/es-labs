@@ -9,10 +9,7 @@ export const load = async ({ fetch }) => {
 function getHighestNumber(a, b) {
 	// Id a and b are equal return null	
 	if (a === b) {		
-		return null;
+		return null;}
 
 	return a > b ? a : b;
-
-
-
 }

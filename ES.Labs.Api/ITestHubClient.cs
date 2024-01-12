@@ -4,7 +4,7 @@ namespace ES.Labs.Api;
 
 public interface ITestHubClient
 {
-    Task ReceiveMessage(string user, string message);
+    Task Notification(string message);
 
     Task Broadcast(string user, string message);
 
@@ -15,4 +15,6 @@ public interface ITestHubClient
     Task EqualizerStateChanged(EqualizerState state);
 
     Task Subscribe(string streamName);
+
+    Task Unsubscribe(string streamName);
 }

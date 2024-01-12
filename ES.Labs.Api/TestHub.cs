@@ -27,11 +27,6 @@ public class TestHub : Hub<ITestHubClient>
         _logger = logger;
     }
 
-    public async Task SendMessage(string user, string message)
-    {
-        await Clients.All.ReceiveMessage(user, message);
-    }
-
     public async Task Broadcast(string user, string message)
     {
         await Clients.All.Broadcast(user, message);
@@ -93,15 +88,25 @@ public class TestHub : Hub<ITestHubClient>
         await Clients.All.ChannelLevel(deviceName, channel, int.Parse(value));
     }
 
-
     public async Task Subscribe(string streamName)
     {
         _logger.LogInformation("Subscribe to {streamName}", streamName);
 
+        // await Groups.RemoveFromGroupAsync(Context.ConnectionId, streamName);
         await Groups.AddToGroupAsync(Context.ConnectionId, streamName);
+
+        await Clients.Group(streamName).Notification($"{Context.ConnectionId} Subscribed to {streamName}");
     }
 
+    public async Task Unsubscribe(string streamName)
+    {
+        _logger.LogInformation("Unsubscribe from {streamName}", streamName);
 
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, streamName);
+
+        await Clients.Group(streamName).Notification($"{Context.ConnectionId} Unsubscribe from {streamName}");
+    }
+    
     public override async Task OnConnectedAsync()
     {
         _logger.LogInformation("OnConnectedAsync");
