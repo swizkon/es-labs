@@ -12,6 +12,10 @@
 	onMount(() => {
 		layoutContent.set(['/boards/board-2', '/boards/board-1']);
 	});
+
+	onDestroy(() => {
+		layoutContent.set([]);
+	});
 </script>
 
 <h1 class="h1 gradient-heading">{product.title}</h1>
