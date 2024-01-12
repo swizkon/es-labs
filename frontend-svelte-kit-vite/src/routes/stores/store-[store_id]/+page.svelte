@@ -67,8 +67,8 @@
 		});
 
 		connection.on('ZoneStateChanged', (store, zone, currentCount, maxCapacity) => {
-			const toast = { message: `Store ${store} zone ${zone} changed to ${currentCount}/${maxCapacity}`, autohide: true, timeout: 1000};
-			toastStore.trigger(toast);
+			// const toast = { message: `Store ${store} zone ${zone} changed to ${currentCount}/${maxCapacity}`, autohide: true, timeout: 1000};
+			// toastStore.trigger(toast);
 
 			zones = zones.map((z) => {
 				if (z.zone === zone) {

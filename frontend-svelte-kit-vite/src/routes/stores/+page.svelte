@@ -36,8 +36,8 @@
 
 		// ("StoresStateChanged", store, currentCount, maxCapacity)
 		connection.on('StoreStateChanged', (store, currentCount, maxCapacity) => {
-			const toast = { message: `Store ${store} changed to ${currentCount}/${maxCapacity}`, autohide: true, timeout: 1000};
-			toastStore.trigger(toast);
+			// const toast = { message: `Store ${store} changed to ${currentCount}/${maxCapacity}`, autohide: true, timeout: 1000};
+			// toastStore.trigger(toast);
 
 			stores.storeStates = stores.storeStates.map((s) => {
 				if (s.store === store) {
