@@ -35,7 +35,7 @@
 						<rect width="100" height="20" y="60" />
 					</svg>
 				</button>
-				<strong class="text-xl uppercase">Evented</strong>
+				<strong class="text-xl uppercase">L&#9901;VE/H&#9760;TE Evented</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<nav>
