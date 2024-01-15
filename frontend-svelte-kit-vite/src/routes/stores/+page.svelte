@@ -2,7 +2,7 @@
 	import Link from '../../components/base/Link.svelte';
     import { ProgressRadial } from '@skeletonlabs/skeleton';
 	export let data;
-	$: ({ stores } = data);
+	$: ({ stores, date } = data);
 
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
@@ -87,7 +87,7 @@
 
 <div class="logo-cloud grid-cols-1 lg:!grid-cols-3 gap-1">
     {#each stores.storeStates as store}
-        <a class="logo-item" href="/stores/store-{store.store}">
+        <a class="logo-item" href="/stores/store-{store.store}-date-{date}">
             <span><ProgressRadial value={100 * store.currentCount/store.maxCapacity}>{store.currentCount}/{store.maxCapacity}</ProgressRadial></span>
             <span>Store {store.store}</span>
         </a>

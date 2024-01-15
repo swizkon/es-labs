@@ -35,6 +35,14 @@ css: unocss
 ---
 layout: image-right
 image: https://source.unsplash.com/collection/94734566/1920x1080
+src: ./pages/crud-sourcing.md
+hide: false
+transition: fade-out
+---
+
+---
+layout: image-right
+image: https://source.unsplash.com/collection/94734566/1920x1080
 src: ./pages/event-sourcing-vs-streaming.md
 hide: false
 transition: fade-out
@@ -43,7 +51,7 @@ transition: fade-out
 ---
 layout: image-right
 image: https://source.unsplash.com/collection/94734566/1920x1080
-src: ./pages/crud-sourcing.md
+src: ./pages/event-storming.md
 hide: false
 transition: fade-out
 ---
