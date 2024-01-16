@@ -1,4 +1,4 @@
-using ES.Labs.MessageHub.Hubs;
+using ES.Labs.RetailRhythmRadar.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 

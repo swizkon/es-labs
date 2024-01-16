@@ -1,9 +1,6 @@
-using System.Text;
-using ES.Labs.RetailRhythmRadar.Hubs;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ES.Labs.MessageHub.Hubs;
+namespace ES.Labs.RetailRhythmRadar.Hubs;
 
 public class MessageExchangeHub : Hub<IMessageExchangeHubClient>
 {
