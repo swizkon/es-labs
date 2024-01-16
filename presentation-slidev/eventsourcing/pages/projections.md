@@ -2,9 +2,9 @@
 
 ### Modelling state from event streams
 
-In-memory or drop create schema in DB.
+In-memory, cached or drop create schema in DB.
 
-Motivator:
+Motivator:\
 Facts (events) dont change, but your perception of the facts do
 
 

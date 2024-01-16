@@ -8,7 +8,6 @@ public static class SecurityExtensions
 {
     public static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
     {
-        services.AddSingleton<ISecurityRepository, StaticSecurityRepository>();
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

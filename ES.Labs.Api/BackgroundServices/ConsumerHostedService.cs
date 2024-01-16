@@ -14,6 +14,7 @@ public class ConsumerHostedService(HttpClient httpClient, IServiceProvider servi
     private static readonly ConcurrentDictionary<string, EqualizerState> EqStates = new();
     private Subject<EqualizerState>? _projectionSubscription;
     private IDisposable? _projectionStreamS;
+    private readonly IConfiguration _configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -38,15 +39,15 @@ public class ConsumerHostedService(HttpClient httpClient, IServiceProvider servi
                     Console.WriteLine(e.Message);
                 }
             });
-
+        
         var eventMetadataInfo = serviceProvider.GetRequiredService<IEventMetadataInfo>();
         var eventDataBuilder = new EventDataBuilder(eventMetadataInfo);
         return MainAsync(_projectionSubscription, eventDataBuilder, stoppingToken);
     }
 
-    public static async Task MainAsync(Subject<EqualizerState>? projectionSubscription, EventDataBuilder eventDataBuilder, CancellationToken cancellationToken)
+    public async Task MainAsync(Subject<EqualizerState>? projectionSubscription, EventDataBuilder eventDataBuilder, CancellationToken cancellationToken)
     {
-        var client = EventStoreUtil.GetDefaultClient();
+        var client = EventStoreUtil.GetDefaultClient(_configuration.GetConnectionString("EVENTSTORE")!);
 
         var dd = new EqualizerAggregate(client, eventDataBuilder);
         // await dd.InitStream();

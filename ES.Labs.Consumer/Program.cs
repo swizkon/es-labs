@@ -5,6 +5,7 @@ using System.Text;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace ES.Labs.Consumer;
@@ -15,6 +16,15 @@ public class Program
 
     public static void Main(string[] args)
     {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new List<KeyValuePair<string, string?>>()
+            {
+                new("ConnectionStrings:EVENTSTORE", "esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false")
+            })
+            .AddCommandLine(args)
+            .AddEnvironmentVariables()
+            .Build();
+
         var httpClient = new HttpClient();
 
         using var projectionSubscription = new Subject<EqualizerState>();
@@ -37,7 +47,7 @@ public class Program
                 }
             });
 
-        MainAsync(args, projectionSubscription).GetAwaiter().GetResult();
+        MainAsync(args, projectionSubscription, configuration).GetAwaiter().GetResult();
         Console.ReadKey();
 
         Console.WriteLine("Cleaning up...");
@@ -47,11 +57,11 @@ public class Program
         httpClient.Dispose();
     }
 
-    public static async Task MainAsync(string[] args, Subject<EqualizerState> projectionSubscription)
+    public static async Task MainAsync(string[] args, Subject<EqualizerState> projectionSubscription, IConfiguration configuration)
     {
         Console.WriteLine($"Hello {typeof(Program).Namespace}!");
 
-        var client = EventStoreUtil.GetDefaultClient();
+        var client = EventStoreUtil.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
 
         //var dd = new EqualizerAggregate(client,new EventDataBuilder());
         //await dd.Hydrate();

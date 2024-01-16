@@ -4,6 +4,7 @@ using System.Text;
 using ES.Labs.Domain;
 using EventStore.Client;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace ES.Labs.Api;
@@ -18,9 +19,10 @@ public class TestHub : Hub<ITestHubClient>
     public TestHub(
         ProjectionState projectionState,
         EventDataBuilder eventDataBuilder,
-        ILogger<TestHub> logger)
+        IConfiguration configuration,
+    ILogger<TestHub> logger)
     {
-        _client = EventStoreUtil.GetDefaultClient();
+        _client = EventStoreUtil.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
 
         _projectionState = projectionState;
         _eventDataBuilder = eventDataBuilder;
@@ -91,10 +93,7 @@ public class TestHub : Hub<ITestHubClient>
     public async Task Subscribe(string streamName)
     {
         _logger.LogInformation("Subscribe to {streamName}", streamName);
-
-        // await Groups.RemoveFromGroupAsync(Context.ConnectionId, streamName);
         await Groups.AddToGroupAsync(Context.ConnectionId, streamName);
-
         await Clients.Group(streamName).Notification($"{Context.ConnectionId} Subscribed to {streamName}");
     }
 

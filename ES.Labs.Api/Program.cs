@@ -5,15 +5,16 @@ using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var services = builder.Services;
 
-services.AddEventStoreClient(settings => EventStoreClientSettings
-    // .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false"));
-    .Create("esdb://admin:changeit@127.0.0.1:2113?tls=false&tlsVerifyCert=false"));
+services.AddEventStoreClient(_ => EventStoreClientSettings
+    .Create(builder.Configuration.GetConnectionString("EVENTSTORE")));
+
 
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

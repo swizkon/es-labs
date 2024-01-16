@@ -6,10 +6,9 @@ namespace ES.Labs.Domain;
 
 public static class EventStoreUtil
 {
-    public static EventStoreClient GetDefaultClient()
+    public static EventStoreClient GetDefaultClient(string connectionString )
     {
-        var settings = EventStoreClientSettings
-            .Create("esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false");
+        var settings = EventStoreClientSettings.Create(connectionString);
         return new EventStoreClient(settings);
     }
 

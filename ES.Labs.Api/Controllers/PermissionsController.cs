@@ -9,14 +9,10 @@ namespace ES.Labs.Api.Controllers
     // [AllowAnonymous]
     public class PermissionsController : ControllerBase
     {
-        private readonly ISecurityRepository _securityRepository;
         private readonly ILogger<EqualizerController> _logger;
 
-        public PermissionsController(
-            ISecurityRepository securityRepository,
-            ILogger<EqualizerController> logger)
+        public PermissionsController(ILogger<EqualizerController> logger)
         {
-            _securityRepository = securityRepository;
             _logger = logger;
         }
 
@@ -24,11 +20,6 @@ namespace ES.Labs.Api.Controllers
         [Authorize(Policy = nameof(Permissions.AdminToolAccess))]
         public IActionResult GetAdmin()
             => Ok("Can access admin");
-
-        [HttpGet("roles")]
-        [Authorize(Policy = nameof(Permissions.ReadAvailableRoles))]
-        public async Task<IActionResult> GetAvailableRoles()
-            => Ok(await _securityRepository.GetAvailableRoles());
 
         [HttpGet("policies")]
         public IActionResult GetAvailablePolicies()
