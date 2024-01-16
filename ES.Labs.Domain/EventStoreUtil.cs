@@ -1,6 +1,6 @@
 ﻿using EventStore.Client;
-using Newtonsoft.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace ES.Labs.Domain;
 
@@ -18,6 +18,6 @@ public static class EventStoreUtil
     public static object GetRecordedEvent(EventRecord evt, Type type)
     {
         var data = Encoding.UTF8.GetString(evt.Data.Span);
-        return JsonConvert.DeserializeObject(data, type);
+        return JsonSerializer.Deserialize(data, type)!;
     }
 }

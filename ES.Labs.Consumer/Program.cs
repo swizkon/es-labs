@@ -2,11 +2,11 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
+using System.Text.Json;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace ES.Labs.Consumer;
 
@@ -29,14 +29,14 @@ public class Program
 
         using var projectionSubscription = new Subject<EqualizerState>();
         var projectionStreamS = projectionSubscription
-            .Throttle(TimeSpan.FromMilliseconds(1000))
+            .Throttle(TimeSpan.FromMilliseconds(100))
             .Subscribe(state =>
             {
                 Console.WriteLine("EMIT state " + state);
                 // Send to the api...
                 try
                 {
-                    var d = new StringContent(JsonConvert.SerializeObject(state), Encoding.UTF8, "application/json");
+                    var d = new StringContent(JsonSerializer.Serialize(state), Encoding.UTF8, "application/json");
                     
                     var res = httpClient.PostAsync($"https://localhost:6001/projections/{state.DeviceName}", d).Result;
                     Console.WriteLine(res.StatusCode);
@@ -48,6 +48,7 @@ public class Program
             });
 
         MainAsync(args, projectionSubscription, configuration).GetAwaiter().GetResult();
+
         Console.ReadKey();
 
         Console.WriteLine("Cleaning up...");
@@ -63,11 +64,47 @@ public class Program
 
         var client = EventStoreUtil.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
 
-        //var dd = new EqualizerAggregate(client,new EventDataBuilder());
-        //await dd.Hydrate();
+        var sub = await client.SubscribeToStreamAsync(
+            streamName: EventStoreConfiguration.DeviceStreamName,
+            start: FromStream.Start,
+            eventAppeared: async (subscription, e, cancellationToken) =>
+            {
+                switch (e.Event.EventType)
+                {
+                    case nameof(Events.ChannelLevelChanged):
+                        await HandleChannelLevelChanged(e, projectionSubscription);
+                        break;
+                    case nameof(Commands.SetVolume):
+                        await HandleSetVolume(e, projectionSubscription);
+                        break;
+                    default:
+                        Console.WriteLine($"Unknown event type {e.Event.EventType}");
+                        break;
+                }
+            }, subscriptionDropped: (subscription, reason, arg3) =>
+            {
+                Console.WriteLine($"Subscription {subscription.SubscriptionId} dropped {reason} {arg3}");
+            });
 
-        // return;  
+        //await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName, (subscription, e, cancellationToken) =>
+        //    {
+        //        switch (e.Event.EventType)
+        //        {
+        //            case nameof(Events.ChannelLevelChanged):
+        //                HandleChannelLevelChanged(e, projectionSubscription);
+        //                break;
+        //            case nameof(Commands.SetVolume):
+        //                HandleSetVolume(e, projectionSubscription);
+        //                break;
+        //            default:
+        //                Console.WriteLine($"Unknown event type {e.Event.EventType}");
+        //                break;
+        //        }
 
+        //        return Task.CompletedTask;
+        //    });
+
+        /*
         await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName,
             async (subscription, e, cancellationToken) =>
             {
@@ -84,7 +121,7 @@ public class Program
                         break;
                 }
             });
-
+        */
         /*
         await client.SubscribeToAllAsync(Position.Start,
             (s, e, c) =>

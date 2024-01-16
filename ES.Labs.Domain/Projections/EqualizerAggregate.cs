@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using EventStore.Client;
-using Newtonsoft.Json;
 using static ES.Labs.Domain.Events;
 
 namespace ES.Labs.Domain.Projections;
@@ -14,7 +14,7 @@ public class EqualizerAggregate(
     EventStoreClient client,
     EventDataBuilder eventDataBuilder)
 {
-    private readonly EqualizerState _state = new EqualizerState();
+    private readonly EqualizerState _state = new(){DeviceName = EventStoreConfiguration.DeviceStreamName };
 
     public StreamPosition? CurrentStreamPosition { get; set; }
 
@@ -30,7 +30,7 @@ public class EqualizerAggregate(
                     eventId: Uuid.NewUuid(),
                     type: data.GetType().Name.ToLower(),
                 //isJson: true,
-                    data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
+                    data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)),
                     metadata: eventDataBuilder.BuildMetadata(data)
                 )
             });
@@ -45,10 +45,12 @@ public class EqualizerAggregate(
             direction: Direction.Forwards,
             streamName: EventStoreConfiguration.DeviceStreamName,
             revision: CurrentStreamPosition ?? StreamPosition.Start,
-            configureOperationOptions: options =>
-            {
-                options.TimeoutAfter = TimeSpan.FromHours(1);
-            });
+            deadline: TimeSpan.FromHours(1));
+
+            //configureOperationOptions: options =>
+            //{
+            //    options.TimeoutAfter = TimeSpan.FromHours(1);
+            //});
 
         Console.WriteLine($"{timer.Elapsed} read completed");
         await foreach (var e in allEvents)
@@ -66,7 +68,6 @@ public class EqualizerAggregate(
         Console.WriteLine($"hydrate done in {timer.Elapsed}");
     }
 
-
     public void SetVolume(int volume)
     {
         if (volume < _state.Volume)
@@ -75,16 +76,11 @@ public class EqualizerAggregate(
         if (volume > _state.Volume)
             Apply(new Events.VolumeIncreased(_state.DeviceName, volume - _state.Volume));
     }
-
-    private async Task AcceptChange(object evt)
-    {
-
-    }
-
+    
     private async Task ApplyEvent(EventRecord evt)
     {
-        var metadata = JsonConvert.DeserializeObject<IDictionary<string, string>>(
-            Encoding.UTF8.GetString(evt.Metadata.ToArray()));
+        var metadata = JsonSerializer.Deserialize<IDictionary<string, string>>(
+            Encoding.UTF8.GetString(evt.Metadata.ToArray()))!;
 
         var eventType = Type.GetType(metadata["CtrlType"])!;
 
@@ -112,10 +108,7 @@ public class EqualizerAggregate(
         _state.Volume -= volumeDecreased.Decrement;
     }
 
-    private void Apply(Events.VolumeIncreased volumeIncreased)
-    {
-        _state.Volume -= volumeIncreased.Increment;
-    }
+    private void Apply(Events.VolumeIncreased volumeIncreased) => _state.Volume -= volumeIncreased.Increment;
 
     private void Apply(Commands.SetVolume volume)
     {

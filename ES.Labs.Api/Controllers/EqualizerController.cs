@@ -5,7 +5,6 @@ using EventStore.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 
 namespace ES.Labs.Api.Controllers;
 
@@ -36,7 +35,7 @@ public class EqualizerController(
                     eventId: Uuid.NewUuid(),
                     type: data.GetType().Name.ToLower(),
                     //isJson: true,
-                    data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
+                    data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)),
                     metadata: eventDataBuilder.BuildMetadata(data)
                 )
             }));

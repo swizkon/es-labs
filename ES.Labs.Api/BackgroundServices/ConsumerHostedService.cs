@@ -5,7 +5,6 @@ using System.Text;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
-using Newtonsoft.Json;
 
 namespace ES.Labs.Api.BackgroundServices;
 
@@ -27,7 +26,7 @@ public class ConsumerHostedService(HttpClient httpClient, IServiceProvider servi
                 Console.WriteLine("EMIT state " + state);
                 try
                 {
-                    var s = JsonConvert.SerializeObject(state);
+                    var s = JsonSerializer.Serialize(state);
                     Console.WriteLine(s);
 
                     var d = new StringContent(s, Encoding.UTF8, "application/json");
@@ -53,7 +52,9 @@ public class ConsumerHostedService(HttpClient httpClient, IServiceProvider servi
         // await dd.InitStream();
         await dd.Hydrate();
 
-        _ = await client.SubscribeToStreamAsync(EventStoreConfiguration.DeviceStreamName, (_, e, _ct) =>
+        var subscription = await client.SubscribeToStreamAsync(streamName: EventStoreConfiguration.DeviceStreamName,
+            start: FromStream.Start,
+            eventAppeared: (_, e, _ct) =>
             {
                 if (e.Event.EventType == nameof(Events.ChannelLevelChanged))
                 {
@@ -70,6 +71,8 @@ public class ConsumerHostedService(HttpClient httpClient, IServiceProvider servi
 
                 return Task.CompletedTask;
             }, cancellationToken: cancellationToken);
+
+        Console.WriteLine("Subscribed to stream " + subscription.SubscriptionId);
     }
 
     private static void HandleChannelLevelChanged(ResolvedEvent resolvedEvent, Subject<EqualizerState>? projectionSubscription)

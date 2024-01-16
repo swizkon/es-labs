@@ -67,7 +67,7 @@ services.AddScoped<EventDataBuilder>();
 
 services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("REDIS_CONNECTION_STRING");
+    options.Configuration = builder.Configuration.GetConnectionString("REDIS");
     options.InstanceName = "ESDemo-";
 });
 

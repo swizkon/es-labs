@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿// using Newtonsoft.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace ES.Labs.Domain;
 
@@ -26,6 +27,6 @@ public class EventDataBuilder
             data.GetType().AssemblyQualifiedName,
             CommitHash = _eventMetadataInfo.GetCommitVersion()
         };
-        return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata));
+        return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(metadata));
     }
 }

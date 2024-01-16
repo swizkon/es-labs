@@ -1,6 +1,0 @@
-@ES.Labs.MessageHub_HostAddress = http://localhost:5194
-
-GET {{ES.Labs.MessageHub_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

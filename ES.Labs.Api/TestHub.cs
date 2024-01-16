@@ -5,7 +5,6 @@ using ES.Labs.Domain;
 using EventStore.Client;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace ES.Labs.Api;
 
@@ -20,7 +19,7 @@ public class TestHub : Hub<ITestHubClient>
         ProjectionState projectionState,
         EventDataBuilder eventDataBuilder,
         IConfiguration configuration,
-    ILogger<TestHub> logger)
+        ILogger<TestHub> logger)
     {
         _client = EventStoreUtil.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
 
@@ -43,7 +42,7 @@ public class TestHub : Hub<ITestHubClient>
         var eventData = new EventData(
             eventId: Uuid.NewUuid(),
             type: eventType,
-            data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
+            data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)),
             metadata: _eventDataBuilder.BuildMetadata(data),
             contentType: "application/json"
         );
@@ -54,10 +53,8 @@ public class TestHub : Hub<ITestHubClient>
             eventData: new List<EventData>
             {
                 eventData
-            }, options =>
-            {
-                options.TimeoutAfter = TimeSpan.FromSeconds(30);
-            });
+            },
+            deadline: TimeSpan.FromSeconds(30));
 
         _logger.LogInformation("Result from the EventStore: {LogPosition} {NextExpectedStreamRevision}", result.LogPosition, result.NextExpectedStreamRevision);
         
@@ -72,7 +69,7 @@ public class TestHub : Hub<ITestHubClient>
         var eventData = new EventData(
             eventId: Uuid.NewUuid(),
             type: eventType,
-            data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)),
+            data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)),
             metadata: _eventDataBuilder.BuildMetadata(data),
             contentType: "application/json"
         );
