@@ -1,3 +1,3 @@
-﻿namespace ES.Labs.RetailRhythmRadar.StoreFlow.Events;
+﻿namespace RetailRhythmRadar.StoreFlow.Events;
 
 public class ZoneExitedEvent : ZoneDomainEvent;

@@ -1,4 +1,4 @@
-﻿namespace ES.Labs.RetailRhythmRadar.StoreFlow;
+﻿namespace RetailRhythmRadar.StoreFlow;
 
 public record StoreZoneState(
     string Zone,

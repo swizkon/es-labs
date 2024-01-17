@@ -1,8 +1,7 @@
-﻿using System.Reflection;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
-using EventSourcing;
+﻿using EventSourcing;
+using RetailRhythmRadar.StoreFlow.Events;
 
-namespace ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
+namespace RetailRhythmRadar.StoreFlow.Projections;
 
 public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEventTypeResolver
 {
@@ -45,6 +44,9 @@ public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEve
 
         if (type.EndsWith(".StoreExitedEvent"))
             return typeof(StoreExitedEvent);
+
+        if (type.EndsWith(".ZoneManuallyClearedEvent"))
+            return typeof(ZoneManuallyClearedEvent);
 
         return null;
     }

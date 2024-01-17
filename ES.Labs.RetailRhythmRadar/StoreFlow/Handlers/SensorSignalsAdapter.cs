@@ -1,8 +1,8 @@
-﻿using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
-using EventSourcing;
+﻿using EventSourcing;
 using MassTransit;
+using RetailRhythmRadar.StoreFlow.Events;
 
-namespace ES.Labs.RetailRhythmRadar.StoreFlow.Handlers;
+namespace RetailRhythmRadar.StoreFlow.Handlers;
 
 public class SensorSignalsAdapter : IConsumer<TurnstilePassageDetected>
 {

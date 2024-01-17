@@ -1,5 +1,5 @@
 
-namespace ES.Labs.RetailRhythmRadar.Hubs;
+namespace RetailRhythmRadar.Hubs;
 
 public interface IMessageExchangeHubClient
 {

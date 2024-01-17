@@ -1,8 +1,8 @@
-﻿using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
-using EventSourcing;
+﻿using EventSourcing;
 using EventSourcing.EventStoreDB;
+using RetailRhythmRadar.StoreFlow.Events;
 
-namespace ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
+namespace RetailRhythmRadar.StoreFlow.Projections;
 
 public class AllStoresProjection
 {

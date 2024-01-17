@@ -1,15 +1,15 @@
-﻿using ES.Labs.RetailRhythmRadar.StoreFlow.Commands;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Handlers;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Queries;
-using EventSourcing;
+﻿using EventSourcing;
 using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using RetailRhythmRadar.StoreFlow.Commands;
+using RetailRhythmRadar.StoreFlow.Events;
+using RetailRhythmRadar.StoreFlow.Handlers;
+using RetailRhythmRadar.StoreFlow.Projections;
+using RetailRhythmRadar.StoreFlow.Queries;
 
-namespace ES.Labs.RetailRhythmRadar.StoreFlow;
+namespace RetailRhythmRadar.StoreFlow;
 
 public static class Setup
 {

@@ -1,10 +1,10 @@
 ﻿using Common.Extensions;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
 using EventSourcing;
 using EventSourcing.EventStoreDB;
 using Microsoft.Extensions.Caching.Distributed;
+using RetailRhythmRadar.StoreFlow.Events;
 
-namespace ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
+namespace RetailRhythmRadar.StoreFlow.Projections;
 
 public class SingleStoreProjection
 {

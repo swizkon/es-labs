@@ -1,4 +1,4 @@
-﻿namespace ES.Labs.RetailRhythmRadar.StoreFlow.Events;
+﻿namespace RetailRhythmRadar.StoreFlow.Events;
 
 public abstract class ZoneDomainEvent : StoreDomainEvent
 {

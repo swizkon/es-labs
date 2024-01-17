@@ -1,4 +1,4 @@
-﻿namespace ES.Labs.RetailRhythmRadar.StoreFlow.Handlers;
+﻿namespace RetailRhythmRadar.StoreFlow.Handlers;
 
 public class StoreStateChanged
 {

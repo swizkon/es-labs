@@ -1,4 +1,4 @@
-﻿namespace ES.Labs.RetailRhythmRadar.StoreFlow.Commands;
+﻿namespace RetailRhythmRadar.StoreFlow.Commands;
 
 public class ResetZone : ZoneCommand
 {

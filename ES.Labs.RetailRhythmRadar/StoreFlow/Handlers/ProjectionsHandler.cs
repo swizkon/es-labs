@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
 using Common.Extensions;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Queries;
 using EventSourcing;
 using MassTransit;
 using Microsoft.Extensions.Caching.Distributed;
+using RetailRhythmRadar.StoreFlow.Projections;
+using RetailRhythmRadar.StoreFlow.Queries;
 
-namespace ES.Labs.RetailRhythmRadar.StoreFlow.Handlers;
+namespace RetailRhythmRadar.StoreFlow.Handlers;
 
 public class ProjectionsHandler : IConsumer<GetStores>, IConsumer<GetStore>
 {

@@ -1,7 +1,7 @@
-using ES.Labs.RetailRhythmRadar.Hubs;
-using ES.Labs.RetailRhythmRadar.StoreFlow;
+using RetailRhythmRadar.Hubs;
+using RetailRhythmRadar.StoreFlow;
 
-namespace ES.Labs.RetailRhythmRadar;
+namespace RetailRhythmRadar;
 
 public class Program
 {

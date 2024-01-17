@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace ES.Labs.RetailRhythmRadar.Hubs;
+namespace RetailRhythmRadar.Hubs;
 
 public class MessageExchangeHub : Hub<IMessageExchangeHubClient>
 {

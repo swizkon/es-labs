@@ -1,13 +1,11 @@
-﻿using System.Diagnostics;
-using Common.Extensions;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Commands;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
-using ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
-using EventSourcing;
+﻿using EventSourcing;
 using MassTransit;
 using Microsoft.Extensions.Caching.Distributed;
+using RetailRhythmRadar.StoreFlow.Commands;
+using RetailRhythmRadar.StoreFlow.Events;
+using RetailRhythmRadar.StoreFlow.Projections;
 
-namespace ES.Labs.RetailRhythmRadar.StoreFlow.Handlers;
+namespace RetailRhythmRadar.StoreFlow.Handlers;
 
 public class ZoneHandler :
         // IConsumer<EnteringZone>,
@@ -75,15 +73,29 @@ public class ZoneHandler :
     /// <exception cref="NotImplementedException"></exception>
     public async Task Consume(ConsumeContext<ZoneManuallyClearedEvent> context)
     {
-        _logger.LogWarning("Handle ZoneManuallyClearedEvent: {@evt}", context.Message);
+        var message = context.Message;
 
         // Simple rehydrate the state
-        var state = await new SingleStoreProjection(context.Message.Store, context.Message.Timestamp)
+        var state = await new SingleStoreProjection(message.Store, message.Timestamp)
             .WithCache(_cache)
             .WithEventDataBuilder(_streamReader)
             .BuildAsync(context.CancellationToken);
-        
+
+        var storeCount = state.ZoneVisitor.Sum(x => x.Value);
+
         // Should we emit some new event to the stores stream?
-        _logger.LogWarning("Adjust visitor count for store to be : {TotalVisitors}", state.ZoneVisitor.Sum(x => x.Value));
+        _logger.LogWarning("Adjust visitor count for store {Store} to be : {TotalVisitors}", message.Store, storeCount);
+
+        var evt = new StoreVisitorsAdjustedEvent
+        {
+            Store = context.Message.Store,
+            VisitorsAfterAdjustment = storeCount,
+            AdjustmentEventId = context.CorrelationId?.ToString(),
+            Reason = $"Adjusting total count for store {message.Store} since zone {message.Zone} was reset",
+            Timestamp = message.Timestamp
+        };
+
+        var allStoresStream = $"stores-{message.Timestamp.Date:yyyy-MM-dd}";
+        await _eventWriter.WriteEventAsync(allStoresStream, evt);
     }
 }

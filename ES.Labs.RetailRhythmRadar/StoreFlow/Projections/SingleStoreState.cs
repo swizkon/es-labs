@@ -1,4 +1,4 @@
-﻿namespace ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
+﻿namespace RetailRhythmRadar.StoreFlow.Projections;
 
 public class SingleStoreState
 {

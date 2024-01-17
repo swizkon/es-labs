@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ES.Labs.RetailRhythmRadar.StoreFlow.Events;
+namespace RetailRhythmRadar.StoreFlow.Events;
 
 public class TurnstilePassageDetected
 {
