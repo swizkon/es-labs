@@ -2,6 +2,7 @@
 using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
 using ES.Labs.RetailRhythmRadar.StoreFlow.Handlers;
 using ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
+using ES.Labs.RetailRhythmRadar.StoreFlow.Queries;
 using EventSourcing;
 using EventSourcing.EventStoreDB;
 using EventStore.Client;

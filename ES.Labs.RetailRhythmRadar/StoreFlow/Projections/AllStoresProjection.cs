@@ -1,5 +1,6 @@
 ﻿using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
 using EventSourcing;
+using EventSourcing.EventStoreDB;
 
 namespace ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
 
@@ -23,8 +24,13 @@ public class AllStoresProjection
 
     public async Task<AllStoresProjection> Rehydrate(IReadStreams streamReader, CancellationToken cancellationToken)
     {
+        var eventTypeResolver = new CustomEventResolver(new DefaultEventResolver());
         var streamName = $"stores-{Date:yyyy-MM-dd}";
-        var events = streamReader.ReadEventsAsync(streamName, revision: Revision, cancellationToken: cancellationToken);
+        var events = streamReader.ReadEventsAsync(
+            streamName: streamName,
+            revision: Revision, 
+            resolver: eventTypeResolver,
+            cancellationToken: cancellationToken);
 
         return await events.AggregateAsync(
             seed: this,

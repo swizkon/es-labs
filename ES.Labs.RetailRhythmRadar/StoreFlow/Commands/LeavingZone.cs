@@ -1,3 +1,3 @@
-﻿//namespace ES.Labs.RetailRhythmRadar.StoreFlow.Commands;
+﻿namespace ES.Labs.RetailRhythmRadar.StoreFlow.Commands;
 
-//public class LeavingZone : ZoneCommand;
+public class ResetZone : ZoneCommand;

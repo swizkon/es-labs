@@ -4,6 +4,7 @@ using EventSourcing;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 namespace ES.Labs.RetailRhythmRadar.StoreFlow.Handlers;
 
@@ -41,17 +42,18 @@ public class BroadcastHandler : IConsumer<StoreStateChanged>
         if (message.StoreChanged)
         {
             var currentCount = state.ZoneVisitor.Sum(x => x.Value);
-            _logger.LogInformation("PushStoresState store {Store}, currentCount {currentCount} at {Date}", message.Store, currentCount, state.Date);
-            
-            await _hubContext.Clients.All.SendAsync("PushStoresState", message.Store, currentCount.ToString(), "50", context.CancellationToken);
+            _logger.LogInformation("StoreStateChanged store {Store}, currentCount {currentCount} at {Date}", message.Store, currentCount, state.Date);
+
+            /*await*/ _hubContext.Clients.Group("storestates").SendAsync("StoreStateChanged", message.Store, currentCount, 50, context.CancellationToken);
         }
 
         foreach (var zone in message.Zones)
         {
+            var group = $"store-{message.Store}-states";
             var zoneCount = state.ZoneVisitor.FirstOrDefault(x => x.Key == zone).Value;
-            _logger.LogInformation("PushStoresState store {Store}, {zone}: {zoneCount} at {Date}", message.Store, zone, zoneCount, state.Date);
+            _logger.LogInformation("ZoneStateChanged store:{Store} zone:{zone} {zoneCount} at {Date}", message.Store, zone, zoneCount, state.Date);
 
-            await _hubContext.Clients.All.SendAsync("PushZoneState", message.Store, zone, zoneCount.ToString(), context.CancellationToken);
+            /*await*/ _hubContext.Clients.Group(group).SendAsync("ZoneStateChanged", message.Store, zone, zoneCount, 50, context.CancellationToken);
         }
     }
 }

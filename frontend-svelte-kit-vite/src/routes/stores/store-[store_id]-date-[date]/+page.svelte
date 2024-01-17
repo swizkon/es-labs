@@ -18,7 +18,7 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	const baseUrl = 'https://localhost:6001';
+	const hubUrl = 'https://localhost:4001/hubs/messageExchange';
 
 	let turnstiles = [
 		{ id: '0A', position: [0, 0, 0]},
@@ -33,30 +33,11 @@
 	let signalRConnectionState = 'Unknown';
 	let connection;
 
-	function handleLevelChanged(a, b) {
-		// connection.send('SetChannelLevel', roomName, '' + a, b);
-	}
-
-	function handleLevelChangedEvent(event) {
-		console.log('page.svelte:handleLevelChangedEvent', event.detail);
-		handleLevelChanged('' + event.detail.key, '' + event.detail.value);
-	}
-
-	function handleVolumeChanged(v) {
-		console.log('handleVolumeChanged', 'v', v, typeof v);
-		connection.send('SetVolume', roomName, v);
-	}
-
-	function handleVolumeChangedEvent(event) {
-		console.log('page.svelte:handleVolumeChangedEvent', event.detail);
-		handleVolumeChanged('' + event.detail.value);
-	}
-
 	async function start() {
 		if (!browser) return;
 
 		connection = new HubConnectionBuilder()
-			.withUrl(`${baseUrl}/hubs/testHub`)
+			.withUrl(hubUrl)
 			.withAutomaticReconnect()
 			.build();
 
@@ -113,7 +94,7 @@
     });
 
 	function sendSignal(store, turnstile, direction) {
-		fetch(`http://localhost:5248/StoreFlow/events/TurnstilePassageDetected`, {
+		fetch(`http://localhost:4000/StoreFlow/events/TurnstilePassageDetected`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -134,6 +115,27 @@
 				toastStore.trigger(toast);
 			});
 	}
+
+function sendResetCommand(store, zone) {
+	fetch(`http://localhost:4000/StoreFlow/commands/ResetZone`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+		"store": store,
+		"zone": zone
+		})
+	})
+		.then((response) => {
+			console.log('response', response);
+		})
+		.catch((err) => {
+			console.log('err', err);
+			const toast = { message: `Reset zone ${zone} failed`, autohide: true, timeout: 1000};
+			toastStore.trigger(toast);
+		});
+}
 
 </script>
 
@@ -165,11 +167,16 @@
 <div class="controls">
 	{#each turnstiles as turnstile}
 		{turnstile.id}
-		<button class="btn variant-filled-primary" on:click={() => sendSignal(store, turnstile.id, 'counterClockwise')}>&#8630;</button>
-		<button class="btn variant-filled-primary" on:click={() => sendSignal(store, turnstile.id, 'clockwise')}>&#8631;</button>
+		<button title="Move from RIGHT to LEFT" class="btn variant-filled-primary" on:click={() => sendSignal(store, turnstile.id, 'counterClockwise')}>&#8630;</button>
+		<button title="Move from LEFT to RIGHT" class="btn variant-filled-primary" on:click={() => sendSignal(store, turnstile.id, 'clockwise')}>&#8631;</button>
 		<hr	/>
 	{/each}
 
+	{#each zones as z}
+		Zone {z.zone}:
+		<button title="Reset to zero" class="btn variant-filled-primary" on:click={() => sendResetCommand(store, z.zone)}>&#9850;</button>
+		<hr	/>
+	{/each}
 	<div>
 		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
 	</div>

@@ -2,6 +2,7 @@
 
 public abstract class ZoneCommand
 {
+    public required string Store { get; set; }
     public required string Zone { get; set; }
     public DateTime Timestamp { get; set; } = DateTime.UtcNow; // GetRandomTimestamp();
 

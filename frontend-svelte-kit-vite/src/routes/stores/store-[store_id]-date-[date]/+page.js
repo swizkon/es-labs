@@ -1,5 +1,5 @@
 export const load = async ({ fetch, params }) => {
-	const storeResult = await fetch(`http://localhost:5248/StoreFlow/queries/store-${params.store_id}/${params.date}`);
+	const storeResult = await fetch(`http://localhost:4000/StoreFlow/queries/store-${params.store_id}/${params.date}`);
 	const storeData = await storeResult.json();
 	
 	let zones = [

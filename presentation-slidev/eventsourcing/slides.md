@@ -75,12 +75,14 @@ hide: false
 
 
 ---
-layout: center
-class: text-center
 transition: fade-out
 ---
 # Demo-time
-Yo yo yo
+
+<div class="w-80 relative">
+<iframe style="min-height:600px;" width="100%" height="90%" src="http://localhost:5173/stores">Demo frame</iframe>
+</div>
+
 
 
 ---
@@ -162,8 +164,8 @@ Hover on the bottom-left corner to see the navigation's controls panel, [learn m
 ---
 src: ./pages/demo-time.md
 hide: false
-layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
+layout: center
+class: text-center
 ---
 
 ---

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Common.Extensions;
 using ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
+using ES.Labs.RetailRhythmRadar.StoreFlow.Queries;
 using EventSourcing;
 using MassTransit;
 using Microsoft.Extensions.Caching.Distributed;

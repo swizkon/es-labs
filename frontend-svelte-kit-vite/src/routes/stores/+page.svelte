@@ -15,7 +15,8 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	const baseUrl = 'https://localhost:6001';	
+	const hubUrl = 'https://localhost:4001/hubs/messageExchange';
+	// const baseUrl = 'https://localhost:6001';	
 
 	let signalRConnectionState = 'Unknown';
 	let connection;
@@ -24,7 +25,7 @@
 		if (!browser) return;
 
 		connection = new HubConnectionBuilder()
-			.withUrl(`${baseUrl}/hubs/testHub`)
+			.withUrl(hubUrl)
 			.withAutomaticReconnect()
 			.build();
 
@@ -36,9 +37,6 @@
 
 		// ("StoresStateChanged", store, currentCount, maxCapacity)
 		connection.on('StoreStateChanged', (store, currentCount, maxCapacity) => {
-			// const toast = { message: `Store ${store} changed to ${currentCount}/${maxCapacity}`, autohide: true, timeout: 1000};
-			// toastStore.trigger(toast);
-
 			stores.storeStates = stores.storeStates.map((s) => {
 				if (s.store === store) {
 					s.currentCount = currentCount;
@@ -46,6 +44,8 @@
 				}
 				return s;
 			});
+
+			stores.totalVisitor = stores.storeStates.reduce((acc, s) => acc + s.currentCount, 0);
 		});
 
 		try {
@@ -83,7 +83,7 @@
 </script>
 
 <h1 class="h1 gradient-heading">Stores</h1>
-<p>Current Total: {stores.totalVisitor} at stream {stores.revision}</p>
+<p>Current Total: {stores.totalVisitor} at stream &#8470; {stores.revision}</p>
 
 <div class="logo-cloud grid-cols-1 lg:!grid-cols-3 gap-1">
     {#each stores.storeStates as store}

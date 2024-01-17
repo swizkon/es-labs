@@ -37,6 +37,7 @@ services:
       EVENTSTORE_INSECURE: true
       EVENTSTORE_ENABLE_EXTERNAL_TCP: true
       EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP: true
+      EVENTSTORE_LOG_LEVEL: "Warning"
 
     volumes:
       - type: volume
@@ -46,8 +47,8 @@ services:
         source: eventstore-volume-logs
         target: /var/log/eventstore
       
-  es-labs-retailrhythmradar:
-    image: es-labs-retailrhythmradar:latest
+  retailrhythmradar:
+    image: retailrhythmradar:latest
     build:
       context: .
       dockerfile: ./es-labs-retailrhythmradar.Dockerfile
@@ -57,6 +58,8 @@ services:
       ASPNETCORE_HTTPS_PORT: 4081
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/es-labs-messagehub.pfx
       ASPNETCORE_Kestrel__Certificates__Default__Password: "p455w0rd"
+      ConnectionStrings__REDIS: redis:6379
+      ConnectionStrings__EventStore: esdb://admin:changeit@eventstore:2113?tls=false&tlsVerifyCert=false
     depends_on:
       - eventstore
     ports:
@@ -65,27 +68,18 @@ services:
     volumes:
       - $CERTS_FOLDER:/https/
 
-# docker run --rm -it -e ASPNETCORE_Kestrel__Certificates__Default__Password="<CREDENTIAL_PLACEHOLDER>" -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx mcr.microsoft.com/dotnet/samples:aspnetapp
-
-  cqrs1:
-    image: cqrs1:latest
-    # build:
-    #   context: .
-    #   dockerfile: ../miss-leanskin/src/Dockerfile.CommandQueryApi
-    #   tags:
-    #     - latest
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      #ASPNETCORE_URLS: http://+:8080
-      # eventstore
-      ConnectionStrings__REDIS: redis:6379
-      ConnectionStrings__EventStore: esdb://admin:changeit@eventstore:2113?tls=false&tlsVerifyCert=false
-    depends_on:
-      - eventstore
-    ports:
-      - '8090:8080'
-      - '8080:8080'
-      - '8091:8081'
+  # cqrs1:
+  #   image: cqrs1:latest
+  #   environment:
+  #     ASPNETCORE_ENVIRONMENT: Development
+  #     ConnectionStrings__REDIS: redis:6379
+  #     ConnectionStrings__EventStore: esdb://admin:changeit@eventstore:2113?tls=false&tlsVerifyCert=false
+  #   depends_on:
+  #     - eventstore
+  #   ports:
+  #     - '8090:8080'
+  #     - '8080:8080'
+  #     - '8091:8081'
       
   esapi:
     image: esapi:latest
@@ -99,12 +93,11 @@ services:
       ASPNETCORE_HTTPS_PORT: 6081
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/es-labs-messagehub.pfx
       ASPNETCORE_Kestrel__Certificates__Default__Password: "p455w0rd"
-      # eventstore
       ConnectionStrings__REDIS: redis:6379
       ConnectionStrings__EventStore: esdb://admin:changeit@eventstore:2113?tls=false&tlsVerifyCert=false
     depends_on:
       - eventstore
-      - es-labs-retailrhythmradar
+      - retailrhythmradar
     ports:
       - '6000:80'
       - '6001:443'
