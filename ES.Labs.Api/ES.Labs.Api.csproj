@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ES.Labs.Domain\ES.Labs.Domain.csproj" />
+    <ProjectReference Include="..\EventSourcing.EventStoreDB\EventSourcing.EventStoreDB.csproj" />
   </ItemGroup>
 
   <ItemGroup>

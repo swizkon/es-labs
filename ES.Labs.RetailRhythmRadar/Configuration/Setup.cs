@@ -3,11 +3,11 @@ using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using RetailRhythmRadar.StoreFlow.Commands;
-using RetailRhythmRadar.StoreFlow.Events;
-using RetailRhythmRadar.StoreFlow.Handlers;
-using RetailRhythmRadar.StoreFlow.Projections;
-using RetailRhythmRadar.StoreFlow.Queries;
+using RetailRhythmRadar.Domain.Commands;
+using RetailRhythmRadar.Domain.Events;
+using RetailRhythmRadar.Domain.Handlers;
+using RetailRhythmRadar.Domain.Projections;
+using RetailRhythmRadar.Domain.Queries;
 
 namespace RetailRhythmRadar.Configuration;
 

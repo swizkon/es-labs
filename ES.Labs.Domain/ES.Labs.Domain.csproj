@@ -12,4 +12,9 @@
 		<PackageReference Include="EventStore.Client.Grpc.Streams" Version="23.1.0" />
 	</ItemGroup>
 
+
+	<ItemGroup>
+	  <ProjectReference Include="..\EventSourcing.EventStoreDB\EventSourcing.EventStoreDB.csproj" />
+	</ItemGroup>
+
 </Project>

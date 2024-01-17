@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using static ES.Labs.Domain.Events;
 
@@ -84,7 +85,7 @@ public class EqualizerAggregate(
 
         var eventType = Type.GetType(metadata["CtrlType"])!;
 
-        var parsedEvent = EventStoreUtil.GetRecordedEvent(evt, eventType);
+        var parsedEvent = EventStoreDbUtils.GetRecordedEvent(evt, eventType);
 
         var methods = this.GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
 

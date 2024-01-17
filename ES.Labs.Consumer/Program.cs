@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
+using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using Microsoft.Extensions.Configuration;
 
@@ -19,11 +20,15 @@ public class Program
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new List<KeyValuePair<string, string?>>()
             {
-                new("ConnectionStrings:EVENTSTORE", "esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false")
+                new("ConnectionStrings:EVENTSTORE", "esdb://admin:changeit@localhost:2113?tls=false&tlsVerifyCert=false"),
+                new("SmtpHost", "localhost"),
+                new("SmtpPort", "1025")
             })
             .AddCommandLine(args)
             .AddEnvironmentVariables()
             .Build();
+        
+        FailureDetection.StartSubscription(configuration);
 
         var httpClient = new HttpClient();
 
@@ -37,9 +42,12 @@ public class Program
                 try
                 {
                     var d = new StringContent(JsonSerializer.Serialize(state), Encoding.UTF8, "application/json");
-                    
-                    var res = httpClient.PostAsync($"https://localhost:6001/projections/{state.DeviceName}", d).Result;
-                    Console.WriteLine(res.StatusCode);
+
+                    httpClient.PostAsync($"https://localhost:6001/projections/{state.DeviceName}", d);
+
+                    //var res = httpClient.PostAsync($"https://localhost:6001/projections/{state.DeviceName}", d)
+                    //    .Result;
+                    // Console.WriteLine(res.StatusCode);
                 }
                 catch (Exception e)
                 {
@@ -49,12 +57,15 @@ public class Program
 
         MainAsync(args, projectionSubscription, configuration).GetAwaiter().GetResult();
 
+        Console.WriteLine("Waiting for user key press...");
         Console.ReadKey();
 
         Console.WriteLine("Cleaning up...");
+
+        FailureDetection.StopSubscription();
+
         projectionStreamS.Dispose();
         projectionSubscription.Dispose();
-
         httpClient.Dispose();
     }
 
@@ -62,7 +73,9 @@ public class Program
     {
         Console.WriteLine($"Hello {typeof(Program).Namespace}!");
 
-        var client = EventStoreUtil.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
+        return;
+
+        var client = EventStoreDbUtils.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
 
         var sub = await client.SubscribeToStreamAsync(
             streamName: EventStoreConfiguration.DeviceStreamName,
@@ -193,7 +206,7 @@ public class Program
             (s, state) =>
             {
                 state.CurrentVersion = resolvedEvent.OriginalEventNumber;
-                modifier(state, EventStoreUtil.GetRecordedEventAs<TEvent>(resolvedEvent.Event));
+                modifier(state, EventStoreDbUtils.GetRecordedEventAs<TEvent>(resolvedEvent.Event));
                 return state;
             });
 

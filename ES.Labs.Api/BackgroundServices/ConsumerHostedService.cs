@@ -4,6 +4,7 @@ using System.Reactive.Subjects;
 using System.Text;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
+using EventSourcing.EventStoreDB;
 using EventStore.Client;
 
 namespace ES.Labs.Api.BackgroundServices;
@@ -46,7 +47,7 @@ public class ConsumerHostedService(HttpClient httpClient, IServiceProvider servi
 
     public async Task MainAsync(Subject<EqualizerState>? projectionSubscription, EventDataBuilder eventDataBuilder, CancellationToken cancellationToken)
     {
-        var client = EventStoreUtil.GetDefaultClient(_configuration.GetConnectionString("EVENTSTORE")!);
+        var client = EventStoreDbUtils.GetDefaultClient(_configuration.GetConnectionString("EVENTSTORE")!);
 
         var dd = new EqualizerAggregate(client, eventDataBuilder);
         // await dd.InitStream();
@@ -120,7 +121,7 @@ public class ConsumerHostedService(HttpClient httpClient, IServiceProvider servi
             (_, state) =>
             {
                 state.CurrentVersion = resolvedEvent.OriginalEventNumber;
-                modifier(state, EventStoreUtil.GetRecordedEventAs<TEvent>(resolvedEvent.Event));
+                modifier(state, EventStoreDbUtils.GetRecordedEventAs<TEvent>(resolvedEvent.Event));
                 return state;
             });
 

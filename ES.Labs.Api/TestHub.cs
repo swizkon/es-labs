@@ -2,6 +2,7 @@
 
 using System.Text;
 using ES.Labs.Domain;
+using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +22,7 @@ public class TestHub : Hub<ITestHubClient>
         IConfiguration configuration,
         ILogger<TestHub> logger)
     {
-        _client = EventStoreUtil.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
+        _client = EventStoreDbUtils.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
 
         _projectionState = projectionState;
         _eventDataBuilder = eventDataBuilder;

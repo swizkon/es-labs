@@ -1,6 +1,7 @@
 using System.Text;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
+using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,7 @@ namespace ES.Labs.Api.Controllers
         {
             //var snap = await _cache.GetStringAsync(FormatCacheKey(State.DeviceName));
 
-            var client = EventStoreUtil.GetDefaultClient(_configuration.GetConnectionString("EVENTSTORE")!);
+            var client = EventStoreDbUtils.GetDefaultClient(_configuration.GetConnectionString("EVENTSTORE")!);
             var events = client.ReadStreamAsync(
                 Direction.Forwards,
                 EventStoreConfiguration.DeviceStreamName,
