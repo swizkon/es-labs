@@ -124,7 +124,9 @@ function sendResetCommand(store, zone) {
 		},
 		body: JSON.stringify({
 		"store": store,
-		"zone": zone
+		"zone": zone,
+		"who": "Malloc Frobnitz",
+		"reason": "No one there..."
 		})
 	})
 		.then((response) => {

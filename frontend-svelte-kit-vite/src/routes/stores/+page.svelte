@@ -18,6 +18,7 @@
 	const hubUrl = 'https://localhost:4001/hubs/messageExchange';
 
 	let signalRConnectionState = 'Unknown';
+	let signalRMessageCount = 0;
 	let connection;
 
 	async function start() {
@@ -32,6 +33,7 @@
 			console.log('Notification', message);
 			const toast = { message: message, autohide: true, timeout: 1000};
 			toastStore.trigger(toast);
+			signalRMessageCount++;
 		});
 
 		// ("StoresStateChanged", store, currentCount, maxCapacity)
@@ -45,6 +47,7 @@
 			});
 
 			stores.totalVisitor = stores.storeStates.reduce((acc, s) => acc + s.currentCount, 0);
+			signalRMessageCount++;
 		});
 
 		try {
@@ -83,6 +86,11 @@
 
 <h1 class="h1 gradient-heading">Stores</h1>
 <p>Current Total: {stores.totalVisitor} at stream &#8470; {stores.revision}</p>
+
+<div>
+	<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
+	<h2>Messages: <small>{signalRMessageCount}</small></h2>
+</div>
 
 <div class="logo-cloud grid-cols-1 lg:!grid-cols-3 gap-1">
     {#each stores.storeStates as store}

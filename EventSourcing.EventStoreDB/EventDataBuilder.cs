@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EventSourcing.EventStoreDB;
 
+    /*
 public class EventDataBuilder
 {
     private readonly EventStoreClient _client;
@@ -22,7 +23,6 @@ public class EventDataBuilder
         logger.LogInformation("Setting up EventStoreClient");
         _client = new EventStoreClient(settings);
     }
-
     public async Task WriteEventAsync(string streamName, params object[] data)
     {
         await _client.AppendToStreamAsync(
@@ -95,4 +95,6 @@ public class EventDataBuilder
         var data = Encoding.UTF8.GetString(evt.Data.Span);
         return JsonSerializer.Deserialize(data, type)!;
     }
+
 }
+    */

@@ -72,6 +72,10 @@ public class SingleStoreProjection
                 _state.ZoneVisitor[exited.Zone] = _state.ZoneVisitor.TryGetValue(exited.Zone, out var count2) ? count2 - 1 : -1;
                 break;
 
+            case ZoneManuallyClearedEvent cleared:
+                _state.ZoneVisitor[cleared.Zone] = 0;
+                break;
+
             default:
                 Console.WriteLine($"No handler defined for {eventData.GetType()}");
                 break;

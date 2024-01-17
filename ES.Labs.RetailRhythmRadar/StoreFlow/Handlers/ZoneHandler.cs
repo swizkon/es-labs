@@ -1,16 +1,19 @@
 ﻿using System.Diagnostics;
 using Common.Extensions;
 using ES.Labs.RetailRhythmRadar.StoreFlow.Commands;
+using ES.Labs.RetailRhythmRadar.StoreFlow.Events;
+using ES.Labs.RetailRhythmRadar.StoreFlow.Projections;
 using EventSourcing;
 using MassTransit;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace ES.Labs.RetailRhythmRadar.StoreFlow.Handlers;
 
-public class ZoneHandler // :
+public class ZoneHandler :
         // IConsumer<EnteringZone>,
         // IConsumer<LeavingZone>,
-        // IConsumer<GetZoneState>
+        IConsumer<ResetZone>,
+        IConsumer<ZoneManuallyClearedEvent>
 {
     private readonly IWriteEvents _eventWriter;
     private readonly IReadStreams _streamReader;
@@ -32,53 +35,55 @@ public class ZoneHandler // :
         _logger = logger;
     }
 
-    //public async Task Consume(ConsumeContext<EnteringZone> context)
-    //{
-    //    var evt = new EnterZoneAccepted
-    //    {
-    //        Zone = context.Message.Zone,
-    //        Timestamp = context.Message.Timestamp
-    //    };
+    public async Task Consume(ConsumeContext<ResetZone> context)
+    {
+        // Simple rehydrate the state
+        var state = await new SingleStoreProjection(context.Message.Store, context.Message.Timestamp)
+            .WithCache(_cache)
+            .WithEventDataBuilder(_streamReader)
+            .BuildAsync(context.CancellationToken);
+        
+        // TODO Some validation etc...
+        var zoneVisitors = state.ZoneVisitor.FirstOrDefault(z => z.Key == context.Message.Zone).Value;
+        if (zoneVisitors == 0)
+        {
+            _logger.LogWarning("Zone {Zone} in store {Store} was already empty", context.Message.Zone, context.Message.Store);
+            return;
+        }
 
-    //    await _eventWriter.WriteEventAsync($"zone-{context.Message.Zone}", evt);
-    //}
+        var evt = new ZoneManuallyClearedEvent
+        {
+            Store = context.Message.Store,
+            Zone = context.Message.Zone,
+            VisitorsBeforeReset = zoneVisitors,
+            Who = context.Message.Who,
+            Reason = context.Message.Reason,
+            Timestamp = context.Message.Timestamp
+        };
 
-    //public async Task Consume(ConsumeContext<LeavingZone> context)
-    //{
-    //    var evt = new LeaveZoneRegistered
-    //    {
-    //        Zone = context.Message.Zone,
-    //        Timestamp = context.Message.Timestamp
-    //    };
+        var storeStream = $"store-{context.Message.Store}-{context.Message.Timestamp.Date:yyyy-MM-dd}";
+        await _eventWriter.WriteEventAsync(storeStream, evt);
 
-    //    await _eventWriter.WriteEventAsync($"zone-{context.Message.Zone}", evt);
-    //}
+        await context.Publish(evt, cancellationToken: context.CancellationToken);
+    }
 
-    //public async Task Consume(ConsumeContext<GetZoneState> context)
-    //{
-    //    var streamName = $"zone-{context.Message.Zone}";
-    //    var projection = await _cache.GetOrSetAsync(streamName, () => new StoreZoneProjection().WithZone(context.Message.Zone));
+    /// <summary>
+    /// Maybe this would belong in a StoreActor
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task Consume(ConsumeContext<ZoneManuallyClearedEvent> context)
+    {
+        _logger.LogWarning("Handle ZoneManuallyClearedEvent: {@evt}", context.Message);
 
-    //    _logger.LogInformation($"Projection start at {projection.Revision ?? 0}");
-
-    //    var timer = Stopwatch.StartNew();
-
-    //    var events = _streamReader.ReadEventsAsync(streamName, revision: projection.Revision, cancellationToken: context.CancellationToken);
-
-    //    projection = await events.AggregateAsync(
-    //        seed: projection,
-    //        accumulator:(current, e) =>
-    //            current
-    //                .ApplyEvent(e.EventData)
-    //                .WithRevision(e.Revision),
-    //        cancellationToken: context.CancellationToken);
-
-    //    timer.Stop();
-
-    //    _logger.LogInformation($"Projection is now at {projection.Revision} after {timer.ElapsedMilliseconds} ms");
-
-    //    await _cache.SetAsync(streamName, () => projection);
-
-    //    await context.RespondAsync(projection);
-    //}
+        // Simple rehydrate the state
+        var state = await new SingleStoreProjection(context.Message.Store, context.Message.Timestamp)
+            .WithCache(_cache)
+            .WithEventDataBuilder(_streamReader)
+            .BuildAsync(context.CancellationToken);
+        
+        // Should we emit some new event to the stores stream?
+        _logger.LogWarning("Adjust visitor count for store to be : {TotalVisitors}", state.ZoneVisitor.Sum(x => x.Value));
+    }
 }
