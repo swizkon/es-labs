@@ -2,5 +2,5 @@
 
 public interface IEnrichMetaData
 {
-    Task<IDictionary<string,string>> EnrichAsync(IDictionary<string, string> metadata);
+    IDictionary<string,string> Enrich(IDictionary<string, string> metadata);
 }

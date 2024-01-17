@@ -10,12 +10,17 @@ namespace EventSourcing.EventStoreDB;
 
 public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
 {
+    private readonly IEnrichMetaData _enrichMetaData;
     private readonly EventStoreClient _client;
 
     private static readonly ConcurrentDictionary<string, (string, Type)> EventTypes = new();
 
-    public EventStoreDbStreamReader(IConfiguration configuration, ILogger<EventStoreDbStreamReader> logger)
+    public EventStoreDbStreamReader(
+        IConfiguration configuration,
+        IEnrichMetaData enrichMetaData,
+        ILogger<EventStoreDbStreamReader> logger)
     {
+        _enrichMetaData = enrichMetaData;
         var connectionString = configuration.GetConnectionString("EVENTSTORE");
 
         if (string.IsNullOrWhiteSpace(connectionString))
@@ -30,34 +35,39 @@ public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
 
     public async Task WriteEventAsync(string streamName, params object[] data)
     {
+        //var es = data;
         await _client.AppendToStreamAsync(
             streamName: streamName,
             expectedState: StreamState.Any,
-            eventData: BuildEventData(data));
+            eventData: BuildEventData(data, enrichMetaData: _enrichMetaData));
     }
     
-    private static IEnumerable<EventData> BuildEventData(params object[] data)
-        => data.Select(BuildEventData);
+    private static IEnumerable<EventData> BuildEventData(object[] data, IEnrichMetaData enrichMetaData)
+        => data.Select(x => BuildEventData(x, enrichMetaData));
 
-    private static EventData BuildEventData(object data)
+    private static EventData BuildEventData(object data, IEnrichMetaData enrichMetaData)
     {
         return new EventData(
             eventId: Uuid.NewUuid(),
             type: data.GetType().Name.ToLower(),
             data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)),
-            metadata: BuildMetadata(data)
+            metadata: BuildMetadata(data, enrichMetaData)
         );
     }
 
-    private static ReadOnlyMemory<byte> BuildMetadata(object data)
+    private static ReadOnlyMemory<byte> BuildMetadata(object data, IEnrichMetaData enrichMetaData)
     {
-        var metadata = new
+        var metadata = new Dictionary<string, string>
         {
-            Timestamp = DateTime.UtcNow.ToString("o"),
-            CtrlType = data.GetType().FullName,
-            data.GetType().AssemblyQualifiedName
+            {"Timestamp", DateTime.UtcNow.ToString("o")},
+            {"CtrlType", data.GetType().FullName!},
+            {"ClrType", data.GetType().FullName!},
+            {"AssemblyQualifiedName", data.GetType().AssemblyQualifiedName!}
         };
-        return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(metadata));
+
+        var enrichedMetadata = enrichMetaData.Enrich(metadata);
+
+        return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(enrichedMetadata));
     }
 
     public async IAsyncEnumerable<DomainEvent> ReadEventsAsync(

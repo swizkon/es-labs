@@ -24,6 +24,7 @@ public static class Setup
             options.InstanceName = "ESDemo-";
         });
 
+        services.AddSingleton<IEnrichMetaData, MetadataEnricher>();
         services.AddSingleton<IWriteEvents, EventStoreDbStreamReader>();
         services.AddSingleton<IReadStreams, EventStoreDbStreamReader>();
 
