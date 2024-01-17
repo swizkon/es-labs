@@ -16,7 +16,6 @@
 	const toastStore = getToastStore();
 
 	const hubUrl = 'https://localhost:4001/hubs/messageExchange';
-	// const baseUrl = 'https://localhost:6001';	
 
 	let signalRConnectionState = 'Unknown';
 	let connection;

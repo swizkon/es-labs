@@ -171,20 +171,17 @@ function sendResetCommand(store, zone) {
 		<button title="Move from LEFT to RIGHT" class="btn variant-filled-primary" on:click={() => sendSignal(store, turnstile.id, 'clockwise')}>&#8631;</button>
 		<hr	/>
 	{/each}
-
+	<hr />
+	<div>
 	{#each zones as z}
-		Zone {z.zone}:
-		<button title="Reset to zero" class="btn variant-filled-primary" on:click={() => sendResetCommand(store, z.zone)}>&#9850;</button>
-		<hr	/>
+		<button title="Reset zone {z.zone} to zero" class="btn variant-filled-primary" on:click={() => sendResetCommand(store, z.zone)}>&#9850; {z.zone}</button>&nbsp;
 	{/each}
+	</div>
+	<hr />
 	<div>
 		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
 	</div>
 </div>
-
-<h1 class="h1 gradient-heading">{title}</h1>
-<hr />
-<Link href="/stores">Back</Link>
 
 <style>
 	.controls {
