@@ -1,63 +1,79 @@
 using ES.Labs.RetailRhythmRadar.Hubs;
+using ES.Labs.RetailRhythmRadar.StoreFlow;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace ES.Labs.RetailRhythmRadar;
 
-var services = builder.Services;
-
-// Add services to the container.
-
-services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-services.AddEndpointsApiExplorer();
-
-services.AddSwaggerGen();
-
-services.AddSignalR();
-
-services.AddCors(options => options.AddPolicy("AllowAll", policy =>
+public class Program
 {
-    policy.AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials()
-        .WithOrigins(
-            "http://localhost:3000",
-            "http://localhost:5000",
-            "http://localhost:5173",
-            "http://localhost:4173",
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-            "http://localhost:6000",
-            "https://localhost:6001",
+        var services = builder.Services;
 
-            "http://localhost:7000",
-            "https://localhost:7001");
-}));
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
 
-var app = builder.Build();
+        services.AddSwaggerGen();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        services.AddHttpClient();
+
+        services.RegisterServices(builder.Configuration);
+
+        services.AddSignalR();
+
+        services.AddCors(options => options.AddPolicy("AllowAll", policy =>
+        {
+            policy.AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .WithOrigins(
+                    "http://localhost:3000",
+                    "http://localhost:5000",
+                    "http://localhost:5173",
+                    "http://localhost:4173",
+
+                    "http://localhost:6000",
+                    "https://localhost:6001",
+
+                    "http://localhost:7000",
+                    "https://localhost:7001");
+        }));
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.AddStoreFlowCommands();
+        app.AddStoreFlowEvents();
+        app.AddStoreFlowQueries();
+
+        app.UseCors("AllowAll");
+
+        // Skip this for now. Should be determined by config and/or some RUNNING IN CONTAINER env var
+        //app.UseHttpsRedirection();
+
+        app.UseRouting();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.UseWebSockets();
+
+        app.UseStaticFiles();
+
+        //app.MapControllers();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapHub<MessageExchangeHub>("/hubs/messageExchange");
+        });
+
+        app.Run();
+    }
 }
-
-app.UseCors("AllowAll");
-
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseWebSockets();
-
-app.UseStaticFiles();
-
-//app.MapControllers();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-    endpoints.MapHub<MessageExchangeHub>("/hubs/messageExchange");
-});
-
-app.Run();

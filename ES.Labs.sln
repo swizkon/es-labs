@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ES.Labs.Domain", "ES.Labs.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActiveMqConsumer", "ActiveMqConsumer\ActiveMqConsumer.csproj", "{D91A03C4-3D55-4046-BA25-A2076364AF62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ES.Labs.RetailRhythmRadar", "ES.Labs.RetailRhythmRadar\ES.Labs.RetailRhythmRadar.csproj", "{018B133C-9AE4-45A1-AE4D-490044F86AC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ES.Labs.RetailRhythmRadar", "ES.Labs.RetailRhythmRadar\ES.Labs.RetailRhythmRadar.csproj", "{018B133C-9AE4-45A1-AE4D-490044F86AC4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{3707D6E4-3B98-407A-89BF-F3CB49E42C68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcing", "EventSourcing\EventSourcing.csproj", "{04957EBA-C695-4093-B296-B60F5E6B527D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcing.EventStoreDB", "EventSourcing.EventStoreDB\EventSourcing.EventStoreDB.csproj", "{5E50191E-8411-4F62-B8D4-CEB956E1F85D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{018B133C-9AE4-45A1-AE4D-490044F86AC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{018B133C-9AE4-45A1-AE4D-490044F86AC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{018B133C-9AE4-45A1-AE4D-490044F86AC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3707D6E4-3B98-407A-89BF-F3CB49E42C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3707D6E4-3B98-407A-89BF-F3CB49E42C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3707D6E4-3B98-407A-89BF-F3CB49E42C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3707D6E4-3B98-407A-89BF-F3CB49E42C68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04957EBA-C695-4093-B296-B60F5E6B527D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04957EBA-C695-4093-B296-B60F5E6B527D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04957EBA-C695-4093-B296-B60F5E6B527D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04957EBA-C695-4093-B296-B60F5E6B527D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E50191E-8411-4F62-B8D4-CEB956E1F85D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E50191E-8411-4F62-B8D4-CEB956E1F85D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E50191E-8411-4F62-B8D4-CEB956E1F85D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E50191E-8411-4F62-B8D4-CEB956E1F85D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
