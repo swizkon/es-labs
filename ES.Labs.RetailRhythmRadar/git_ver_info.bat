@@ -11,5 +11,3 @@ echo public static class VersionInfo >> Configuration/Versioning.cs
 echo {>> Configuration/Versioning.cs
 echo	public const string GitVersion = "%myVar%";>> Configuration/Versioning.cs
 echo }>> Configuration/Versioning.cs
-
-REM git rev-parse HEAD >> Configuration/Versioning.cs

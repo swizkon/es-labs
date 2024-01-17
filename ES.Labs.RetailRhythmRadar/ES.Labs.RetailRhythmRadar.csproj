@@ -11,6 +11,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="git_ver_info.bat" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="git_ver_info.bat">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="MassTransit" Version="8.1.3" />
 		<PackageReference Include="MassTransit.Grpc" Version="8.1.3" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.1" />
@@ -27,7 +37,8 @@
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec Command="echo try get some git stuff..." />
-		<Exec Command="call git_ver_info.bat" />
+		<!--<Exec Command="git rev-parse HEAD" />-->
+		<Exec Command="call git_ver_info.bat" ContinueOnError="true"/>
 	</Target>
 
 </Project>

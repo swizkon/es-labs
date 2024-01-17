@@ -94,7 +94,7 @@
     });
 
 	function sendSignal(store, turnstile, direction) {
-		fetch(`http://localhost:4000/StoreFlow/events/TurnstilePassageDetected`, {
+		fetch(`http://localhost:4000/events/TurnstilePassageDetected`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -117,7 +117,7 @@
 	}
 
 function sendResetCommand(store, zone) {
-	fetch(`http://localhost:4000/StoreFlow/commands/ResetZone`, {
+	fetch(`http://localhost:4000/commands/ResetZone`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'

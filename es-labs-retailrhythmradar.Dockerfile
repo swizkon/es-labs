@@ -12,6 +12,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["ES.Labs.RetailRhythmRadar/ES.Labs.RetailRhythmRadar.csproj", "ES.Labs.RetailRhythmRadar/"]
+COPY ["ES.Labs.RetailRhythmRadar/git_ver_info.bat", "ES.Labs.RetailRhythmRadar/"]
 
 RUN dotnet restore "./ES.Labs.RetailRhythmRadar/./ES.Labs.RetailRhythmRadar.csproj"
 COPY . .
