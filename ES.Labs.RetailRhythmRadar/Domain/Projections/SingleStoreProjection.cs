@@ -19,7 +19,7 @@ public class SingleStoreProjection
     {
         _store = store;
         _state.Date = date;
-        _eventTypeResolver = new CustomEventResolver(new DefaultEventResolver());
+        _eventTypeResolver = new CustomEventResolver(new DefaultEventResolver(new GreedyEventResolver()));
     }
 
     public SingleStoreProjection WithCache(IDistributedCache cache)

@@ -1,10 +1,13 @@
 ﻿using EventSourcing;
+using EventSourcing.EventStoreDB;
 using RetailRhythmRadar.Domain.Events;
 
 namespace RetailRhythmRadar.Domain.Projections;
 
 public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEventTypeResolver
 {
+    private readonly IEventTypeResolver _fallbackEventTypeResolver = new GreedyEventResolver();
+
     public Type? ResolveType(IDictionary<string, string> metadata)
     {
         var type = Type.GetType(metadata["CtrlType"]);
@@ -24,7 +27,7 @@ public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEve
         return ResolveTypeFromMetadata(metadata);
     }
 
-    private static Type? ResolveTypeFromMetadata(IDictionary<string, string> metadata)
+    private Type? ResolveTypeFromMetadata(IDictionary<string, string> metadata)
     {
         var type = metadata!["CtrlType"];
 
@@ -48,6 +51,6 @@ public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEve
         if (type.EndsWith(".ZoneManuallyClearedEvent"))
             return typeof(ZoneManuallyClearedEvent);
 
-        return null;
+        return _fallbackEventTypeResolver.ResolveType(metadata);
     }
 }

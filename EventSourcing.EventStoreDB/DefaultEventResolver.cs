@@ -2,7 +2,7 @@
 
 namespace EventSourcing.EventStoreDB;
 
-public class DefaultEventResolver : IEventTypeResolver
+public class DefaultEventResolver(IEventTypeResolver? fallbackEventTypeResolver = null) : IEventTypeResolver
 {
     public Type? ResolveType(IDictionary<string, string> metadata)
     {
@@ -14,7 +14,7 @@ public class DefaultEventResolver : IEventTypeResolver
             return type;
         }
 
-        var typeFromCallingAssembly = Assembly.GetCallingAssembly().GetType(typeName);
+        var typeFromCallingAssembly = Assembly.GetEntryAssembly()?.GetType(typeName);
         if (typeFromCallingAssembly != null)
         {
             Console.WriteLine($"typeFromCallingAssembly: {typeFromCallingAssembly.FullName}");
@@ -22,6 +22,7 @@ public class DefaultEventResolver : IEventTypeResolver
         }
 
         Console.WriteLine($"DefaultEventResolver failed to get type: {typeName}");
-        return null;
+        
+        return fallbackEventTypeResolver?.ResolveType(metadata);
     }
 }

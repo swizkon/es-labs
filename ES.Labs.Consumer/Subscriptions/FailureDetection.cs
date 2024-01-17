@@ -61,8 +61,6 @@ public class FailureDetection
                         break;
 
                     default:
-
-                        await HandleZoneManuallyCleared(e, projectionSubscription);
                         Console.WriteLine($"Unknown event type {e.Event.EventType}");
                         Console.WriteLine($"Event.EventStreamId {e.Event.EventStreamId}");
 

@@ -24,7 +24,7 @@ public class AllStoresProjection
 
     public async Task<AllStoresProjection> Rehydrate(IReadStreams streamReader, CancellationToken cancellationToken)
     {
-        var eventTypeResolver = new CustomEventResolver(new DefaultEventResolver());
+        var eventTypeResolver = new CustomEventResolver(new DefaultEventResolver(new GreedyEventResolver()));
         var streamName = $"stores-{Date:yyyy-MM-dd}";
         var events = streamReader.ReadEventsAsync(
             streamName: streamName,
