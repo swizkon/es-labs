@@ -53,6 +53,10 @@ public class AllStoresProjection
                 StoreVisitor[exited.Store] = StoreVisitor.TryGetValue(exited.Store, out var count2) ? count2 - 1 : 0;
                 break;
 
+            case StoreVisitorsAdjustedEvent adjusted:
+                StoreVisitor[adjusted.Store] = adjusted.VisitorsAfterAdjustment;
+                break;
+
             default:
                 Console.WriteLine($"No handler defined for {eventData.GetType()}");
                 break;

@@ -40,12 +40,14 @@ services:
       EVENTSTORE_LOG_LEVEL: "Warning"
 
     volumes:
-      - type: volume
-        source: eventstore-volume-data
-        target: /var/lib/eventstore
-      - type: volume
-        source: eventstore-volume-logs
-        target: /var/log/eventstore
+      - $ES_DATA_FOLDER:/var/lib/eventstore
+      - $ES_LOG_FOLDER:/var/log/eventstore
+      # - type: volume
+      #   source: eventstore-2-volume-data
+      #   target: /var/lib/eventstore
+      # - type: volume
+      #   source: eventstore-2-volume-logs
+      #   target: /var/log/eventstore
       
   retailrhythmradar:
     image: retailrhythmradar:latest
@@ -68,19 +70,6 @@ services:
     volumes:
       - $CERTS_FOLDER:/https/
 
-  # cqrs1:
-  #   image: cqrs1:latest
-  #   environment:
-  #     ASPNETCORE_ENVIRONMENT: Development
-  #     ConnectionStrings__REDIS: redis:6379
-  #     ConnectionStrings__EventStore: esdb://admin:changeit@eventstore:2113?tls=false&tlsVerifyCert=false
-  #   depends_on:
-  #     - eventstore
-  #   ports:
-  #     - '8090:8080'
-  #     - '8080:8080'
-  #     - '8091:8081'
-      
   esapi:
     image: esapi:latest
     build:
@@ -109,6 +98,8 @@ services:
 volumes:
   eventstore-volume-data:
   eventstore-volume-logs:
+  eventstore-2-volume-data:
+  eventstore-2-volume-logs:
 
 
 

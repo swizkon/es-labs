@@ -25,4 +25,9 @@
 		<ProjectReference Include="..\EventSourcing\EventSourcing.csproj" />
 	</ItemGroup>
 
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="echo try get some git stuff..." />
+		<Exec Command="call git_ver_info.bat" />
+	</Target>
+
 </Project>

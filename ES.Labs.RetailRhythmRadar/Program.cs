@@ -1,5 +1,5 @@
+using RetailRhythmRadar.Configuration;
 using RetailRhythmRadar.Hubs;
-using RetailRhythmRadar.StoreFlow;
 
 namespace RetailRhythmRadar;
 
@@ -49,9 +49,10 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.AddStoreFlowCommands();
-        app.AddStoreFlowEvents();
-        app.AddStoreFlowQueries();
+        app
+            .MapCommandEndPoints()
+            .MapEventEndPoints()
+            .MapQueryEndPoints();
 
         app.UseCors("AllowAll");
 

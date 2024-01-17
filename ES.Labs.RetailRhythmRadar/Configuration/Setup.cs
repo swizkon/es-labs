@@ -9,7 +9,7 @@ using RetailRhythmRadar.StoreFlow.Handlers;
 using RetailRhythmRadar.StoreFlow.Projections;
 using RetailRhythmRadar.StoreFlow.Queries;
 
-namespace RetailRhythmRadar.StoreFlow;
+namespace RetailRhythmRadar.Configuration;
 
 public static class Setup
 {
@@ -46,75 +46,67 @@ public static class Setup
         });
     }
 
-    public static void AddStoreFlowCommands(this WebApplication application)
+    public static WebApplication MapCommandEndPoints(this WebApplication application)
     {
         var bus = application.Services.GetRequiredService<IBus>();
 
-        var g = application.MapGroup("StoreFlow/commands");
+        var commandRoutes = application.MapGroup("commands");
 
         foreach (var command in typeof(Setup).Assembly.GetTypes().Where(t => t is { IsClass: true, IsAbstract: false } && t.IsAssignableTo(typeof(ZoneCommand))))
         {
-            g.MapPost(command.Name, (Func<HttpContext, Task<IActionResult>>)(async payload =>
+            commandRoutes.MapPost(command.Name, (Func<HttpContext, Task<IActionResult>>)(async payload =>
             {
                 var p = await payload.Request.ReadFromJsonAsync(command);
                 await bus.Publish(p!);
                 return new OkResult();
             }));
         }
+        return application;
     }
 
-    public static void AddStoreFlowEvents(this WebApplication application)
+    public static WebApplication MapEventEndPoints(this WebApplication application)
     {
         var bus = application.Services.GetRequiredService<IBus>();
 
-        var eventEndPoints = application.MapGroup("StoreFlow/events");
-
-        eventEndPoints.MapPost(nameof(TurnstilePassageDetected), (Func<TurnstilePassageDetected, Task<IActionResult>>)(async ([FromBody] message) =>
-        {
-            await bus.Publish(message);
-            return new OkResult();
-        }));
-    }
-
-    public static void AddStoreFlowQueries(this WebApplication application)
-    {
-        var bus = application.Services.GetRequiredService<IBus>();
-
-        var mapGroup = application.MapGroup("StoreFlow/queries");
-
-        //mapGroup.MapGet("state/{zone}/{date}", (Func<string, string, Task<StoreZoneProjection>>)(async ([FromRoute] zone) =>
-        //{
-
-        //    var response = await bus.Request<GetStore, SingleStoreState>(new GetStore(store, d));
-
-        //    return response.Message;
-
-        //    var response = await bus.Request<GetZoneState, StoreZoneProjection>(new GetZoneState(zone));
-
-        //    return response.Message;
-        //}));
-
-        mapGroup.MapGet("stores/{date}", (Func<string, Task<AllStoresProjection>>)(async ([FromRoute] date) =>
-        {
-            if (!DateTime.TryParse(date, out var d))
+        application
+            .MapGroup("events")
+            .MapPost(nameof(TurnstilePassageDetected), (Func<TurnstilePassageDetected, Task<IActionResult>>)(async ([FromBody] message) =>
             {
-                d = DateTime.UtcNow.Date;
-            }
+                await bus.Publish(message);
+                return new OkResult();
+            }));
+        return application;
+    }
+
+    public static WebApplication MapQueryEndPoints(this WebApplication application)
+    {
+        var bus = application.Services.GetRequiredService<IBus>();
+
+        var queryRoutes = application.MapGroup("queries");
+
+        queryRoutes.MapGet("stores/{date}", (Func<string, Task<AllStoresProjection>>)(async ([FromRoute] date) =>
+        {
+            var d = GetDate(date);
             var response = await bus.Request<GetStores, AllStoresProjection>(new GetStores(d));
-
             return response.Message;
         }));
 
-        mapGroup.MapGet("store-{store}/{date}", (Func<string, string, Task<SingleStoreState>>)(async ([FromRoute] store, [FromRoute] date) =>
+        queryRoutes.MapGet("store-{store}/{date}", (Func<string, string, Task<SingleStoreState>>)(async ([FromRoute] store, [FromRoute] date) =>
         {
-            if (!DateTime.TryParse(date, out var d))
-            {
-                d = DateTime.UtcNow.Date;
-            }
-
+            var d = GetDate(date);
             var response = await bus.Request<GetStore, SingleStoreState>(new GetStore(store, d));
-
             return response.Message;
         }));
+        return application;
+    }
+
+    private static DateTime GetDate(string dateAsString)
+    {
+        if (!DateTime.TryParse(dateAsString, out var date))
+        {
+            date = DateTime.UtcNow.Date;
+        }
+
+        return date;
     }
 }
