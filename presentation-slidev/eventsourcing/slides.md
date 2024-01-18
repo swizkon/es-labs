@@ -99,7 +99,7 @@ transition: fade-out
 Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
 
 <div class="relative">
-<iframe style="min-height:400px;" width="100%" height="90%" src="http://localhost:5173/stores">Demo frame</iframe>
+<iframe style="min-height:400px;" width="100%" height="90%" src="http://localhost:3000/sensors/enterandexit">Demo frame</iframe>
 </div>
 
 ---

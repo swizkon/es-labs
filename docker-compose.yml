@@ -95,6 +95,17 @@ services:
     volumes:
       - $CERTS_FOLDER:/https/
 
+  simulator:
+    image: simulator:latest
+    build:
+      context: ./frontend-simulator
+      dockerfile: ../es-labs-simulator.Dockerfile
+    depends_on:
+      - esapi
+      - retailrhythmradar
+    ports:
+      - 3000:3000
+
 volumes:
   eventstore-volume-data:
   eventstore-volume-logs:
