@@ -1,20 +1,27 @@
 # CRUD Sourcing
 
-### Weak events NOT capturing important business events
+### Data centric instead of business events
 
-What is the reason for the state to change?
+Is the event something that makes sense to business?
 
-```cs {none|1-6|9|all}
-// Anemic update event
-record UserUpdated {
-  id: number
-  firstName: string
-  lastName: string
+```cs {none|1-4|6-9|11-18}
+// Anemic remove event
+record PlaylistDeleted {
+  id: uuid, reason?: string
 }
 
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = { ...user, ...update }
-  saveUser(id, newUser)
+// Some soft-delete style
+record PlaylistDeactivated {
+  id: uuid, reason?: string
 }
+
+// Names telling you why
+record SubscriptionCancelled {
+  id: uuid
+}
+
+record UserUnfollowedPlaylist {
+  id: uuid
+}
+
 ```

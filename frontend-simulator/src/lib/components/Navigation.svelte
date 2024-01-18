@@ -12,8 +12,7 @@
 	<ul>
 		<li><a href="/" on:click={drawerClose}>Home</a></li>
 		<li><a href="/stores" on:click={drawerClose}>stores</a></li>
-		<li><a href="/about" on:click={drawerClose}>about</a></li>
-		<li><a href="/boards" on:click={drawerClose}>boards</a></li>
+		<li><a href="/sensors" on:click={drawerClose}>sensors</a></li>
 	</ul>
 </nav>
 	

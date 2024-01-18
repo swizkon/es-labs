@@ -116,7 +116,7 @@ public class FailureDetection
                 return state;
             });
 
-        var moreThanFiveFailureWithinTenSeconds = s.Failures.Count(f => f > DateTime.UtcNow.AddSeconds(-10)) > 5;
+        var moreThanFiveFailureWithinTenSeconds = s.Failures.Count(f => f > DateTime.UtcNow.AddSeconds(-20)) > 3;
 
         var moreThanOneFailureWithinTwoSeconds = s.Failures.Count(f => f > DateTime.UtcNow.AddSeconds(-2)) > 1;
         // Check if we should emit an error...

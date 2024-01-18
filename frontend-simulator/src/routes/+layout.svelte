@@ -36,19 +36,25 @@
 					</svg>
 				</button>
 				<!-- <strong class="text-xl uppercase">L&#9901;VE/H&#9760;TE Evented</strong> -->
-				<strong class="text-xl">Retail Rhythm Radar</strong>
+				
+				{#if $layoutContent}
+					{#each $layoutContent as laylink}
+						<strong class="text-xl">{laylink}</strong>
+					{/each}
+				{:else}
+					<strong class="text-xl">Retail Rhythm Radar - Simulator</strong>
+				{/if}
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<nav>
-					{#if $layoutContent}
+					<!-- {#if $layoutContent}
 						{#each $layoutContent as laylink}
 							<a class="p-1" href={laylink}>{laylink}</a>
 						{/each}
-					{/if}
+					{/if} -->
 					<a href="/">Home</a>
 					<a href="/stores">stores</a>
-					<a href="/about">about</a>
-					<a href="/boards">boards</a>
+					<a href="/sensors">sensors</a>
 				</nav>
 			</svelte:fragment>
 		</AppBar>
