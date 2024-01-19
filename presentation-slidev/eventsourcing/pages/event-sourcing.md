@@ -1,8 +1,8 @@
 ---
-title: Event Sourcing - code patterns
+title: Event Sourcing in a nutshell
 ---
 
-# Event Sourcing
+# Event Sourcing in a nutshell
 ### Storing data as a series of events
 
 
@@ -37,6 +37,3 @@ title: Event Sourcing - code patterns
 
 </div>
 </div>
-
-<hr/>
-LINKS HERE MAYBE...
