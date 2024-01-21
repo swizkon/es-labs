@@ -1,8 +1,10 @@
 
 @TurnstileLocationStore = 2
-@TurnstileLocationZone = 0A
 
-@Date = 2024-01-18
+#@TurnstileLocationZone = 0A
+@TurnstileLocationZone = A0
+
+@Date = 2024-01-19
 
 ###
 
@@ -11,12 +13,37 @@ POST http://localhost:4000/events/TurnstilePassageDetected
 Content-Type: application/json
 
 {
-  "timestamp": "{{Date}}",
+  "__timestamp": "{{Date}}",
   "direction": "Clockwise",
   "__direction": "CounterClockwise",
   "turnstile": {
     "__store": "{{TurnstileLocationStore}}",
     "SerialNumber": "{{TurnstileLocationStore}}-{{TurnstileLocationZone}}"
+  }
+}
+
+
+### Enter
+
+POST http://localhost:4000/events/TurnstilePassageDetected
+Content-Type: application/json
+
+{
+  "direction": "Clockwise",
+  "turnstile": {
+    "SerialNumber": "{{TurnstileLocationStore}}-0A"
+  }
+}
+
+### Exit
+
+POST http://localhost:4000/events/TurnstilePassageDetected
+Content-Type: application/json
+
+{
+  "direction": "Clockwise",
+  "turnstile": {
+    "SerialNumber": "{{TurnstileLocationStore}}-A0"
   }
 }
 

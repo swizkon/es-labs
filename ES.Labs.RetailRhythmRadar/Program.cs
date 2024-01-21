@@ -1,3 +1,4 @@
+using RetailRhythmRadar.BackgroundServices;
 using RetailRhythmRadar.Configuration;
 using RetailRhythmRadar.Hubs;
 
@@ -19,6 +20,8 @@ public class Program
         services.AddHttpClient();
 
         services.RegisterServices(builder.Configuration);
+        
+        services.AddHostedService<ConsumerHostedService>();
 
         services.AddSignalR();
 

@@ -13,7 +13,7 @@ public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEve
         var type = Type.GetType(metadata["CtrlType"]);
         if (type != null)
         {
-            Console.WriteLine($"CustomEventResolver: {type}");
+            // Console.WriteLine($"CustomEventResolver: {type}");
             return type;
         }
 

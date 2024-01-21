@@ -1,6 +1,7 @@
 <script>
-	import { layoutContent } from '../lib/navStore.js';
+	import { layoutContent, isEmbedded } from '../lib/navStore.js';
 	layoutContent.set(null);
+	isEmbedded.set(false);
 
 	import { AppShell, AppBar, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
 	import { Toast } from '@skeletonlabs/skeleton';
@@ -26,6 +27,9 @@
 
 <AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
 	<svelte:fragment slot="header">
+		{#if $isEmbedded}
+		<!-- No nav in embedded mode -->
+		{:else}
 		<AppBar>
 			<svelte:fragment slot="lead">
 				<button class="btn btn-sm mr-4" on:click={drawerOpen}>
@@ -47,17 +51,14 @@
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<nav>
-					<!-- {#if $layoutContent}
-						{#each $layoutContent as laylink}
-							<a class="p-1" href={laylink}>{laylink}</a>
-						{/each}
-					{/if} -->
 					<a href="/">Home</a>
-					<a href="/stores">stores</a>
-					<a href="/sensors">sensors</a>
+					<a href="/stores">Stores</a>
+					<a href="/projections">Projections</a>
+					<a href="/sensors">Sensors</a>
 				</nav>
 			</svelte:fragment>
 		</AppBar>
+		{/if}
 	</svelte:fragment>
 <!-- 	
 	<svelte:fragment slot="sidebarLeft">
@@ -68,8 +69,8 @@
 	
 	<!-- <svelte:fragment slot="pageHeader">Page Header</svelte:fragment> -->
 
-	<!-- Router Slot -->
-	<div class="container p-10 h-full mx-auto">
+	<!-- Router Slotp-10 -->
+	<div class="container h-full mx-auto">
 		<div class="space-y-5">
 			<slot />
 		</div>

@@ -10,8 +10,10 @@ using RetailRhythmRadar.Hubs;
 
 namespace RetailRhythmRadar.Domain.Handlers;
 
-public class BroadcastHandler : IConsumer<StoreStateChanged>,
-    IConsumer<ZoneManuallyClearedEvent>
+public class BroadcastHandler :
+    IConsumer<StoreStateChanged>,
+    IConsumer<ZoneManuallyClearedEvent>,
+    IConsumer<AverageTimeProjection>
 {
     private readonly IReadStreams _eventStreams;
     private readonly IDistributedCache _cache;
@@ -77,5 +79,15 @@ public class BroadcastHandler : IConsumer<StoreStateChanged>,
 
         var storeCount = state.ZoneVisitor.Sum(x => x.Value);
         _hubContext.Clients.Group("storestates").SendAsync("StoreStateChanged", message.Store, storeCount, 50, context.CancellationToken);
+    }
+
+    public async Task Consume(ConsumeContext<AverageTimeProjection> context)
+    {
+        var message = context.Message;
+        var group = $"store-{message.Store}-states";
+        await _hubContext
+            .Clients
+            .Group(group)
+            .SendAsync("AverageTimeProjectionChanged", message.Store, message, context.CancellationToken);
     }
 }

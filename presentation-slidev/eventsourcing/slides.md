@@ -37,6 +37,14 @@ hide: false
 transition: fade
 ---
 
+
+---
+src: ./pages/demo-time-streaming-projection.md
+hide: false
+layout: default
+---
+
+
 ---
 src: ./pages/crud-sourcing.md
 hide: false
@@ -105,18 +113,6 @@ Hover on the bottom-left corner to see the navigation's controls panel, [learn m
 <div class="relative">
 <iframe style="min-height:400px;" width="100%" height="90%" src="http://localhost:3000/sensors/enterandexit">Demo frame</iframe>
 </div>
-
----
-layout: default
----
-
-# Table of contents
-
-```
-<Toc minDepth="1" maxDepth="1"></Toc>
-```
-
-<Toc></Toc>
 
 ---
 src: ./pages/demo-time.md
