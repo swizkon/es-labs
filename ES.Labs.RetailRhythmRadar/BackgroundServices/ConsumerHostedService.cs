@@ -7,32 +7,54 @@ using EventSourcing;
 using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using MassTransit;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using RetailRhythmRadar.Domain.Events;
 using RetailRhythmRadar.Domain.Projections;
 
 namespace RetailRhythmRadar.BackgroundServices;
 
-public class ConsumerHostedService(IServiceProvider serviceProvider) : BackgroundService
+public class ConsumerHostedService : BackgroundService
 {
+    private readonly IHostApplicationLifetime _lifetime;
+    private readonly ILogger<ConsumerHostedService> _logger;
+
+    private volatile bool _eventStoreReady;
+
     private static readonly ConcurrentDictionary<string, AverageTimeProjection> States = new();
 
     private Subject<AverageTimeProjection>? _projectionSubscription;
     private IDisposable? _projectionStreamS;
-    private readonly IConfiguration _configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    private readonly IBus _bus = serviceProvider.GetRequiredService<IBus>();
-    
+    private readonly IConfiguration _configuration;
+    private readonly IBus _bus;
+
+    public ConsumerHostedService(IServiceProvider serviceProvider, IHostApplicationLifetime lifetime, ILogger<ConsumerHostedService> logger)
+    {
+        _lifetime = lifetime;
+        _logger = logger;
+        _configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        _bus = serviceProvider.GetRequiredService<IBus>();
+    }
+
     private static string StreamName => $"stores-{DateTime.UtcNow:yyyy-MM-dd}";
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Console.WriteLine($"{GetType().Name} Starting...");
+        _logger.LogInformation($"Starting background service...");
+        if (!await WaitForAppStartup(_lifetime, stoppingToken))
+        {
+            return;
+        }
 
-        Console.WriteLine($"{GetType().Name} Wait for 10 secs...");
-
-        Task.Delay(10000, stoppingToken);
-
-        Console.WriteLine($"{GetType().Name} Continue...");
+        _logger.LogInformation($"Continue...");
+        
+        while (!_eventStoreReady)
+        {
+            _eventStoreReady = await WaitForEventStore(_lifetime, stoppingToken);
+            if (!_eventStoreReady)
+            {
+                _logger.LogInformation($"App not started. Wait for 1 sec...");
+                await Task.Delay(1_000, stoppingToken);
+            }
+        }
 
         _projectionSubscription = new Subject<AverageTimeProjection>();
         _projectionStreamS = _projectionSubscription
@@ -46,11 +68,11 @@ public class ConsumerHostedService(IServiceProvider serviceProvider) : Backgroun
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    _logger.LogError(e.Message, e);
                 }
             });
-        
-        return MainAsync(_projectionSubscription, stoppingToken);
+
+        await MainAsync(_projectionSubscription, stoppingToken);
     }
 
     public async Task MainAsync(Subject<AverageTimeProjection>? projectionSubscription, CancellationToken cancellationToken)
@@ -84,7 +106,7 @@ public class ConsumerHostedService(IServiceProvider serviceProvider) : Backgroun
                 return Task.CompletedTask;
             }, cancellationToken: cancellationToken);
 
-        Console.WriteLine("Subscribed to stream " + subscription.SubscriptionId);
+        _logger.LogInformation("Subscribed to stream " + subscription.SubscriptionId);
         //if(Environment.UserInteractive)
         //    Console.ReadKey();
     }
@@ -146,5 +168,36 @@ public class ConsumerHostedService(IServiceProvider serviceProvider) : Backgroun
     {
         var data = Encoding.UTF8.GetString(evt.Data.Span);
         return JsonSerializer.Deserialize(data, type)!;
+    }
+
+    private async Task<bool> WaitForAppStartup(IHostApplicationLifetime lifetime, CancellationToken stoppingToken)
+    {
+        var startedSource = new TaskCompletionSource();
+        var cancelledSource = new TaskCompletionSource();
+
+        using var reg1 = lifetime.ApplicationStarted.Register(() => startedSource.SetResult());
+        using var reg2 = stoppingToken.Register(() => cancelledSource.SetResult());
+
+        var completedTask = await Task.WhenAny(
+            startedSource.Task,
+            cancelledSource.Task);
+
+        return completedTask == startedSource.Task;
+    }
+
+    private async Task<bool> WaitForEventStore(IHostApplicationLifetime lifetime, CancellationToken stoppingToken)
+    {
+        var client = EventStoreDbUtils.GetDefaultClient(_configuration.GetConnectionString("EVENTSTORE")!);
+
+        try
+        {
+            var meta = await client.GetStreamMetadataAsync(StreamName);
+            return meta != null;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message, e);
+            return false;
+        }
     }
 }

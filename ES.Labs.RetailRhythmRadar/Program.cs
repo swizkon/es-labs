@@ -20,7 +20,7 @@ public class Program
         services.AddHttpClient();
 
         services.RegisterServices(builder.Configuration);
-        
+
         services.AddHostedService<ConsumerHostedService>();
 
         services.AddSignalR();
