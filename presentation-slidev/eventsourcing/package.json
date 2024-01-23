@@ -12,5 +12,8 @@
     "@slidev/theme-seriph": "*",
     "slidev-theme-queenslab": "^0.0.3",
     "slidev-theme-the-unnamed": "^0.0.10"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.41.1"
   }
 }

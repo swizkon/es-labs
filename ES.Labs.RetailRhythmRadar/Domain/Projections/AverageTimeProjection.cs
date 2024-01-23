@@ -29,8 +29,6 @@ public record AverageTimeProjection(
         if (CurrentNumberOfVisitors < 0)
             return Empty;
 
-        // var entries = Entries.ToList();
-        
         // Get the timespan between now and the last time the store was entered
         var timeSpan = exited.Timestamp - Entries.LastOrDefault();
 

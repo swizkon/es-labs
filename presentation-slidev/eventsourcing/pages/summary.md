@@ -3,9 +3,6 @@
 
 
 
-
-
-
 <div class="grid grid-cols-2 gap-12">
 <div>
 
@@ -31,7 +28,6 @@
 
 #### Lessons learned:
  - EventStoreDB
- - Sveltekit + svelte cubed
  - dotnet 8
  - docker compose
 

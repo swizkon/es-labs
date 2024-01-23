@@ -7,33 +7,33 @@ Is the event something that makes sense to business?
 <div class="grid grid-cols-2 gap-12">
 <div>
 
-#### CRUD Sourcing
+#### CRUD Sourcing &#9763;
 
 ```cs {none|1-4|6-8|none}
 // Anemic remove event
 record PlaylistDeleted {
-  id: uuid, reason?: string
+  id: Guid, reason?: string
 }
 
 // Some soft-delete style
 record PlaylistDeactivated {
-  id: uuid, reason?: string
+  id: Guid, reason?: string
 }
 ```
 
 </div>
 <div>
 
-#### Event Sourcing
+#### Event Sourcing &#9842;
 
 ```cs {none|1-4|6-8}
 // Names telling you why
 record SubscriptionCancelled {
-  id: uuid
+  id: Guid
 }
 
 record UserUnfollowedPlaylist {
-  id: uuid
+  id: Guid
 }
 ```
 

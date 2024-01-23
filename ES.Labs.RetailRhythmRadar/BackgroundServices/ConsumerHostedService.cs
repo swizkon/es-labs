@@ -56,9 +56,20 @@ public class ConsumerHostedService : BackgroundService
             }
         }
 
+        //var enters = new Subject<StoreEnteredEvent>();
+        //var exits = new Subject<StoreExitedEvent>();
+
+        //var aggr = enters.Zip(exits)
+        //    .Throttle(100.Milliseconds())
+        //    .Select(tuple => tuple.First.Timestamp - tuple.Second.Timestamp)
+        //    .Subscribe(tuple => 
+        //    {
+
+        //    });
+
         _projectionSubscription = new Subject<AverageTimeProjection>();
         _projectionStreamS = _projectionSubscription
-            .Throttle(TimeSpan.FromMilliseconds(50))
+            .Throttle(50.Milliseconds())
             .Subscribe(async state =>
             {
                 Console.WriteLine(state);
@@ -86,8 +97,7 @@ public class ConsumerHostedService : BackgroundService
             start: FromStream.End,
             eventAppeared: (_, e, _) =>
             {
-                var resolveType = ResolveEvent(e, eventResolver);
-                var eventData = resolveType.EventData;
+                var eventData = ResolveEvent(e, eventResolver).EventData;
                 switch (eventData)
                 {
                     case StoreEnteredEvent entered:
@@ -191,8 +201,8 @@ public class ConsumerHostedService : BackgroundService
 
         try
         {
-            var meta = await client.GetStreamMetadataAsync(StreamName);
-            return meta != null;
+            var meta = await client.GetStreamMetadataAsync(StreamName, cancellationToken: stoppingToken);
+            return true;
         }
         catch (Exception e)
         {

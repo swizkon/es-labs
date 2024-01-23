@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
+using EventSourcing;
 using FluentAssertions;
 using RetailRhythmRadar.Domain.Events;
-using RetailRhythmRadar.Domain.Processors;
 using RetailRhythmRadar.Domain.Projections;
 using TestHelpers;
 
@@ -13,7 +13,9 @@ public class UnitTest1(RetailRhythmRadarApiFactory apiFactory) : IClassFixture<R
 {
     private readonly HttpClient _httpClient = apiFactory.CreateClient();
 
-    private static string StreamName => $"store-1-{DateTime.UtcNow:yyyy-MM-dd}";
+    private static string StreamName => $"store-1-{TodayName}";
+
+    private static string TodayName => $"{DateTime.UtcNow:yyyy-MM-dd}";
 
     [FactSequence(0)]
     public async Task X__Given_setup()
@@ -69,9 +71,9 @@ public class UnitTest1(RetailRhythmRadarApiFactory apiFactory) : IClassFixture<R
     [FactSequence(2)]
     public async Task B__projection_should_exist()
     {
-        var result = await _httpClient.GetFromJsonAsync<SingleStoreState>($"queries/store-1/2024-01-22");
+        var result = await _httpClient.GetFromJsonAsync<SingleStoreState>($"queries/store-1/{TodayName}");
 
-        result.Date.Should().BeAfter(DateTime.UtcNow.AddDays(-1));
+        result!.Date.Should().BeAfter(DateTime.UtcNow.AddDays(-1));
     }
 
     [FactSequence(3)]
@@ -91,7 +93,7 @@ public class UnitTest1(RetailRhythmRadarApiFactory apiFactory) : IClassFixture<R
     [FactSequence(4)]
     public async Task D__projection_should_exist()
     {
-        var result = await _httpClient.GetFromJsonAsync<AllStoresProjection>($"queries/stores/2024-01-22");
+        var result = await _httpClient.GetFromJsonAsync<AllStoresProjection>($"queries/stores/{TodayName}");
         result.Date.Should().BeAfter(DateTime.UtcNow.AddDays(-1));
     }
 }

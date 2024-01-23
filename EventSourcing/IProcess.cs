@@ -1,6 +1,4 @@
-﻿using EventSourcing;
-
-namespace RetailRhythmRadar.Domain.Processors;
+﻿namespace EventSourcing;
 
 public interface IProcess<in T>
 {

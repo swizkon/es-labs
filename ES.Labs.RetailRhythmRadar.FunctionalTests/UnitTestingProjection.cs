@@ -13,7 +13,7 @@ public class UnitTestingProjection
         var (projection, time) = FivePeopleEnteredAtSameTime();
 
         // Act
-        projection = projection.ApplyEvent(new StoreExitedEvent { Store = "", Timestamp = time.AddSeconds(10) });
+        projection = projection.PeopleExitedAt(time.AddSeconds(10));
 
         // Assert
         projection.AverageTime.Should().Be(TimeSpan.FromSeconds(10));
@@ -27,13 +27,10 @@ public class UnitTestingProjection
         var (projection, time) = FivePeopleEnteredAtSameTime();
 
         // Act
-        projection = projection
-            .ApplyEvent(new StoreExitedEvent { Store = "", Timestamp = time.AddSeconds(10) })
-            .ApplyEvent(new StoreExitedEvent { Store = "", Timestamp = time.AddSeconds(20) })
-            .ApplyEvent(new StoreExitedEvent { Store = "", Timestamp = time.AddSeconds(36) });
-
+        projection.PeopleExitedAt(time.AddSeconds(10), time.AddSeconds(20), time.AddSeconds(36))
+        
         // Assert
-        projection.AverageTime.Should().Be(TimeSpan.FromSeconds(22));
+        .AverageTime.Should().Be(TimeSpan.FromSeconds(22));
     }
 
     private static (AverageTimeProjection, DateTime) FivePeopleEnteredAtSameTime()
@@ -45,5 +42,16 @@ public class UnitTestingProjection
                 (current, _) => current.ApplyEvent(new StoreEnteredEvent { Store = string.Empty, Timestamp = time }));
 
         return (projection, time);
+    }
+}
+
+internal static class TestSetup
+{
+    public static AverageTimeProjection PeopleExitedAt(this AverageTimeProjection projection, params DateTime[] timestamps)
+    {
+        return timestamps
+            .Aggregate(projection,
+                (current, ts) => current.ApplyEvent(new StoreExitedEvent { Store = string.Empty, Timestamp = ts }));
+
     }
 }

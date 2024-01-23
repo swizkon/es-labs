@@ -1,6 +1,6 @@
 # Event Sourcing vs Event streaming
 
-### Weak events NOT capturing important business events
+### Persistent with ordering guarantee or durable just enough to enable catch-up?
 
 Event streaming / pubsub with durable storage.\
 IRL Kafka without topic expiration.
