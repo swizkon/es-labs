@@ -1,5 +1,5 @@
 
-@TurnstileLocationStore = 2
+@TurnstileLocationStore = 1
 
 #@TurnstileLocationZone = 0A
 @TurnstileLocationZone = A0

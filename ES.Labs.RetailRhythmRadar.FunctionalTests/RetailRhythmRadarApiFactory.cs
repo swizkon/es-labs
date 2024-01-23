@@ -1,9 +1,14 @@
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using EventSourcing.EventStoreDB;
+using EventStore.Client;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using RetailRhythmRadar;
 using Testcontainers.Redis;
 
@@ -29,37 +34,8 @@ public class RetailRhythmRadarApiFactory : WebApplicationFactory<Program>, IAsyn
         .WithEnvironment("EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP", "true") // Redundant?
         // .WithEnvironment("EVENTSTORE_MEM_DB", "true")
 
-        // Wait until the HTTP endpoint of the container is available.
         .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(2113)))
-        // Build the container configuration.
         .Build();
-
-    /*
-       eventstore:
-       container_name: esdb-docs
-       image: eventstore/eventstore:latest
-       ports:
-       - '2113:2113'
-       - '1112:1112'
-       - '1113:1113'
-       environment:
-       EVENTSTORE_EXT_TCP_PORT: 1113
-       EVENTSTORE_RUN_PROJECTIONS: all
-       EVENTSTORE_START_STANDARD_PROJECTIONS: 'true'
-       PROJECTION_THREADS: 8
-       INSECURE: true
-       EVENTSTORE_INSECURE: true
-       EVENTSTORE_ENABLE_EXTERNAL_TCP: true
-       EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP: true
-
-       volumes:
-       - type: volume
-       source: eventstore-volume-data
-       target: /var/lib/eventstore
-       - type: volume
-       source: eventstore-volume-logs
-       target: /var/log/eventstore
-     */
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -73,21 +49,52 @@ public class RetailRhythmRadarApiFactory : WebApplicationFactory<Program>, IAsyn
                     options.Configuration = redis.GetConnectionString();
                     options.InstanceName = "ESDemo-";
                 });
+
+                // Use in-memory caching for testing
+                services.RemoveAll(typeof(IDistributedCache));
+                services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
             });
     }
 
     public async Task InitializeAsync()
     {
         await esContainer.StartAsync();
-        //await redisStack.StartAsync();
         await redis.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
         await esContainer.StopAsync();
-        // await redisStack.StopAsync();
         await redis.StopAsync();
         await base.DisposeAsync();
+    }
+
+    public TService GetService<TService>() => Services.GetRequiredService<TService>();
+
+    public async Task<ulong?> GetStreamPosition(string streamName)
+    {
+        var configuration = base.Services.GetRequiredService<IConfiguration>();
+        var client = EventStoreDbUtils.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
+        try
+        {
+            var s = client.ReadStreamAsync(
+                direction: Direction.Backwards,
+                streamName: streamName,
+                revision: StreamPosition.End,
+                maxCount: 1);
+            var state = await s.ReadState;
+            if (state == ReadState.StreamNotFound)
+            {
+                return default;
+            }
+
+            var first = await s.FirstOrDefaultAsync();
+
+            return (ulong) first.Event.EventNumber;
+        }
+        catch (Exception)
+        {
+            return default;
+        }
     }
 }

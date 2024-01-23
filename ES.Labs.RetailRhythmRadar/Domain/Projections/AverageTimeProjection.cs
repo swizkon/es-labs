@@ -10,6 +10,8 @@ public record AverageTimeProjection(
     TimeSpan AverageTime,
     IEnumerable<DateTime> Entries)
 {
+    private int _completedVisits;
+
     public static AverageTimeProjection Empty => new("1", 0, 0, TimeSpan.Zero, TimeSpan.Zero, new List<DateTime>());
 
     public AverageTimeProjection ApplyEvent(StoreEnteredEvent entered)
@@ -27,18 +29,20 @@ public record AverageTimeProjection(
         if (CurrentNumberOfVisitors < 0)
             return Empty;
 
-        var entries = Entries.ToList();
+        // var entries = Entries.ToList();
         
         // Get the timespan between now and the last time the store was entered
-        var timeSpan = exited.Timestamp - entries.LastOrDefault();
+        var timeSpan = exited.Timestamp - Entries.LastOrDefault();
 
         var totalTime = TotalTime + timeSpan;
+
+        _completedVisits += 1;
 
         return this with
         {
             CurrentNumberOfVisitors = CurrentNumberOfVisitors - 1,
             TotalTime = totalTime,
-            AverageTime = TimeSpan.FromTicks(totalTime.Ticks / Math.Max(TotalOfVisitors, 1)),
+            AverageTime = TimeSpan.FromTicks(totalTime.Ticks / Math.Max(_completedVisits, 1)),
             Entries = Entries.SkipLast(1).ToList()
         };
     }

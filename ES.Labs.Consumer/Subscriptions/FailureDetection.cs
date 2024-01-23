@@ -90,7 +90,6 @@ public class FailureDetection
                 state.Failures = state.Failures
                     .Append(evt.Timestamp)
                     .Where(f => f > DateTime.UtcNow.AddSeconds(-10))
-                    // .TakeLast(5)
                     .ToList();
                 state.TotalFailures += 1;
                 state.StoreAndZone = $"Store: {evt.Store}, Zone: {evt.Zone}";

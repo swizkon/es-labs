@@ -1,5 +1,5 @@
 namespace RetailRhythmRadar.Configuration; 
 public static class VersionInfo 
 {
-public const string GitVersion = "3743fc37dbcb1c876748cef152be77838f7dab1f";
+public const string GitVersion = "2b4f3eb4dbb03e845e7f3b0ee212d2383966bfce";
 }

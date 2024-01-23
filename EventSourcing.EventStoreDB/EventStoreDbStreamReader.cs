@@ -33,13 +33,17 @@ public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
         _client = new EventStoreClient(settings);
     }
 
-    public async Task WriteEventAsync(string streamName, params object[] data)
+    public async Task<WriteEventResult> WriteEventAsync(string streamName, params object[] data)
     {
         //var es = data;
-        await _client.AppendToStreamAsync(
+        var result = await _client.AppendToStreamAsync(
             streamName: streamName,
             expectedState: StreamState.Any,
             eventData: BuildEventData(data, enrichMetaData: _enrichMetaData));
+
+        return new WriteEventResult(StreamName: streamName,
+            Revision: result.NextExpectedStreamRevision,
+            Position: result.LogPosition.CommitPosition);
     }
     
     private static IEnumerable<EventData> BuildEventData(object[] data, IEnrichMetaData enrichMetaData)

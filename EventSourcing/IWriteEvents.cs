@@ -2,5 +2,5 @@
 
 public interface IWriteEvents
 {
-    Task WriteEventAsync(string streamName, params object[] data);
+    Task<WriteEventResult> WriteEventAsync(string streamName, params object[] data);
 }

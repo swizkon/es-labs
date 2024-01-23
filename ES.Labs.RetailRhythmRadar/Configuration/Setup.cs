@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using RetailRhythmRadar.Domain.Commands;
 using RetailRhythmRadar.Domain.Events;
 using RetailRhythmRadar.Domain.Handlers;
+using RetailRhythmRadar.Domain.Processors;
 using RetailRhythmRadar.Domain.Projections;
 using RetailRhythmRadar.Domain.Queries;
 
@@ -27,6 +28,8 @@ public static class Setup
         services.AddSingleton<IEnrichMetaData, MetadataEnricher>();
         services.AddSingleton<IWriteEvents, EventStoreDbStreamReader>();
         services.AddSingleton<IReadStreams, EventStoreDbStreamReader>();
+
+        services.AddSingleton<IProcess<TurnstilePassageDetected>, SensorSignalProcessor>();
 
         services.AddMassTransit(x =>
         {
@@ -67,14 +70,16 @@ public static class Setup
 
     public static WebApplication MapEventEndPoints(this WebApplication application)
     {
-        var bus = application.Services.GetRequiredService<IBus>();
+        //var bus = application.Services.GetRequiredService<IBus>();
+        var processor = application.Services.GetRequiredService<IProcess<TurnstilePassageDetected>>();
 
         application
             .MapGroup("events")
             .MapPost(nameof(TurnstilePassageDetected), (Func<TurnstilePassageDetected, Task<IActionResult>>)(async ([FromBody] message) =>
             {
-                await bus.Publish(message);
-                return new OkResult();
+                var result = await processor.Handle(message);
+                //await bus.Publish(message);
+                return new OkObjectResult(result);
             }));
         return application;
     }
