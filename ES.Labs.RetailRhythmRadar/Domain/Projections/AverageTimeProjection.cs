@@ -44,4 +44,13 @@ public record AverageTimeProjection(
             Entries = Entries.SkipLast(1).ToList()
         };
     }
+
+    public AverageTimeProjection ApplyEvent(StoreVisitorsAdjustedEvent adjusted)
+    {
+        return this with
+        {
+            TotalOfVisitors = TotalOfVisitors + (CurrentNumberOfVisitors - adjusted.VisitorsAfterAdjustment),
+            CurrentNumberOfVisitors = adjusted.VisitorsAfterAdjustment
+        };
+    }
 }

@@ -107,6 +107,10 @@ public class ConsumerHostedService : BackgroundService
                     case StoreExitedEvent exited:
                         Handle(exited, projectionSubscription);
                         break;
+                        
+                    case StoreVisitorsAdjustedEvent adjusted:
+                        Handle(adjusted, projectionSubscription);
+                        break;
 
                     default:
                         Console.WriteLine($"No handler defined for {eventData.GetType()}");
@@ -134,6 +138,12 @@ public class ConsumerHostedService : BackgroundService
     private static void Handle(StoreExitedEvent entered, IObserver<AverageTimeProjection>? projectionSubscription) =>
         TransformState(
             resolvedEvent: entered,
+            projectionSubscription: projectionSubscription,
+            modifier: (state, e) => state.ApplyEvent(e));
+
+    private static void Handle(StoreVisitorsAdjustedEvent adjusted, IObserver<AverageTimeProjection>? projectionSubscription) =>
+        TransformState(
+            resolvedEvent: adjusted,
             projectionSubscription: projectionSubscription,
             modifier: (state, e) => state.ApplyEvent(e));
 

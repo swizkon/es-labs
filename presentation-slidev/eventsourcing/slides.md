@@ -115,14 +115,6 @@ Hover on the bottom-left corner to see the navigation's controls panel, [learn m
 </div>
 
 ---
-src: ./pages/demo-time.md
-hide: false
-layout: center
-class: text-center
----
-
-
----
 layout: center
 class: text-center
 ---

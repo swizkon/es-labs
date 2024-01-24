@@ -12,7 +12,6 @@ title: Event Sourcing in a nutshell
 ## Use cases
  - Anomaly detection
  - Event-driven by nature
- - Audit log by design
  - Temporal queries
  - DDD
 
@@ -20,7 +19,6 @@ title: Event Sourcing in a nutshell
  - Capture the business domain lingo\
    (Domain Driven-style)
  - Probably not applied to the entire system
- - More a "Design pattern" than "Architectural Pattern"
  - Append-only log of all domain events\
    (Many dbs works this way under the hood)
 
@@ -34,15 +32,26 @@ title: Event Sourcing in a nutshell
  - Capture facts now and decide later
  - Replay for new models
  - Run simulations
- - Cache for ever
- - Audit log by design
+ - Caching for ever
+ - Auditing-friendly by design
  - Hopefully alignment between business and dev team
+ - Optimize for Write and Read\
+   (with eventuall concistency as penalty)
 
 #### Pains &#9760;
  - Versioning
  - Migrations
  - Extra code for events and projections
  - Naming things...
+ - Stream strategy/partitioning (EventStoreDB)
+ - Find concistency boundary
+
 
 </div>
 </div>
+
+
+<hr />
+Resources:
+
+[A Beginner’s Guide to Event Sourcing](https://www.eventstore.com/event-sourcing)
