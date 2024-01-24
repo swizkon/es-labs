@@ -1,4 +1,4 @@
-﻿namespace RetailRhythmRadar.BackgroundServices;
+﻿namespace Common.Extensions;
 
 public static class TimestampExtensions
 {

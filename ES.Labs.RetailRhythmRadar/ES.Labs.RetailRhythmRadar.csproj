@@ -37,9 +37,9 @@
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="echo try get some git stuff..." />
+		<!--<Exec Command="echo try get some git stuff..." />-->
 		<!--<Exec Command="git rev-parse HEAD" />-->
-		<Exec Command="call git_ver_info.bat" ContinueOnError="true" />
+		<!--<Exec Command="call git_ver_info.bat" ContinueOnError="true" />-->
 	</Target>
 
 </Project>

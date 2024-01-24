@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Text.Json;
+using Common.Extensions;
 using EventSourcing;
 using EventSourcing.EventStoreDB;
 using EventStore.Client;
