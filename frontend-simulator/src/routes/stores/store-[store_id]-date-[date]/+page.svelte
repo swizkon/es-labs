@@ -6,14 +6,13 @@
 	import * as THREE from 'three';
 	import * as SC from 'svelte-cubed';
 
-	import Link from '../../../components/base/Link.svelte';
-
 	export let data;
 	$: ({ store, title, zones } = data);
 
 	import { HubConnectionBuilder } from '@microsoft/signalr';
 	
 	import StoreZone from '../../../components/StoreZone.svelte';
+	import Turnstile from '../../../components/Turnstile.svelte';
 
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
@@ -21,13 +20,13 @@
 	const hubUrl = 'https://localhost:4001/hubs/messageExchange';
 
 	let turnstiles = [
-		{ id: '0A', position: [0, 0, 0]},
-		{ id: 'AB', position: [0, 0, 0]},
-		{ id: 'AC', position: [0, 0, 0]},
-		{ id: 'BC', position: [0, 0, 0]},
-		{ id: 'BD', position: [0, 0, 0]},
-		{ id: 'CD', position: [0, 0, 0]},
-		{ id: 'D0', position: [0, 0, 0]}
+		{ id: '0A', position: [-15, 0, 0]},
+		{ id: 'AB', position: [-6, 0, -6]},
+		{ id: 'AC', position: [-6, 0, 6]},
+		{ id: 'BC', position: [-1, 0, -1]},
+		{ id: 'BD', position: [4, 0, -6]},
+		{ id: 'CD', position: [4, 0, 4]},
+		{ id: 'D0', position: [14, 0, 0]}
 	];
 
 	let signalRConnectionState = 'Unknown';
@@ -157,7 +156,11 @@ function sendResetCommand(store, zone) {
 	</SC.Group>
 
 	{#each zones as zone}
-		<StoreZone visitors={zone.visitors} position={zone.position} color={zone.color} size={zone.size} />
+		<StoreZone zone={zone.zone} visitors={zone.visitors} position={zone.position} color={zone.color} size={zone.size} />
+	{/each}
+	
+	{#each turnstiles as turnstile}
+		<Turnstile position={turnstile.position} id={turnstile.id} />
 	{/each}
 
 	<SC.PerspectiveCamera position={[-40, 15, 30]} />

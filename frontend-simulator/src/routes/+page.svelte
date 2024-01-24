@@ -6,7 +6,6 @@
 
 	import { HubConnectionBuilder } from '@microsoft/signalr';
 
-	import Logo from '../components/Logo.svelte';
 	import Level from '../components/Level.svelte';
 	import Slider from '../lib/components/Slider.svelte';
 
@@ -140,8 +139,6 @@
 	<SC.AmbientLight intensity={0.6} />
 	<SC.DirectionalLight intensity={0.5} position={[-2, 3, 2]} shadow={{ mapSize: [2048, 2048] }} />
 </SC.Canvas>
-
-<Logo />
 
 <div class="controls">
 	{#each levels as level, i}
