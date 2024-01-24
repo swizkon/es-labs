@@ -32,16 +32,9 @@ css: unocss
 ## Event Sourcing
 
 ---
-src: ./pages/event-sourcing.md
+src: ./pages/event-sourcing-nutshell.md
 hide: false
 transition: fade
----
-
-
----
-src: ./pages/demo-time-streaming-projection.md
-hide: false
-layout: default
 ---
 
 
@@ -71,6 +64,27 @@ hide: false
 transition: fade
 ---
 
+
+---
+src: ./pages/setting-the-stage.md
+hide: false
+transition: fade
+---
+
+
+---
+src: ./pages/testing.md
+hide: false
+transition: fade
+---
+
+
+---
+src: ./pages/demo-time-streaming-projection.md
+hide: false
+layout: default
+---
+
 ---
 src: ./pages/event-storming.md
 hide: false
@@ -95,15 +109,6 @@ transition: fade
 
 
 ---
-layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
-src: ./pages/setting-the-stage.md
-hide: false
-transition: fade
----
-
-
----
 transition: fade
 ---
 # Demo-time
@@ -113,6 +118,14 @@ Hover on the bottom-left corner to see the navigation's controls panel, [learn m
 <div class="relative">
 <iframe style="min-height:400px;" width="100%" height="90%" src="http://localhost:3000/sensors/enterandexit">Demo frame</iframe>
 </div>
+
+
+---
+src: ./pages/event-sourcing.md
+hide: false
+transition: fade
+---
+
 
 ---
 layout: center

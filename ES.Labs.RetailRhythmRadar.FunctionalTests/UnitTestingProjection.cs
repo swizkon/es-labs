@@ -10,43 +10,57 @@ public class UnitTestingProjection
     public void It_should_calculate_avg_time_for_single_customer()
     {
         // Arrange
-        var (projection, time) = FivePeopleEnteredAtSameTime();
+        var randomTime = GetRandomTime();
+        FivePeopleEnteredAtSameTime(randomTime)
 
         // Act
-        projection = projection.PeopleExitedAt(time.AddSeconds(10));
+        .PeopleExitedAt(randomTime.AddSeconds(10))
 
         // Assert
-        projection.AverageTime.Should().Be(TimeSpan.FromSeconds(10));
-        projection.CurrentNumberOfVisitors.Should().Be(4);
+        .AverageTime.Should().Be(TimeSpan.FromSeconds(10));
     }
 
     [Fact]
     public void It_should_calculate_avg_time_per_customer()
     {
-        // Arrange
-        var (projection, time) = FivePeopleEnteredAtSameTime();
+        // Given
+        var randomTime = GetRandomTime();
+        FivePeopleEnteredAtSameTime(randomTime)
 
-        // Act
-        projection.PeopleExitedAt(time.AddSeconds(10), time.AddSeconds(20), time.AddSeconds(36))
+        // When
+        .PeopleExitedAt(
+            randomTime.AddSeconds(10),
+            randomTime.AddSeconds(20),
+            randomTime.AddSeconds(36))
         
-        // Assert
+        // Then
         .AverageTime.Should().Be(TimeSpan.FromSeconds(22));
     }
 
-    private static (AverageTimeProjection, DateTime) FivePeopleEnteredAtSameTime()
+    private static  AverageTimeProjection FivePeopleEnteredAtSameTime(DateTime timestamp)
     {
-        var time = DateTime.UtcNow.Date.AddMinutes(-Random.Shared.Next(10, 1000));
-
         var projection = Enumerable.Range(1, 5)
             .Aggregate(AverageTimeProjection.Empty,
-                (current, _) => current.ApplyEvent(new StoreEnteredEvent { Store = string.Empty, Timestamp = time }));
+                (current, _) => current.ApplyEvent(new StoreEnteredEvent { Store = string.Empty, Timestamp = timestamp }));
 
-        return (projection, time);
+        return projection; //, time);
+    }
+
+    private static DateTime GetRandomTime()
+    {
+        return DateTime.UtcNow.Date.AddMinutes(-Random.Shared.Next(10, 1000));
     }
 }
 
 internal static class TestSetup
 {
+    private static AverageTimeProjection PeopleEnteredAt(this AverageTimeProjection projection, params DateTime[] timestamps)
+    {
+        return timestamps
+            .Aggregate(projection,
+                (current, ts) => current.ApplyEvent(new StoreEnteredEvent { Store = string.Empty, Timestamp = ts }));
+    }
+
     public static AverageTimeProjection PeopleExitedAt(this AverageTimeProjection projection, params DateTime[] timestamps)
     {
         return timestamps

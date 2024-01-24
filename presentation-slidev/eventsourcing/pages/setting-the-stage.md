@@ -1,10 +1,12 @@
 # Setting the stage
 
 
-![Alt text](/pages/image-2.png)
+
 
 The tech in use:
+ - EventstoreDB
+ - dotnet 8 api
+ - Sveltekit + cubed dashboard
+ - Some console apps running subscriptions
 
- - Eventstore DB
- - Web api
- - Consumer console app
+![Alt text](/pages/image-2.png)

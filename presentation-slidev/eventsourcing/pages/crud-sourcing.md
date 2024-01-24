@@ -2,7 +2,8 @@
 
 ### Data centric instead of business events
 
-Is the event something that makes sense to business?
+Example managing a buffer of tasks to complete.\
+Here in the shape of a list with tasks up for grabs.
 
 <div class="grid grid-cols-2 gap-12">
 <div>
@@ -11,13 +12,13 @@ Is the event something that makes sense to business?
 
 ```cs {none|1-4|6-8|none}
 // Anemic remove event
-record PlaylistDeleted {
+record TaskRemoved {
   id: Guid, reason?: string
 }
 
-// Some soft-delete style
-record PlaylistDeactivated {
-  id: Guid, reason?: string
+// Some update
+record StatusUpdated {
+  id: Guid, status?: string
 }
 ```
 
@@ -27,12 +28,12 @@ record PlaylistDeactivated {
 #### Event Sourcing &#9842;
 
 ```cs {none|1-4|6-8}
-// Names telling you why
-record SubscriptionCancelled {
+// Why item was removed from the read model
+record TaskDeferred {
   id: Guid
 }
 
-record UserUnfollowedPlaylist {
+record TaskPicked {
   id: Guid
 }
 ```
@@ -40,5 +41,6 @@ record UserUnfollowedPlaylist {
 </div>
 </div>
 
+Is the event something that makes sense to business?
 
 

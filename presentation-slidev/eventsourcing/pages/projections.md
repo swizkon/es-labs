@@ -1,7 +1,18 @@
-# Modelling state from event streams
+# Modeling state from event streams
 
-### Projections
+### Projections, View models, Read models
 
 In-memory, dist cache, vendor specific or drop/create/migrate schema in DB.
 
-Why? Facts (events) dont change, but your perception of the facts might
+Why? Facts (events) dont change, but your view of the facts might
+
+
+<hr/>
+
+#### Optimized read model
+
+Select just enough data that is needed for views.
+
+ - Use 1N, 2N, 3N form pending on use case
+ - Star schema
+ - Choose suitable format

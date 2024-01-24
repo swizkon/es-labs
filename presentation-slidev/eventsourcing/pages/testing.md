@@ -2,56 +2,53 @@
 title: Testing
 ---
 
-# Testing
-### Aggregate invariants and state transitions
+# Pure functional projection testing
+### Checking invariants and state transitions
 
 
 <div class="grid grid-cols-2 gap-12">
 <div>
 
-## Use cases
- - Anomaly detection
- - Event-driven by nature
- - Temporal queries
- - DDD
+#### Test
 
-## Characteristics
- - Capture the business domain lingo\
-   (Domain Driven-style)
- - Probably not applied to the entire system
- - Append-only log of all domain events\
-   (Many dbs works this way under the hood)
+```cs
+[Fact]
+public void It_should_calculate_avg_time_per_customer()
+{
+  // Given
+  var randomTime = GetRandomTime();
+  FivePeopleEnteredAtSameTime(randomTime)
 
-
+  // When
+  .PeopleExitedAt(
+    randomTime.AddSeconds(10),
+    randomTime.AddSeconds(20),
+    randomTime.AddSeconds(36))
+    
+  // Then
+  .AverageTime.Should().Be(TimeSpan.FromSeconds(22));
+}
+```
 
 
 </div>
 <div>
 
-#### Benefits &hearts;
- - Capture facts now and decide later
- - Replay for new models
- - Run simulations
- - Caching for ever
- - Auditing-friendly by design
- - Hopefully alignment between business and dev team
- - Optimize for Write and Read\
-   (with eventuall concistency as penalty)
+#### Implementation
 
-#### Pains &#9760;
- - Versioning
- - Migrations
- - Extra code for events and projections
- - Naming things...
- - Stream strategy/partitioning (EventStoreDB)
- - Find concistency boundary
+```cs
+public static AvgTimeProjection Empty => new("1");
 
+public AvgTimeProjection ApplyEvent(StoreEntered e)
+{
+  return this with
+  {
+    TotalOfVisitors = TotalOfVisitors + 1,
+    CurrentNumberOfVisitors = CurrentNumberOfVisitors + 1,
+    Entries = Entries.Append(e.Timestamp).ToList()
+  };
+}
+```
 
 </div>
 </div>
-
-
-<hr />
-Resources:
-
-[A Beginner’s Guide to Event Sourcing](https://www.eventstore.com/event-sourcing)

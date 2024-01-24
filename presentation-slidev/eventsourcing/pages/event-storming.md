@@ -11,9 +11,9 @@ Similar to a FirstLab&trade;
 
 Collaboration with all people involved in the product development in order to visualize:
 
-* Pivotal events
-* Bounded context
-* Swimlanes
+* Pivotal events (Integration events)
+* Bounded context (Service)
+* Swimlanes (Async process outside saga, like "Email receipt")
 
 <hr/>
 
