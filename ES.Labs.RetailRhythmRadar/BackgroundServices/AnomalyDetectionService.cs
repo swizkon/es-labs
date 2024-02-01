@@ -14,9 +14,9 @@ public class AnomalyDetectionService : EventStoreSubscriptionBase
 {
     private readonly ILogger<AnomalyDetectionService> _logger;
 
-    private static readonly ConcurrentDictionary<string, AverageTimeProjection> States = new();
+    private static readonly ConcurrentDictionary<string, EnterAndExists> States = new();
 
-    private Subject<AverageTimeProjection>? _projectionSubscription;
+    private Subject<EnterAndExists>? _projectionSubscription;
     private IDisposable? _projectionStreamS;
     private readonly IConfiguration _configuration;
     private readonly IBus _bus;
@@ -42,7 +42,7 @@ public class AnomalyDetectionService : EventStoreSubscriptionBase
             return;
         }
 
-        _projectionSubscription = new Subject<AverageTimeProjection>();
+        _projectionSubscription = new Subject<EnterAndExists>();
         _projectionStreamS = _projectionSubscription
             .Throttle(50.Milliseconds())
             .Subscribe(async state =>
@@ -61,30 +61,22 @@ public class AnomalyDetectionService : EventStoreSubscriptionBase
         await MainAsync(_projectionSubscription, stoppingToken);
     }
 
-    public async Task MainAsync(Subject<AverageTimeProjection>? projectionSubscription, CancellationToken cancellationToken)
+    public async Task MainAsync(Subject<EnterAndExists>? projectionSubscription, CancellationToken cancellationToken)
     {
         var eventResolver = new CustomEventResolver(new DefaultEventResolver(new GreedyEventResolver()));
         var client = EventStoreDbUtils.GetDefaultClient(_configuration.GetConnectionString("EVENTSTORE")!);
         
         var subscription = await client.SubscribeToStreamAsync(
             streamName: StreamName,
-            // start: FromStream.Start,
-            start: FromStream.End,
+            start: FromStream.Start,
+            // start: FromStream.End,
             eventAppeared: (_, e, _) =>
             {
                 var eventData = EventStoreDbUtils.ResolveEvent(e, eventResolver).EventData;
                 switch (eventData)
                 {
-                    case StoreEnteredEvent entered:
-                        Handle(entered, projectionSubscription);
-                        break;
-
                     case StoreExitedEvent exited:
                         Handle(exited, projectionSubscription);
-                        break;
-                        
-                    case StoreVisitorsAdjustedEvent adjusted:
-                        Handle(adjusted, projectionSubscription);
                         break;
 
                     default:
@@ -97,43 +89,29 @@ public class AnomalyDetectionService : EventStoreSubscriptionBase
         _logger.LogInformation("Subscribed to stream " + subscription.SubscriptionId);
     }
 
-    private static void Handle(StoreEnteredEvent entered, IObserver<AverageTimeProjection>? projectionSubscription) =>
+    private static void Handle(StoreExitedEvent entered, IObserver<EnterAndExists>? projectionSubscription) =>
         TransformState(
             resolvedEvent: entered,
-            projectionSubscription: projectionSubscription,
-            modifier: (state, e) =>
-            {
-                state = state.ApplyEvent(e);
-                return state;
-            });
-
-    private static void Handle(StoreExitedEvent entered, IObserver<AverageTimeProjection>? projectionSubscription) =>
-        TransformState(
-            resolvedEvent: entered,
-            projectionSubscription: projectionSubscription,
-            modifier: (state, e) => state.ApplyEvent(e));
-
-    private static void Handle(StoreVisitorsAdjustedEvent adjusted, IObserver<AverageTimeProjection>? projectionSubscription) =>
-        TransformState(
-            resolvedEvent: adjusted,
             projectionSubscription: projectionSubscription,
             modifier: (state, e) => state.ApplyEvent(e));
 
     private static void TransformState<TEvent>(
         TEvent resolvedEvent,
-        IObserver<AverageTimeProjection>? projectionSubscription,
-        Func<AverageTimeProjection, TEvent, AverageTimeProjection> modifier)
+        IObserver<EnterAndExists>? projectionSubscription,
+        Func<EnterAndExists, TEvent, EnterAndExists> modifier)
     {
         var s = States.AddOrUpdate(StreamName,
-             modifier(AverageTimeProjection.Empty, resolvedEvent),
+             modifier(EnterAndExists.InitialState("1"), resolvedEvent),
             (_, state) => modifier(state, resolvedEvent));
 
-        projectionSubscription?.OnNext(s);
+        if (s.FrontDoorExits > s.GiftShopExits * 2)
+        {
+            projectionSubscription?.OnNext(s);
+        }
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        Console.WriteLine($"{GetType().Name} Stopping...");
         _projectionStreamS?.Dispose();
         _projectionSubscription?.Dispose();
 

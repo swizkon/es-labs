@@ -113,7 +113,13 @@ public class SensorSignalProcessor : IProcess<TurnstilePassageDetected>
         var isExitEvent = from != "0" && to == "0";
         if (isExitEvent)
         {
-            var storeExitedEvent = new StoreExitedEvent { Store = message.Turnstile.GetStore(), Timestamp = message.Timestamp };
+            var door = from == "A" ? "FrontDoor" : "GiftShop";
+            var storeExitedEvent = new StoreExitedEvent
+            {
+                Store = message.Turnstile.GetStore(), 
+                Timestamp = message.Timestamp,
+                Door = door
+            };
             eventGroups.Add((allStoresStream, storeExitedEvent));
         }
     }
