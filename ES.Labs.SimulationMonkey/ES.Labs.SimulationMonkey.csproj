@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<Compile Include="..\ES.Labs.RetailRhythmRadar\Domain\Events\TurnstilePassageDetected.cs">
+			<Link>Events/TurnstilePassageDetected.cs</Link>
+		</Compile>
+		<Compile Include="..\ES.Labs.RetailRhythmRadar\Domain\Events\TurnstileIdentifier.cs">
+			<Link>Events/TurnstileIdentifier.cs</Link>
+		</Compile>
+		<Compile Include="..\ES.Labs.RetailRhythmRadar\Domain\Events\TurnstileDirection.cs">
+			<Link>Events/TurnstileDirection.cs</Link>
+		</Compile>
+		<Compile Include="..\ES.Labs.RetailRhythmRadar\Domain\Projections\SingleStoreState.cs">
+			<Link>Projections/SingleStoreState.cs</Link>
+		</Compile>
+	</ItemGroup>
+
+</Project>

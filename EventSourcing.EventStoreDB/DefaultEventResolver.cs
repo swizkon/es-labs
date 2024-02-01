@@ -6,7 +6,7 @@ public class DefaultEventResolver(IEventTypeResolver? fallbackEventTypeResolver 
 {
     public Type? ResolveType(IDictionary<string, string> metadata)
     {
-        var typeName = metadata!["CtrlType"];
+        var typeName = metadata["CtrlType"];
         var type = Type.GetType(typeName);
         if (type != null)
         {

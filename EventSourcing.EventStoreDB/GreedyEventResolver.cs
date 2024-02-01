@@ -7,12 +7,6 @@ public class GreedyEventResolver : IEventTypeResolver
     public Type? ResolveType(IDictionary<string, string> metadata)
     {
         var typeName = metadata["CtrlType"];
-        //var type = Type.GetType(typeName);
-        //if (type != null)
-        //{
-        //    Console.WriteLine($"DefaultEventResolver: {type}");
-        //    return type;
-        //}
 
         var asm = Assembly.GetEntryAssembly();
 

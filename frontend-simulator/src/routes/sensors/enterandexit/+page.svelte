@@ -141,7 +141,7 @@ function sendResetCommand(store, zone) {
 	</SC.Group>
 
 	{#each zones as zone}
-		<StoreZone visitors={zone.visitors} position={zone.position} color={zone.color} size={zone.size} />
+		<StoreZone zone={zone.zone} visitors={zone.visitors} position={zone.position} color={zone.color} size={zone.size} />
 	{/each}
 
 	<SC.PerspectiveCamera position={[-40, 15, 30]} />

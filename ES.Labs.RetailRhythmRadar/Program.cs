@@ -22,6 +22,7 @@ public class Program
         services.RegisterServices(builder.Configuration);
 
         services.AddHostedService<ConsumerHostedService>();
+        services.AddHostedService<AnomalyDetectionService>();
 
         services.AddSignalR();
 

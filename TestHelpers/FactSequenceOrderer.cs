@@ -11,9 +11,9 @@ public class FactSequenceOrderer : ITestCaseOrderer
 
         foreach (TTestCase testCase in testCases)
         {
-            int sequence = 0;
+            var sequence = 0;
 
-            foreach (IAttributeInfo attr in testCase.TestMethod.Method.GetCustomAttributes((typeof(FactSequenceAttribute).AssemblyQualifiedName)))
+            foreach (var attr in testCase.TestMethod.Method.GetCustomAttributes((typeof(FactSequenceAttribute).AssemblyQualifiedName)))
                 sequence = attr.GetNamedArgument<int>("Sequence");
 
             GetOrCreate(sortedMethods, sequence).Add(testCase);
@@ -27,12 +27,10 @@ public class FactSequenceOrderer : ITestCaseOrderer
         }
     }
 
-    static TValue GetOrCreate<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key)
+    private static TValue GetOrCreate<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key)
         where TValue : new()
     {
-        TValue result;
-
-        if (dictionary.TryGetValue(key, out result)) return result;
+        if (dictionary.TryGetValue(key, out var result)) return result;
 
         result = new TValue();
         dictionary[key] = result;

@@ -10,11 +10,9 @@ using RetailRhythmRadar.Domain.Projections;
 
 namespace RetailRhythmRadar.BackgroundServices;
 
-public class ConsumerHostedService : EventStoreSubscriptionBase
+public class AnomalyDetectionService : EventStoreSubscriptionBase
 {
-    private readonly ILogger<ConsumerHostedService> _logger;
-
-    private volatile bool _eventStoreReady;
+    private readonly ILogger<AnomalyDetectionService> _logger;
 
     private static readonly ConcurrentDictionary<string, AverageTimeProjection> States = new();
 
@@ -23,7 +21,7 @@ public class ConsumerHostedService : EventStoreSubscriptionBase
     private readonly IConfiguration _configuration;
     private readonly IBus _bus;
 
-    public ConsumerHostedService(IServiceProvider serviceProvider, ILogger<ConsumerHostedService> logger) : base(logger)
+    public AnomalyDetectionService(IServiceProvider serviceProvider, ILogger<AnomalyDetectionService> logger) : base(logger)
     {
         _logger = logger;
         _configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -35,7 +33,7 @@ public class ConsumerHostedService : EventStoreSubscriptionBase
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation($"Starting background service...");
-
+        
         var eventStoreReady = await WaitForEventStore(StreamName, _configuration, TimeSpan.FromDays(14), stoppingToken);
 
         if (!eventStoreReady)
@@ -43,7 +41,7 @@ public class ConsumerHostedService : EventStoreSubscriptionBase
             _logger.LogInformation("EventStoreDB not available. Wait for 1 sec...");
             return;
         }
-        
+
         _projectionSubscription = new Subject<AverageTimeProjection>();
         _projectionStreamS = _projectionSubscription
             .Throttle(50.Milliseconds())
@@ -96,7 +94,6 @@ public class ConsumerHostedService : EventStoreSubscriptionBase
 
                 return Task.CompletedTask;
             }, cancellationToken: cancellationToken);
-
         _logger.LogInformation("Subscribed to stream " + subscription.SubscriptionId);
     }
 
