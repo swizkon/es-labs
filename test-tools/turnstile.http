@@ -71,10 +71,10 @@ Content-Type: application/json
 {
   "__timestamp": "{{Date}}",
   "store": "{{TurnstileLocationStore}}",
-  "zone": "A",
+  "zone": "D",
   "who": "some admin",
-  "why": "some reason",
-  "NumberOfVisitors": 0
+  "reason": "some reason",
+  "NumberOfVisitors": 10
 }
 
 

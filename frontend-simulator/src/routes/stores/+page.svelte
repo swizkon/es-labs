@@ -1,13 +1,12 @@
 <script>
-	import Link from '../../components/base/Link.svelte';
+	import { layoutContent } from '../../lib/navStore';
+
     import { ProgressRadial } from '@skeletonlabs/skeleton';
 	export let data;
 	$: ({ stores, date } = data);
 
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
-	import * as THREE from 'three';
-	import * as SC from 'svelte-cubed';
 
 	import { HubConnectionBuilder } from '@microsoft/signalr';
 
@@ -36,7 +35,6 @@
 			signalRMessageCount++;
 		});
 
-		// ("StoresStateChanged", store, currentCount, maxCapacity)
 		connection.on('StoreStateChanged', (store, currentCount, maxCapacity) => {
 			stores.storeStates = stores.storeStates.map((s) => {
 				if (s.store === store) {
@@ -67,16 +65,15 @@
 	}
     
 	onMount(async () => {
+		layoutContent.set(['Stores']);
 		await start();
 
 		return () => {
-			// console.log('onMount return function called');
-			// connection.send('Unsubscribe', 'storestates');
-			// connection.stop();
 		};
 	});
 
 	onDestroy( () => {
+		layoutContent.set(['']);
 		if (!browser) return;
 			connection.send('Unsubscribe', 'storestates');
 			connection.stop();
@@ -84,7 +81,7 @@
 
 </script>
 
-<h1 class="h1 gradient-heading">Stores</h1>
+<!-- <h1 class="h1 gradient-heading">Stores</h1> -->
 <p>Current Total: {stores.totalVisitor} at stream &#8470; {stores.revision}</p>
 
 <div>

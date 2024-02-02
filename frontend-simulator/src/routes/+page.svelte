@@ -1,5 +1,6 @@
 <script>
-	import { onMount } from 'svelte';
+	import { layoutContent } from '../lib/navStore';
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import * as THREE from 'three';
 	import * as SC from 'svelte-cubed';
@@ -12,55 +13,57 @@
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	const baseUrl = 'https://localhost:6001';
-	const roomName = 'mainroom';
+	const hubUrl = 'https://localhost:4001/hubs/messageExchange';
 
 	let signalRConnectionState = 'Unknown';
 	let signalRMessageCount = 0;
 	let connection;
 
 	async function start() {
-		console.log(browser);
 		if (!browser) return;
 
 		connection = new HubConnectionBuilder()
-			.withUrl(`${baseUrl}/hubs/testHub`)
+			.withUrl(hubUrl)
 			.withAutomaticReconnect()
 			.build();
-
-		connection.on('EqualizerStateChanged', function (data) {
-			console.log('EqualizerStateChanged', data);
-
-			for (let index = 0; index < data.channels.length; index++) {
-				const element = data.channels[index];
-				const pos = parseInt(element.channel);
-				const lev = parseInt(element.level);
-				levels[pos] = lev;
-				bikes[pos][1] = lev;
-			}
-			volume = data.volume;
-			projection.volume = data.volume;
-		});
-
-		connection.on('ChannelLevel', (player, x, y) => {
-			console.log('ChannelLevel', player, x, y);
-			bikes[x][1] = y;
+			
+		connection.on('Notification', (message) => {
+			console.log('Notification', message);
+			const toast = { message: message, autohide: true, timeout: 1000};
+			toastStore.trigger(toast);
 			signalRMessageCount++;
 		});
 
-		connection.on('VolumeChanged', (deviceName, v) => {
-			console.log('VolumeChanged', deviceName, v);
-			projection.volume = parseInt(v);
+		connection.on('ZoneThresholdChanged', function (zone, threshold) {
 			signalRMessageCount++;
+			console.log('ZoneThresholdChanged', zone, threshold);
+
+			bikes = bikes.map((b) => {
+				if (b[3] === zone) {
+					b[1] = threshold;
+				}
+				return b;
+			});
+
+			// for (let index = 0; index < data.channels.length; index++) {
+			// 	const element = data.channels[index];
+			// 	const pos = parseInt(element.channel);
+			// 	const lev = parseInt(element.level);
+			// 	levels[pos] = lev;
+			// 	bikes[pos][1] = lev;
+			// }
 		});
+
+		// connection.onclose(async () => {
+		// 	signalRConnectionState = connection.state;
+		// 	const toast = { message: 'SignalR Disconnected.', background: 'variant-filled-error' };
+		// 	toastStore.trigger(toast);
+		// });
 
 		try {
 			await connection.start();
-			connection.send('Broadcast', 'index.svelte', 'Just connected');
+			connection.send('Subscribe', 'configs');
 			signalRConnectionState = connection.state;
-			console.log('SignalR Connected.');
-			const toast = { message: 'SignalR Connected.' };
-			toastStore.trigger(toast);
 		} catch (err) {
 			signalRConnectionState = connection.state;
 			console.log('err', err);
@@ -73,7 +76,15 @@
 		}
 	}
 
+	async function stop() {
+		if (!browser) return;
+		connection.send('Unsubscribe', 'configs');
+		await connection.stop();
+	}
+
 	onMount(async () => {
+		if (!browser) return;
+		layoutContent.set(['Configure zone capacity']);
 		await start();
 
 		return () => {
@@ -81,38 +92,34 @@
 		};
 	});
 
-	let volume = 0.1;
+	onDestroy(async () => {
+		layoutContent.set(['']);
+		await stop();
+    });
 
-	let levels = [];
+	let volume = 50;
 
-	let projection = {
-		volume: 0.1
-	};
+	let levels = [
+		{ zone: 'A', threshold: 25},
+		{ zone: 'B', threshold: 25},
+		{ zone: 'C', threshold: 25},
+		{ zone: 'D', threshold: 25}];
+
 	let bikes = [
-		[[0, 0, -10], 50, 0x663399],
-		[[0, 0, -5], 50, 0x336699],
-		[[0, 0, 0], 50, 0x996633],
-		[[0, 0, 5], 50, 0x339966],
-		[[0, 0, 10], 50, 0x669933]
+		[[0, 0, -5], 25, 0x663399, 'A'],
+		[[0, 0, 0], 25, 0x336699, 'B'],
+		[[0, 0, 5], 25, 0x996633, 'C'],
+		[[0, 0, 10], 25, 0x339966, 'D']
 	];
 
-	function handleLevelChanged(a, b) {
-		connection.send('SetChannelLevel', roomName, '' + a, b);
+	function handleZoneThresholdChanged(a, b) {
+		connection.send('SetZoneThreshold', a, b);
 	}
 
-	function handleLevelChangedEvent(event) {
-		console.log('page.svelte:handleLevelChangedEvent', event.detail);
-		handleLevelChanged('' + event.detail.key, '' + event.detail.value);
-	}
-
-	function handleVolumeChanged(v) {
-		console.log('handleVolumeChanged', 'v', v, typeof v);
-		connection.send('SetVolume', roomName, v);
-	}
-
-	function handleVolumeChangedEvent(event) {
-		console.log('page.svelte:handleVolumeChangedEvent', event.detail);
-		handleVolumeChanged('' + event.detail.value);
+	function handleZoneThresholdChangedEvent(event) {
+		console.log('handleZoneThresholdChangedEvent', event.detail);
+		var d = levels[event.detail.key];
+		handleZoneThresholdChanged(`${d.zone}`, `${d.threshold}`);
 	}
 </script>
 
@@ -125,17 +132,17 @@
 >
 	<SC.Group position={[0, 0, 0]}>
 		<SC.Primitive
-			object={new THREE.GridHelper(40, 40, 'papayawhip2', 'papayawhip2')}
+			object={new THREE.GridHelper(40, 40, 'papayawhip', 'papayawhip')}
 			position={[0, 0.1, 0]}
 		/>
 	</SC.Group>
 
 	{#each bikes as b}
-		<Level volume={projection.volume} position={b[0]} level={b[1]} color={b[2]} />
+		<Level volume={volume} position={b[0]} level={b[1]} color={b[2]} />
 	{/each}
 
 	<SC.PerspectiveCamera position={[-40, 15, 30]} />
-	<SC.OrbitControls enableZoom={true} maxPolarAngle={Math.PI * 0.51} />
+	<SC.OrbitControls autoRotate={false} enableZoom={true} maxPolarAngle={Math.PI * 0.51} />
 	<SC.AmbientLight intensity={0.6} />
 	<SC.DirectionalLight intensity={0.5} position={[-2, 3, 2]} shadow={{ mapSize: [2048, 2048] }} />
 </SC.Canvas>
@@ -143,19 +150,12 @@
 <div class="controls">
 	{#each levels as level, i}
 		<Slider
-			on:sliderChange={handleLevelChangedEvent}
-			label="Level {i}"
+			on:sliderChange={handleZoneThresholdChangedEvent}
+			label="Zone {level.zone}"
 			key={i}
-			bind:value={level}
+			bind:value={level.threshold}
 		/>
 	{/each}
-
-	<Slider
-		on:sliderChange={handleVolumeChangedEvent}
-		label="Volume II"
-		key="volume"
-		bind:value={volume}
-	/>
 	<div>
 		<h2>ConnectionState: <small>{signalRConnectionState}</small></h2>
 		<h2>Messages: <small>{signalRMessageCount}</small></h2>

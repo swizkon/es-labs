@@ -7,7 +7,7 @@ public interface IMessageExchangeHubClient
 
     Task ChannelLevel(string deviceName, string channel, int value);
 
-    Task VolumeChanged(string deviceName, int volume);  
+    Task ZoneThresholdChanged(string zone, int threshold);  
     
     Task Subscribe(string streamName);
 
