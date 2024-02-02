@@ -48,8 +48,7 @@ public class BroadcastHandler :
         {
             var currentCount = state.ZoneVisitor.Sum(x => x.Value);
             _logger.LogInformation("StoreStateChanged store {Store}, currentCount {currentCount} at {Date}", message.Store, currentCount, state.Date);
-
-            /*await*/ _hubContext.Clients.Group("storestates").SendAsync("StoreStateChanged", message.Store, currentCount, 50, context.CancellationToken);
+            _hubContext.Clients.Group("storestates").SendAsync("StoreStateChanged", message.Store, currentCount, 50, context.CancellationToken);
         }
 
         foreach (var zone in message.Zones)
@@ -57,8 +56,7 @@ public class BroadcastHandler :
             var group = $"store-{message.Store}-states";
             var zoneCount = state.ZoneVisitor.FirstOrDefault(x => x.Key == zone).Value;
             _logger.LogInformation("ZoneStateChanged store:{Store} zone:{zone} {zoneCount} at {Date}", message.Store, zone, zoneCount, state.Date);
-
-            /*await*/ _hubContext.Clients.Group(group).SendAsync("ZoneStateChanged", message.Store, zone, zoneCount, 50, context.CancellationToken);
+            _hubContext.Clients.Group(group).SendAsync("ZoneStateChanged", message.Store, zone, zoneCount, 50, context.CancellationToken);
         }
     }
 

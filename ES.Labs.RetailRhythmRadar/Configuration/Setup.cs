@@ -1,4 +1,5 @@
-﻿using EventSourcing;
+﻿using System.Diagnostics;
+using EventSourcing;
 using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using MassTransit;
@@ -19,12 +20,21 @@ public static class Setup
         services.AddEventStoreClient(_ => EventStoreClientSettings
             .Create(configuration.GetConnectionString("EVENTSTORE") ?? string.Empty));
 
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = configuration.GetConnectionString("REDIS");
-            options.InstanceName = "ESDemo-";
-        });
+        var useInMemoryCache = Debugger.IsAttached || configuration.GetValue<bool>("UseInMemoryCache");
 
+        if (useInMemoryCache)
+        {
+            services.AddDistributedMemoryCache();
+        }
+        else
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration.GetConnectionString("REDIS");
+                options.InstanceName = "ESDemo-";
+            });
+        }
+        
         services.AddSingleton<IEnrichMetaData, MetadataEnricher>();
         services.AddSingleton<IWriteEvents, EventStoreDbStreamReader>();
         services.AddSingleton<IReadStreams, EventStoreDbStreamReader>();
@@ -70,7 +80,6 @@ public static class Setup
 
     public static WebApplication MapEventEndPoints(this WebApplication application)
     {
-        //var bus = application.Services.GetRequiredService<IBus>();
         var processor = application.Services.GetRequiredService<IProcess<TurnstilePassageDetected>>();
 
         application
@@ -78,7 +87,6 @@ public static class Setup
             .MapPost(nameof(TurnstilePassageDetected), (Func<TurnstilePassageDetected, Task<IActionResult>>)(async ([FromBody] message) =>
             {
                 var result = await processor.Handle(message);
-                //await bus.Publish(message);
                 return new OkObjectResult(result);
             }));
         return application;
