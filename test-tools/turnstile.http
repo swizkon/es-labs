@@ -63,6 +63,19 @@ Accept: application/json
 
 
 
+### Manually set zone  
+
+POST http://localhost:4000/commands/AdjustZone
+Content-Type: application/json
+
+{
+  "__timestamp": "{{Date}}",
+  "store": "{{TurnstileLocationStore}}",
+  "zone": "A",
+  "who": "some admin",
+  "why": "some reason",
+  "NumberOfVisitors": 0
+}
 
 
 

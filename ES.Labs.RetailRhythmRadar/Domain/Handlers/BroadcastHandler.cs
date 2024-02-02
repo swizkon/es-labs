@@ -13,6 +13,7 @@ namespace RetailRhythmRadar.Domain.Handlers;
 public class BroadcastHandler :
     IConsumer<StoreStateChanged>,
     IConsumer<ZoneManuallyClearedEvent>,
+    IConsumer<ZoneManuallyAdjustedEvent>,
     IConsumer<AverageTimeProjection>
 {
     private readonly IReadStreams _eventStreams;
@@ -63,20 +64,16 @@ public class BroadcastHandler :
     public async Task Consume(ConsumeContext<ZoneManuallyClearedEvent> context)
     {
         var message = context.Message;
+        _logger.LogInformation("ZoneManuallyClearedEvent store:{Store} zone:{zone} at {Date}", message.Store, message.Zone, message.Timestamp);
+        await BroadcastSingleStoreProjection(message.Store, message.Zone, message.Timestamp, context.CancellationToken);
+    }
 
-        var group = $"store-{message.Store}-states";
-        const int zoneCount = 0;
-
-        var state = await new SingleStoreProjection(message.Store, message.Timestamp)
-            .WithCache(_cache)
-            .WithEventDataBuilder(_eventStreams)
-            .BuildAsync(context.CancellationToken);
-
-        _logger.LogInformation("ZoneManuallyClearedEvent store:{Store} zone:{zone} {zoneCount} at {Date}", message.Store, message.Zone, zoneCount, message.Timestamp);
-        _hubContext.Clients.Group(group).SendAsync("ZoneStateChanged", message.Store, message.Zone, zoneCount, 50, context.CancellationToken);
-
-        var storeCount = state.ZoneVisitor.Sum(x => x.Value);
-        _hubContext.Clients.Group("storestates").SendAsync("StoreStateChanged", message.Store, storeCount, 50, context.CancellationToken);
+    public async Task Consume(ConsumeContext<ZoneManuallyAdjustedEvent> context)
+    {
+        var message = context.Message;
+        _logger.LogInformation("ZoneManuallyAdjustedEvent store:{Store} zone:{zone} {NumberOfVisitors} visitors at {Date}", message.Store, message.Zone, message.NumberOfVisitors, message.Timestamp);
+        
+        await BroadcastSingleStoreProjection(message.Store, message.Zone, message.Timestamp, context.CancellationToken);
     }
 
     public async Task Consume(ConsumeContext<AverageTimeProjection> context)
@@ -87,5 +84,22 @@ public class BroadcastHandler :
             .Clients
             .Group(group)
             .SendAsync("AverageTimeProjectionChanged", message.Store, message, context.CancellationToken);
+    }
+
+    private async Task BroadcastSingleStoreProjection(string store, string zone, DateTime timestamp, CancellationToken cancellationToken)
+    {
+        var group = $"store-{store}-states";
+
+        var state = await new SingleStoreProjection(store, timestamp)
+            .WithCache(_cache)
+            .WithEventDataBuilder(_eventStreams)
+            .BuildAsync(cancellationToken);
+
+        var zoneCount = state.ZoneVisitor.FirstOrDefault(x => x.Key == zone).Value;
+
+        _hubContext.Clients.Group(group).SendAsync("ZoneStateChanged", store, zone, zoneCount, 50, cancellationToken);
+
+        var storeCount = state.ZoneVisitor.Sum(x => x.Value);
+        _hubContext.Clients.Group("storestates").SendAsync("StoreStateChanged", store, storeCount, 50, cancellationToken);
     }
 }

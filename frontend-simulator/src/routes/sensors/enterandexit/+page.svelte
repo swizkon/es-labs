@@ -100,28 +100,6 @@
 			});
 	}
 
-function sendResetCommand(store, zone) {
-	fetch(`http://localhost:4000/commands/ResetZone`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({
-		"store": store,
-		"zone": zone,
-		"who": "Malloc Frobnitz",
-		"reason": "No one there..."
-		})
-	})
-		.then((response) => {
-			console.log('response', response);
-		})
-		.catch((err) => {
-			console.log('err', err);
-			const toast = { message: `Reset zone ${zone} failed`, autohide: true, timeout: 1000};
-			toastStore.trigger(toast);
-		});
-}
 
 </script>
 

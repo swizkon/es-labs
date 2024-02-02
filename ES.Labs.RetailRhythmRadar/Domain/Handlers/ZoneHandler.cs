@@ -10,6 +10,10 @@ namespace RetailRhythmRadar.Domain.Handlers;
 public class ZoneHandler :
         // IConsumer<EnteringZone>,
         // IConsumer<LeavingZone>,
+        
+        IConsumer<AdjustZone>,
+        IConsumer<ZoneManuallyAdjustedEvent>,
+
         IConsumer<ResetZone>,
         IConsumer<ZoneManuallyClearedEvent>
 {
@@ -31,6 +35,24 @@ public class ZoneHandler :
         _streamReader = streamReader;
         _cache = cache;
         _logger = logger;
+    }
+
+    public async Task Consume(ConsumeContext<AdjustZone> context)
+    {
+        var evt = new ZoneManuallyAdjustedEvent
+        {
+            Store = context.Message.Store,
+            Zone = context.Message.Zone,
+            NumberOfVisitors = context.Message.NumberOfVisitors,
+            Who = context.Message.Who,
+            Reason = context.Message.Reason,
+            Timestamp = context.Message.Timestamp
+        };
+
+        var storeStream = $"store-{context.Message.Store}-{context.Message.Timestamp.Date:yyyy-MM-dd}";
+        await _eventWriter.WriteEventAsync(storeStream, evt);
+
+        await context.Publish(evt, cancellationToken: context.CancellationToken);
     }
 
     public async Task Consume(ConsumeContext<ResetZone> context)
@@ -84,6 +106,39 @@ public class ZoneHandler :
         var storeCount = state.ZoneVisitor.Sum(x => x.Value);
 
         // Should we emit some new event to the stores stream?
+        _logger.LogWarning("Adjust visitor count for store {Store} to be : {TotalVisitors}", message.Store, storeCount);
+
+        var evt = new StoreVisitorsAdjustedEvent
+        {
+            Store = context.Message.Store,
+            VisitorsAfterAdjustment = storeCount,
+            AdjustmentEventId = context.CorrelationId?.ToString(),
+            Reason = $"Adjusting total count for store {message.Store} since zone {message.Zone} was reset",
+            Timestamp = message.Timestamp
+        };
+
+        var allStoresStream = $"stores-{message.Timestamp.Date:yyyy-MM-dd}";
+        await _eventWriter.WriteEventAsync(allStoresStream, evt);
+    }
+
+    /// <summary>
+    /// Maybe this would belong in a StoreActor
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task Consume(ConsumeContext<ZoneManuallyAdjustedEvent> context)
+    {
+        var message = context.Message;
+
+        // Simple rehydrate the state
+        var state = await new SingleStoreProjection(message.Store, message.Timestamp)
+            .WithCache(_cache)
+            .WithEventDataBuilder(_streamReader)
+            .BuildAsync(context.CancellationToken);
+
+        var storeCount = state.ZoneVisitor.Sum(x => x.Value);
+
         _logger.LogWarning("Adjust visitor count for store {Store} to be : {TotalVisitors}", message.Store, storeCount);
 
         var evt = new StoreVisitorsAdjustedEvent

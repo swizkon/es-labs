@@ -51,6 +51,9 @@ public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEve
         if (type.EndsWith(".ZoneManuallyClearedEvent"))
             return typeof(ZoneManuallyClearedEvent);
 
+        if (type.EndsWith(".ZoneManuallyAdjustedEvent"))
+            return typeof(ZoneManuallyAdjustedEvent);
+
         return _fallbackEventTypeResolver.ResolveType(metadata);
     }
 }

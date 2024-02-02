@@ -76,6 +76,10 @@ public class SingleStoreProjection
                 _state.ZoneVisitor[cleared.Zone] = 0;
                 break;
 
+            case ZoneManuallyAdjustedEvent adjusted:
+                _state.ZoneVisitor[adjusted.Zone] = adjusted.NumberOfVisitors;
+                break;
+
             default:
                 Console.WriteLine($"No handler defined for {eventData.GetType()}");
                 break;
