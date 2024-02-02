@@ -48,6 +48,13 @@ public class SensorSignalProcessor : IProcess<TurnstilePassageDetected>
             results.Add(r);
         }
 
+        // TODO Here we should probably do something a little bit more refined...
+        var enteredEvents = eventGroups.Select(x => x.Item2).OfType<ZoneEnteredEvent>();
+        foreach (var enteredEvent in enteredEvents)
+        {
+            await _bus.Publish(enteredEvent);
+        }
+        
         // Check for side effects
         var affectedZones = eventGroups
             .Select(x => x.Item2)

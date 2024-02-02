@@ -28,7 +28,7 @@
 			.build();
 			
 		connection.on('Notification', (message) => {
-			console.log('Notification', message);
+			// console.log('Notification', message);
 			const toast = { message: message, autohide: true, timeout: 1000};
 			toastStore.trigger(toast);
 			signalRMessageCount++;
@@ -36,7 +36,7 @@
 
 		connection.on('ZoneThresholdChanged', function (zone, threshold) {
 			signalRMessageCount++;
-			console.log('ZoneThresholdChanged', zone, threshold);
+			// console.log('ZoneThresholdChanged', zone, threshold);
 
 			bikes = bikes.map((b) => {
 				if (b[3] === zone) {
@@ -44,21 +44,12 @@
 				}
 				return b;
 			});
-
-			// for (let index = 0; index < data.channels.length; index++) {
-			// 	const element = data.channels[index];
-			// 	const pos = parseInt(element.channel);
-			// 	const lev = parseInt(element.level);
-			// 	levels[pos] = lev;
-			// 	bikes[pos][1] = lev;
-			// }
 		});
 
-		// connection.onclose(async () => {
-		// 	signalRConnectionState = connection.state;
-		// 	const toast = { message: 'SignalR Disconnected.', background: 'variant-filled-error' };
-		// 	toastStore.trigger(toast);
-		// });
+		connection.on('ConfigChanged', function (config) {
+			signalRMessageCount++;
+			console.log('ConfigChanged', config);
+		});
 
 		try {
 			await connection.start();
@@ -117,7 +108,7 @@
 	}
 
 	function handleZoneThresholdChangedEvent(event) {
-		console.log('handleZoneThresholdChangedEvent', event.detail);
+		// console.log('handleZoneThresholdChangedEvent', event.detail);
 		var d = levels[event.detail.key];
 		handleZoneThresholdChanged(`${d.zone}`, `${d.threshold}`);
 	}

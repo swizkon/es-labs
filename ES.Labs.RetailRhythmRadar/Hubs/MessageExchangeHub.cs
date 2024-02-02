@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.SignalR;
 using EventSourcing;
+using Microsoft.Extensions.Caching.Distributed;
 using RetailRhythmRadar.Domain.Events;
+using RetailRhythmRadar.Domain.Projections;
 
 namespace RetailRhythmRadar.Hubs;
 
@@ -9,22 +11,24 @@ public class MessageExchangeHub : Hub<IMessageExchangeHubClient>
     //private readonly ProjectionState _projectionState;
     //private readonly EventDataBuilder _eventDataBuilder;
     private readonly IWriteEvents _eventWriter;
+    private readonly IReadStreams _eventReader;
 
     private readonly ILogger<MessageExchangeHub> _logger;
+
+    private IDistributedCache _cache;
     //private readonly EventStoreClient _client;
 
     public MessageExchangeHub(
         // ProjectionState projectionState,
         // EventDataBuilder eventDataBuilder,
         IWriteEvents eventWriter,
-        IConfiguration configuration,
+        IReadStreams eventReader,
+        IDistributedCache cache,
         ILogger<MessageExchangeHub> logger)
     {
-        // _client = EventStoreUtil.GetDefaultClient(configuration.GetConnectionString("EVENTSTORE")!);
-
-        //_projectionState = projectionState;
-        //_eventDataBuilder = eventDataBuilder;
         _eventWriter = eventWriter;
+        _eventReader = eventReader;
+        _cache = cache;
         _logger = logger;
     }
 
@@ -47,6 +51,14 @@ public class MessageExchangeHub : Hub<IMessageExchangeHubClient>
 
         await _eventWriter.WriteEventAsync("configs", evt);
         await Clients.Group("configs").ZoneThresholdChanged(evt.Zone, evt.Threshold);
+        var state = await new ConfigProjection(_eventReader, _cache).BuildAsync(CancellationToken.None);
+
+        var zoneThresholds = state.ZoneVisitor.Select(x => new
+        {
+            zone = x.Key,
+            threshold = x.Value
+        });
+        await Clients.Group("configs").ConfigChanged(zoneThresholds);
     }
 
     // 
