@@ -44,7 +44,7 @@ public class SensorSignalProcessor : IProcess<TurnstilePassageDetected>
             var stream = groupedEvents.Key;
             var events = groupedEvents.ToList().Select(x => x.Item2).ToArray();
 
-            var r = await _eventWriter.WriteEventAsync(stream, events);
+            var r = await _eventWriter.WriteEventsAsync(stream, events);
             results.Add(r);
         }
 

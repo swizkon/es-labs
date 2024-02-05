@@ -41,6 +41,11 @@ public class ConfigProjection
         {
             ApplyEvent(@event.EventData);
             _state.Revision = @event.Revision;
+
+            //if (_state.ZoneA * _state.ZoneB * _state.ZoneC * _state.ZoneD != 0)
+            //{
+            //    break;
+            //}
         }
 
         return _state;

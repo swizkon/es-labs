@@ -33,10 +33,7 @@ public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
         _client = new EventStoreClient(settings);
     }
 
-    public Task<WriteEventResult> WriteEventAsync(string streamName, params object[] data)
-        => WriteEventAsync(streamName, null, data);
-
-    public async Task<WriteEventResult> WriteEventAsync(string streamName, long? expectedRevision, params object[] data)
+    public async Task<WriteEventResult> WriteEventsAsync(string streamName, long? expectedRevision, IEnumerable<object> data)
     {
         var result = expectedRevision == null ?
             await _client.AppendToStreamAsync(
@@ -53,8 +50,8 @@ public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
             Revision: result.NextExpectedStreamRevision,
             Position: result.LogPosition.CommitPosition);
     }
-    
-    private static IEnumerable<EventData> BuildEventData(object[] data, IEnrichMetaData enrichMetaData)
+
+    private static IEnumerable<EventData> BuildEventData(IEnumerable<object> data, IEnrichMetaData enrichMetaData)
         => data.Select(x => BuildEventData(x, enrichMetaData));
 
     private static EventData BuildEventData(object data, IEnrichMetaData enrichMetaData)

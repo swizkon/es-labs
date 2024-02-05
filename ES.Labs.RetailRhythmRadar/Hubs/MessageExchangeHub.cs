@@ -50,7 +50,7 @@ public class MessageExchangeHub : Hub<IMessageExchangeHubClient>
         };
 
         await _eventWriter.WriteEventAsync("configs", evt);
-        await Clients.Group("configs").ZoneThresholdChanged(evt.Zone, evt.Threshold);
+        // await Clients.Group("configs").ZoneThresholdChanged(evt.Zone, evt.Threshold);
         var state = await new ConfigProjection(_eventReader, _cache).BuildAsync(CancellationToken.None);
 
         var zoneThresholds = state.ZoneVisitor.Select(x => new

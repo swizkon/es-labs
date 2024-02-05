@@ -33,10 +33,10 @@
 			toastStore.trigger(toast);
 			signalRMessageCount++;
 		});
-
+		
+		/*
 		connection.on('ZoneThresholdChanged', function (zone, threshold) {
 			signalRMessageCount++;
-			// console.log('ZoneThresholdChanged', zone, threshold);
 
 			bikes = bikes.map((b) => {
 				if (b[3] === zone) {
@@ -45,10 +45,15 @@
 				return b;
 			});
 		});
+		*/
 
 		connection.on('ConfigChanged', function (config) {
 			signalRMessageCount++;
-			console.log('ConfigChanged', config);
+			// console.log('ConfigChanged', config);
+			bikes = bikes.map((b, i) => {
+				b[1] = config[i].threshold;
+				return b;
+			});
 		});
 
 		try {
