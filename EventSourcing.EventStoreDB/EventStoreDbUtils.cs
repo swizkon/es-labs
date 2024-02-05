@@ -32,6 +32,7 @@ public static class EventStoreDbUtils
         return new DomainEvent(
             EventType: eType?.FullName ?? string.Empty,
             EventData: GetRecordedEvent(evt.Event, eType!),
-            Revision: evt.Event.EventNumber);
+            Revision: evt.Event.EventNumber,
+            Position: evt.OriginalPosition.GetValueOrDefault().CommitPosition);
     }
 }

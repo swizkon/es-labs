@@ -119,7 +119,8 @@ public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
         return new DomainEvent(
             EventType: eventTypeName,
             EventData: GetRecordedEvent(evt.Event, eventType),
-            Revision: evt.Event.EventNumber);
+            Revision: evt.Event.EventNumber,
+            Position: evt.OriginalPosition.GetValueOrDefault().CommitPosition);
     }
 
     private static object GetRecordedEvent(EventRecord evt, Type type)
