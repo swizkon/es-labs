@@ -16,7 +16,7 @@ State is derived from replay of all events inside an aggregate.
 
 #### Use cases
 Anomaly detection\
-Temporal queries\
+Temporal queries
 
 
 #### Characteristics

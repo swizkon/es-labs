@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 
-	  <IsPackable>false</IsPackable>
-	  <IsTestProject>true</IsTestProject>
-	  <PreserveCompilationContext>true</PreserveCompilationContext>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="FluentAssertions" Version="6.12.0" />
@@ -28,8 +28,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\ES.Labs.RetailRhythmRadar\ES.Labs.RetailRhythmRadar.csproj" />
-	  <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
+		<ProjectReference Include="..\ES.Labs.RetailRhythmRadar\ES.Labs.RetailRhythmRadar.csproj" />
+		<ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
 	</ItemGroup>
 
 </Project>

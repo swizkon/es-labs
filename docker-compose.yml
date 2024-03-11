@@ -55,6 +55,7 @@ services:
       context: .
       dockerfile: ./es-labs-retailrhythmradar.Dockerfile
     environment:
+      SmtpHost: mailpit
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: "https://+;http://+" 
       ASPNETCORE_HTTPS_PORT: 4081

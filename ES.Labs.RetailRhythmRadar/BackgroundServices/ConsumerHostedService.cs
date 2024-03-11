@@ -49,7 +49,6 @@ public class ConsumerHostedService : EventStoreSubscriptionBase
             .Throttle(50.Milliseconds())
             .Subscribe(async state =>
             {
-                Console.WriteLine(state);
                 try
                 {
                     await _bus.Publish(state, stoppingToken);

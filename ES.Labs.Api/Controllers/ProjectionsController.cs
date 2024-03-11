@@ -65,11 +65,6 @@ namespace ES.Labs.Api.Controllers
 
             await foreach (var @event in events)
             {
-                //Console.WriteLine(@event.Event.EventNumber);
-                //Console.WriteLine(@event.OriginalStreamId);
-                // Console.WriteLine(Encoding.UTF8.GetString(@event.Event.Data.ToArray()));
-
-                // _logger.LogInformation("Got projection {OriginalEventNumber}", @event.OriginalEventNumber);
                 State.CurrentVersion = @event.OriginalEventNumber;
                 State.Volume += 1;
             }
