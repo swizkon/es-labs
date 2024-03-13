@@ -8,17 +8,17 @@ using Microsoft.Extensions.Logging;
 
 namespace EventSourcing.EventStoreDB;
 
-public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
+public class EventStoreDbStreamUtility : IReadStreams, ICreateStreams, IWriteEvents
 {
     private readonly IEnrichMetaData _enrichMetaData;
     private readonly EventStoreClient _client;
 
     private static readonly ConcurrentDictionary<string, (string, Type)> EventTypes = new();
 
-    public EventStoreDbStreamReader(
+    public EventStoreDbStreamUtility(
         IConfiguration configuration,
         IEnrichMetaData enrichMetaData,
-        ILogger<EventStoreDbStreamReader> logger)
+        ILogger<EventStoreDbStreamUtility> logger)
     {
         _enrichMetaData = enrichMetaData;
         var connectionString = configuration.GetConnectionString("EVENTSTORE");
@@ -31,6 +31,18 @@ public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
         var settings = EventStoreClientSettings.Create(connectionString);
         logger.LogInformation("Setting up EventStoreClient");
         _client = new EventStoreClient(settings);
+    }
+    
+    public async Task<WriteEventResult> CreateStreamAsync(string streamName, IEnumerable<object> data)
+    {
+        var result = await _client.AppendToStreamAsync(
+            streamName: streamName,
+            expectedState: StreamState.NoStream,
+            eventData: BuildEventData(data, enrichMetaData: _enrichMetaData));
+
+        return new WriteEventResult(StreamName: streamName,
+            Revision: result.NextExpectedStreamRevision,
+            Position: result.LogPosition.CommitPosition);
     }
 
     public async Task<WriteEventResult> WriteEventsAsync(string streamName, long? expectedRevision, IEnumerable<object> data)
@@ -86,7 +98,7 @@ public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         StreamPosition? streamRevision = revision.HasValue ? new StreamPosition(revision.Value) : null;
-        var events = _client.ReadStreamAsync(Direction.Forwards, streamName, streamRevision?.Next() ?? StreamPosition.Start, cancellationToken: cancellationToken);
+        var events = _client.ReadStreamAsync(Direction.Forwards, streamName, streamRevision?.Next() ?? StreamPosition.Start, resolveLinkTos: true, cancellationToken: cancellationToken);
         var state = await events.ReadState;
         if (state == ReadState.StreamNotFound)
         {
@@ -116,7 +128,8 @@ public class EventStoreDbStreamReader : IReadStreams, IWriteEvents
         return new DomainEvent(
             EventType: eventTypeName,
             EventData: GetRecordedEvent(evt.Event, eventType),
-            Revision: evt.Event.EventNumber,
+            // Revision: evt.Event.EventNumber,
+            Revision: evt.OriginalEventNumber,
             Position: evt.OriginalPosition.GetValueOrDefault().CommitPosition);
     }
 

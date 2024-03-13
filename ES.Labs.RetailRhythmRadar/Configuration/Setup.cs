@@ -36,8 +36,8 @@ public static class Setup
         }
         
         services.AddSingleton<IEnrichMetaData, MetadataEnricher>();
-        services.AddSingleton<IWriteEvents, EventStoreDbStreamReader>();
-        services.AddSingleton<IReadStreams, EventStoreDbStreamReader>();
+        services.AddSingleton<IWriteEvents, EventStoreDbStreamUtility>();
+        services.AddSingleton<IReadStreams, EventStoreDbStreamUtility>();
 
         services.AddSingleton<IProcess<TurnstilePassageDetected>, SensorSignalProcessor>();
 

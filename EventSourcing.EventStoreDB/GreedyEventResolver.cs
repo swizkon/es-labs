@@ -4,9 +4,23 @@ namespace EventSourcing.EventStoreDB;
 
 public class GreedyEventResolver : IEventTypeResolver
 {
+    private Assembly? _assembly;
+
+    public GreedyEventResolver(Assembly? assembly)
+    {
+        _assembly = assembly;
+    }
+
     public Type? ResolveType(IDictionary<string, string> metadata)
     {
         var typeName = metadata["CtrlType"];
+
+        var defaultAssembly = _assembly?.GetType(typeName);
+        if (defaultAssembly != null)
+        {
+            Console.WriteLine($"{GetType().Name} defaultAssembly: {defaultAssembly.FullName}");
+            return defaultAssembly;
+        }
 
         var asm = Assembly.GetEntryAssembly();
 
