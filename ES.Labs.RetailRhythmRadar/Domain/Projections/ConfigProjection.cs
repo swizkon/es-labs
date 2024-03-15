@@ -3,6 +3,7 @@ using EventSourcing;
 using EventSourcing.EventStoreDB;
 using Microsoft.Extensions.Caching.Distributed;
 using RetailRhythmRadar.Domain.Events;
+using System.Reflection;
 
 namespace RetailRhythmRadar.Domain.Projections;
 
@@ -10,7 +11,7 @@ public class ConfigProjection
 {
     private readonly IDistributedCache _cache;
     private readonly IReadStreams _eventStreams;
-    private readonly IEventTypeResolver _eventTypeResolver = new CustomEventResolver(new DefaultEventResolver(new GreedyEventResolver()));
+    private readonly IEventTypeResolver _eventTypeResolver = new CustomEventResolver(new DefaultEventResolver(new GreedyEventResolver(Assembly.GetExecutingAssembly())));
 
     private SingleStoreState _state = new();
 

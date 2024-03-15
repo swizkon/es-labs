@@ -68,9 +68,10 @@ public class EventStoreDbStreamUtility : IReadStreams, ICreateStreams, IWriteEve
 
     private static EventData BuildEventData(object data, IEnrichMetaData enrichMetaData)
     {
+        var eventType = data.GetType().Name;
         return new EventData(
             eventId: Uuid.NewUuid(),
-            type: data.GetType().Name.ToLower(),
+            type: eventType[..1].ToLowerInvariant() + eventType[1..],
             data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)),
             metadata: BuildMetadata(data, enrichMetaData)
         );
@@ -113,13 +114,24 @@ public class EventStoreDbStreamUtility : IReadStreams, ICreateStreams, IWriteEve
 
     private static DomainEvent ResolveEvent(ResolvedEvent evt, IEventTypeResolver eventResolver)
     {
+        if(evt.Event == null)
+        {
+            var empty = new object();
+            return new DomainEvent(
+                EventType: empty.GetType().Name,
+                EventData: empty,
+                // Revision: evt.Event.EventNumber,
+                Revision: evt.OriginalEventNumber,
+                Position: evt.OriginalPosition.GetValueOrDefault().CommitPosition);
+        }
+
         var (eventTypeName, eventType) = EventTypes.GetOrAdd(evt.Event.EventType, (_) =>
         {
             var metadata = JsonSerializer.Deserialize<IDictionary<string, string>>(
                 Encoding.UTF8.GetString(evt.Event.Metadata.ToArray()))
                     ?? new Dictionary<string, string>();
 
-            var eType = eventResolver.ResolveType(metadata); // Type.GetType(metadata!["CtrlType"])!;
+            var eType = eventResolver.ResolveType(metadata);
             return eType is null
                 ? throw new InvalidOperationException($"Could not resolve type for event {evt.Event.EventType} ({metadata["CtrlType"]})")
                 : (eType.FullName!, eType);

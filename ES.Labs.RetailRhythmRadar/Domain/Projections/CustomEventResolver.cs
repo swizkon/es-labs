@@ -1,12 +1,13 @@
 ﻿using EventSourcing;
 using EventSourcing.EventStoreDB;
 using RetailRhythmRadar.Domain.Events;
+using System.Reflection;
 
 namespace RetailRhythmRadar.Domain.Projections;
 
 public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEventTypeResolver
 {
-    private readonly IEventTypeResolver _fallbackEventTypeResolver = new GreedyEventResolver();
+    private readonly IEventTypeResolver _fallbackEventTypeResolver = new GreedyEventResolver(Assembly.GetExecutingAssembly());
 
     public Type? ResolveType(IDictionary<string, string> metadata)
     {

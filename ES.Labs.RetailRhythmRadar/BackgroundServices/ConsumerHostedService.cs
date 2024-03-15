@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reflection;
 using Common.Extensions;
 using EventSourcing.EventStoreDB;
 using EventStore.Client;
@@ -64,7 +65,7 @@ public class ConsumerHostedService : EventStoreSubscriptionBase
 
     public async Task MainAsync(Subject<AverageTimeProjection>? projectionSubscription, CancellationToken cancellationToken)
     {
-        var eventResolver = new CustomEventResolver(new DefaultEventResolver(new GreedyEventResolver()));
+        var eventResolver = new CustomEventResolver(new DefaultEventResolver(new GreedyEventResolver(Assembly.GetExecutingAssembly())));
         var client = EventStoreDbUtils.GetDefaultClient(_configuration.GetConnectionString("EVENTSTORE")!);
         
         var subscription = await client.SubscribeToStreamAsync(
