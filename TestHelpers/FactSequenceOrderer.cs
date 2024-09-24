@@ -14,7 +14,7 @@ public class FactSequenceOrderer : ITestCaseOrderer
             var sequence = 0;
 
             foreach (var attr in testCase.TestMethod.Method.GetCustomAttributes((typeof(FactSequenceAttribute).AssemblyQualifiedName)))
-                sequence = attr.GetNamedArgument<int>("Sequence");
+                sequence = attr.GetNamedArgument<int>(nameof(FactSequenceAttribute.Sequence));
 
             GetOrCreate(sortedMethods, sequence).Add(testCase);
         }
@@ -23,7 +23,6 @@ public class FactSequenceOrderer : ITestCaseOrderer
         {
             list.Sort((x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.TestMethod.Method.Name, y.TestMethod.Method.Name));
             foreach (TTestCase testCase in list) yield return testCase;
-
         }
     }
 

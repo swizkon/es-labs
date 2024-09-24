@@ -2,6 +2,8 @@
 
 using NAudio.Wave;
 
+using StackExchange.Redis;
+
 Console.WriteLine("Hello! Press any key to continue");
 
 // Provide the path to your MP3 file
@@ -20,6 +22,8 @@ using var mp3Reader = new Mp3FileReader(mp3FilePath);
 outputDevice.Init(mp3Reader);
 
 ConsoleKeyInfo k;
+
+var connection = ConnectionMultiplexer.Connect("localhost:6379");
 
 do
 {
