@@ -27,13 +27,17 @@ record StatusUpdated {
 
 #### Event Sourcing &#9842;
 
-```cs {none|1-4|6-8}
+```cs {none|1-4|6-8|10-13}
 // Why item was removed from the read model
 record TaskDeferred {
   id: Guid
 }
 
 record TaskPicked {
+  id: Guid
+}
+
+record TaskCompleted {
   id: Guid
 }
 ```

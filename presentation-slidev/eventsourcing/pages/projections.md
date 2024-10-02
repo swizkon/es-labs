@@ -17,6 +17,35 @@ Select just enough data that is needed for views.
  - Star schema
  - Choose suitable format
 
+```
+fromStream("$ce-stores")
+.when({
+  $init: function() {
+    return {
+      stores: {
+        "1":0,
+        "2":0,
+        "3":0,
+        "4":0,
+        "5":0,
+      },
+      enter: 0,
+      exit: 0
+    }
+  },
+  storeEnteredEvent: function(state, event) {
+    state.stores[event.data.Store] += 1;
+    state.enter += 1;
+  },
+  storeExitedEvent: function(state, event) {
+    state.stores[event.data.Store] -= 1;
+    state.exit += 1;
+  }
+})
+.transformBy(function(state) {
+  state.eof = 'yes';
+})
+```
 
 <hr/>
 
