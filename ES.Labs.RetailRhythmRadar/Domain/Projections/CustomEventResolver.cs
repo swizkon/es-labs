@@ -11,7 +11,7 @@ public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEve
 
     public Type? ResolveType(IDictionary<string, string> metadata)
     {
-        var type = Type.GetType(metadata["CtrlType"]);
+        var type = Type.GetType(metadata["ClrType"]);
         if (type != null)
         {
             // Console.WriteLine($"CustomEventResolver: {type}");
@@ -30,7 +30,7 @@ public class CustomEventResolver(IEventTypeResolver defaultEventResolver) : IEve
 
     private Type? ResolveTypeFromMetadata(IDictionary<string, string> metadata)
     {
-        var type = metadata!["CtrlType"];
+        var type = metadata!["ClrType"];
 
         Console.WriteLine($"ResolveTypeFromMetadata: {type}");
         

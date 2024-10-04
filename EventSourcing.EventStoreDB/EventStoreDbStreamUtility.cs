@@ -132,7 +132,7 @@ public class EventStoreDbStreamUtility : IReadStreams, ICreateStreams, IWriteEve
 
             var eType = eventResolver.ResolveType(metadata);
             return eType is null
-                ? throw new InvalidOperationException($"Could not resolve type for event {evt.Event.EventType} ({metadata["CtrlType"]})")
+                ? throw new InvalidOperationException($"Could not resolve type for event {evt.Event.EventType} ({metadata["ClrType"]})")
                 : (eType.FullName!, eType);
         });
 

@@ -83,7 +83,7 @@ public class EqualizerAggregate(
         var metadata = JsonSerializer.Deserialize<IDictionary<string, string>>(
             Encoding.UTF8.GetString(evt.Metadata.ToArray()))!;
 
-        var eventType = Type.GetType(metadata["CtrlType"])!;
+        var eventType = Type.GetType(metadata["ClrType"])!;
 
         var parsedEvent = EventStoreDbUtils.GetRecordedEvent(evt, eventType);
 
