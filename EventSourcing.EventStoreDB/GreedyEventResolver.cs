@@ -13,7 +13,7 @@ public class GreedyEventResolver : IEventTypeResolver
 
     public Type? ResolveType(IDictionary<string, string> metadata)
     {
-        var typeName = metadata["CtrlType"];
+        var typeName = metadata["ClrType"];
 
         var defaultAssembly = _assembly?.GetType(typeName);
         if (defaultAssembly != null)

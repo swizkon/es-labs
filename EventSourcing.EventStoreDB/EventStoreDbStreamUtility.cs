@@ -82,7 +82,6 @@ public class EventStoreDbStreamUtility : IReadStreams, ICreateStreams, IWriteEve
         var metadata = new Dictionary<string, string>
         {
             {"Timestamp", DateTime.UtcNow.ToString("o")},
-            {"CtrlType", data.GetType().FullName!},
             {"ClrType", data.GetType().FullName!},
             {"AssemblyQualifiedName", data.GetType().AssemblyQualifiedName!}
         };

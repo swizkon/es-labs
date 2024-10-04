@@ -22,7 +22,7 @@ public class EventDataBuilder
         var metadata = new
         {
             Timestamp = DateTime.UtcNow.ToString("o"),
-            CtrlType = data.GetType().FullName,
+            ClrType = data.GetType().FullName,
             data.GetType().AssemblyQualifiedName,
             CommitHash = _eventMetadataInfo.GetCommitVersion()
         };
