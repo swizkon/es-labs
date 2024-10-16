@@ -1,8 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Net.Http.Json;
-using Microsoft.VisualBasic.CompilerServices;
-using RetailRhythmRadar.Domain.Events;
 using RetailRhythmRadar.Domain.Projections;
 
 Console.WriteLine("Hello, World!");

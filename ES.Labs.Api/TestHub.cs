@@ -5,7 +5,6 @@ using ES.Labs.Domain;
 using EventSourcing.EventStoreDB;
 using EventStore.Client;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
 
 namespace ES.Labs.Api;
 

@@ -15,7 +15,10 @@ public class Program
         services.AddControllers();
         services.AddEndpointsApiExplorer();
 
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(options =>
+        {
+            options.DocumentFilter<PathLowercaseDocumentFilter>();
+        });
 
         services.AddHttpClient();
 
@@ -49,8 +52,14 @@ public class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwagger(options =>
+            {
+            });
+            app.UseSwaggerUI(options =>
+            {
+                options.EnableFilter();
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "RetailRhythmRadar API V1");
+            });
         }
 
         app

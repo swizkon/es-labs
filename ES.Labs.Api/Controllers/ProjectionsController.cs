@@ -1,4 +1,3 @@
-using System.Text;
 using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventSourcing.EventStoreDB;

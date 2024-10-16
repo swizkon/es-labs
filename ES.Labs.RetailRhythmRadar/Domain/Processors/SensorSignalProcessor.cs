@@ -1,6 +1,5 @@
 ﻿using EventSourcing;
 using MassTransit;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using RetailRhythmRadar.Domain.Events;
 using RetailRhythmRadar.Domain.Handlers;
 

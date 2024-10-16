@@ -64,11 +64,11 @@ public static class Setup
     {
         var bus = application.Services.GetRequiredService<IBus>();
 
-        var commandRoutes = application.MapGroup("commands");
+        var commandRoutes = application.MapGroup("commands").WithTags("Commands");
 
         foreach (var command in typeof(Setup).Assembly.GetTypes().Where(t => t is { IsClass: true, IsAbstract: false } && t.IsAssignableTo(typeof(ZoneCommand))))
         {
-            commandRoutes.MapPost(command.Name, (Func<HttpContext, Task<IActionResult>>)(async payload =>
+            commandRoutes.MapPost(command.FullName!, (Func<HttpContext, Task<IActionResult>>)(async payload =>
             {
                 var p = await payload.Request.ReadFromJsonAsync(command);
                 await bus.Publish(p!);

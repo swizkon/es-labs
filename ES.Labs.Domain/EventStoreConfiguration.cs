@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ES.Labs.Domain
+﻿namespace ES.Labs.Domain
 {
     public static class EventStoreConfiguration
     {

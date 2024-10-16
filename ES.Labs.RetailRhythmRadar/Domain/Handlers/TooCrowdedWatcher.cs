@@ -1,7 +1,6 @@
 ﻿using EventSourcing;
 using MassTransit;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 using RetailRhythmRadar.Domain.Events;
 using RetailRhythmRadar.Domain.Projections;
 using System.Net.Mail;

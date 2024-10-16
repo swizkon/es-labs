@@ -5,7 +5,6 @@ using ES.Labs.Domain;
 using ES.Labs.Domain.Projections;
 using EventStore.Client;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

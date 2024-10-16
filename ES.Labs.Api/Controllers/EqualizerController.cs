@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using ES.Labs.Domain;
 using EventStore.Client;

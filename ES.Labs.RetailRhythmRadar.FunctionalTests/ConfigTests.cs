@@ -1,4 +1,3 @@
-using System.Net.Http.Json;
 using EventSourcing;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
